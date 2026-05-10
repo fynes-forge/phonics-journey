@@ -155,14 +155,14 @@ jobs:
           echo "aab=$AAB_DST" >> "$GITHUB_OUTPUT"
 
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-apk
           path: phonics-journey-v${{ needs.validate-version.outputs.version }}.apk
           retention-days: 90
 
       - name: Upload AAB artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-aab
           path: phonics-journey-v${{ needs.validate-version.outputs.version }}.aab
@@ -208,7 +208,7 @@ jobs:
           cd -
 
       - name: Upload iOS artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ios-build
           path: phonics-journey-ios-v${{ needs.validate-version.outputs.version }}.zip
