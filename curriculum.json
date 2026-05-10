@@ -1,0 +1,783 @@
+{
+  "version": "1.0.0",
+  "curriculum": "Little Wandle Letters and Sounds Revised",
+  "levels": [
+    {
+      "id": 1, "phase": 2, "title": "s – sun", "gpc": "s",
+      "phoneme": "s", "grapheme": "s", "example_word": "sun",
+      "words": ["sat", "sit", "sip", "sob", "sot"],
+      "tricky_words": [], "distractor_letters": ["a", "t", "p", "n"],
+      "description": "Meet the sound 's' as in 'sun'",
+      "unlocked": true
+    },
+    {
+      "id": 2, "phase": 2, "title": "a – ant", "gpc": "a",
+      "phoneme": "a", "grapheme": "a", "example_word": "ant",
+      "words": ["sat", "tan", "tap", "nap", "map"],
+      "tricky_words": [], "distractor_letters": ["s", "t", "p", "n"],
+      "description": "Meet the sound 'a' as in 'ant'"
+    },
+    {
+      "id": 3, "phase": 2, "title": "t – tap", "gpc": "t",
+      "phoneme": "t", "grapheme": "t", "example_word": "tap",
+      "words": ["sat", "tan", "tap", "tip", "top"],
+      "tricky_words": [], "distractor_letters": ["s", "a", "p", "n"],
+      "description": "Meet the sound 't' as in 'tap'"
+    },
+    {
+      "id": 4, "phase": 2, "title": "p – pin", "gpc": "p",
+      "phoneme": "p", "grapheme": "p", "example_word": "pin",
+      "words": ["pat", "pit", "pan", "pap", "tap"],
+      "tricky_words": [], "distractor_letters": ["s", "a", "t", "n"],
+      "description": "Meet the sound 'p' as in 'pin'"
+    },
+    {
+      "id": 5, "phase": 2, "title": "i – it", "gpc": "i",
+      "phoneme": "i", "grapheme": "i", "example_word": "it",
+      "words": ["sit", "sip", "tip", "pin", "pit"],
+      "tricky_words": [], "distractor_letters": ["s", "a", "t", "p"],
+      "description": "Meet the short vowel 'i' as in 'it'"
+    },
+    {
+      "id": 6, "phase": 2, "title": "n – net", "gpc": "n",
+      "phoneme": "n", "grapheme": "n", "example_word": "net",
+      "words": ["nap", "nip", "tan", "pan", "tin"],
+      "tricky_words": [], "distractor_letters": ["s", "a", "t", "p"],
+      "description": "Meet the sound 'n' as in 'net'"
+    },
+    {
+      "id": 7, "phase": 2, "title": "m – map", "gpc": "m",
+      "phoneme": "m", "grapheme": "m", "example_word": "map",
+      "words": ["map", "mat", "man", "mip", "rim"],
+      "tricky_words": [], "distractor_letters": ["s", "a", "t", "n"],
+      "description": "Meet the sound 'm' as in 'map'"
+    },
+    {
+      "id": 8, "phase": 2, "title": "d – dog", "gpc": "d",
+      "phoneme": "d", "grapheme": "d", "example_word": "dog",
+      "words": ["dad", "dim", "dip", "dam", "din"],
+      "tricky_words": [], "distractor_letters": ["b", "p", "a", "n"],
+      "description": "Meet the sound 'd' as in 'dog'"
+    },
+    {
+      "id": 9, "phase": 2, "title": "g – got", "gpc": "g",
+      "phoneme": "g", "grapheme": "g", "example_word": "got",
+      "words": ["gap", "gig", "gas", "nag", "tag"],
+      "tricky_words": [], "distractor_letters": ["d", "p", "a", "n"],
+      "description": "Meet the sound 'g' as in 'got'"
+    },
+    {
+      "id": 10, "phase": 2, "title": "o – on", "gpc": "o",
+      "phoneme": "o", "grapheme": "o", "example_word": "on",
+      "words": ["top", "dog", "got", "mom", "not"],
+      "tricky_words": [], "distractor_letters": ["a", "i", "u", "e"],
+      "description": "Meet the short vowel 'o' as in 'on'"
+    },
+    {
+      "id": 11, "phase": 2, "title": "c – cat", "gpc": "c",
+      "phoneme": "k", "grapheme": "c", "example_word": "cat",
+      "words": ["cat", "cap", "can", "cot", "cod"],
+      "tricky_words": [], "distractor_letters": ["g", "k", "t", "d"],
+      "description": "Meet the sound 'c' as in 'cat'"
+    },
+    {
+      "id": 12, "phase": 2, "title": "k – kit", "gpc": "k",
+      "phoneme": "k", "grapheme": "k", "example_word": "kit",
+      "words": ["kid", "kin", "ken", "king", "kit"],
+      "tricky_words": [], "distractor_letters": ["c", "g", "t", "d"],
+      "description": "Meet the sound 'k' as in 'kit'"
+    },
+    {
+      "id": 13, "phase": 2, "title": "ck – duck", "gpc": "ck",
+      "phoneme": "k", "grapheme": "ck", "example_word": "duck",
+      "words": ["back", "dock", "kick", "lock", "rock"],
+      "tricky_words": [], "distractor_letters": ["c", "k", "g", "t"],
+      "description": "Meet the digraph 'ck' as in 'duck'"
+    },
+    {
+      "id": 14, "phase": 2, "title": "e – egg", "gpc": "e",
+      "phoneme": "e", "grapheme": "e", "example_word": "egg",
+      "words": ["bed", "red", "ten", "leg", "net"],
+      "tricky_words": [], "distractor_letters": ["a", "i", "o", "u"],
+      "description": "Meet the short vowel 'e' as in 'egg'"
+    },
+    {
+      "id": 15, "phase": 2, "title": "u – up", "gpc": "u",
+      "phoneme": "u", "grapheme": "u", "example_word": "up",
+      "words": ["bug", "cup", "mud", "run", "sun"],
+      "tricky_words": [], "distractor_letters": ["a", "e", "i", "o"],
+      "description": "Meet the short vowel 'u' as in 'up'"
+    },
+    {
+      "id": 16, "phase": 2, "title": "r – red", "gpc": "r",
+      "phoneme": "r", "grapheme": "r", "example_word": "red",
+      "words": ["rat", "rim", "rob", "run", "rug"],
+      "tricky_words": [], "distractor_letters": ["n", "m", "l", "d"],
+      "description": "Meet the sound 'r' as in 'red'"
+    },
+    {
+      "id": 17, "phase": 2, "title": "h – hat", "gpc": "h",
+      "phoneme": "h", "grapheme": "h", "example_word": "hat",
+      "words": ["had", "ham", "hen", "him", "hot"],
+      "tricky_words": [], "distractor_letters": ["b", "d", "n", "m"],
+      "description": "Meet the sound 'h' as in 'hat'"
+    },
+    {
+      "id": 18, "phase": 2, "title": "b – bat", "gpc": "b",
+      "phoneme": "b", "grapheme": "b", "example_word": "bat",
+      "words": ["bad", "bag", "big", "bob", "bun"],
+      "tricky_words": [], "distractor_letters": ["d", "p", "q", "h"],
+      "description": "Meet the sound 'b' as in 'bat'"
+    },
+    {
+      "id": 19, "phase": 2, "title": "f – fox", "gpc": "f",
+      "phoneme": "f", "grapheme": "f", "example_word": "fox",
+      "words": ["fat", "fig", "fit", "fog", "fun"],
+      "tricky_words": [], "distractor_letters": ["v", "p", "t", "n"],
+      "description": "Meet the sound 'f' as in 'fox'"
+    },
+    {
+      "id": 20, "phase": 2, "title": "l – log", "gpc": "l",
+      "phoneme": "l", "grapheme": "l", "example_word": "log",
+      "words": ["lab", "lap", "led", "lip", "lot"],
+      "tricky_words": [], "distractor_letters": ["r", "n", "m", "t"],
+      "description": "Meet the sound 'l' as in 'log'"
+    },
+    {
+      "id": 21, "phase": 2, "title": "ff – off", "gpc": "ff",
+      "phoneme": "f", "grapheme": "ff", "example_word": "off",
+      "words": ["huff", "puff", "buff", "cliff", "staff"],
+      "tricky_words": [], "distractor_letters": ["f", "v", "p", "ph"],
+      "description": "Meet the double letter 'ff' as in 'off'"
+    },
+    {
+      "id": 22, "phase": 2, "title": "ll – bell", "gpc": "ll",
+      "phoneme": "l", "grapheme": "ll", "example_word": "bell",
+      "words": ["bell", "fill", "hill", "mill", "spell"],
+      "tricky_words": [], "distractor_letters": ["l", "r", "n", "m"],
+      "description": "Meet the double letter 'll' as in 'bell'"
+    },
+    {
+      "id": 23, "phase": 2, "title": "ss – hiss", "gpc": "ss",
+      "phoneme": "s", "grapheme": "ss", "example_word": "hiss",
+      "words": ["hiss", "boss", "mess", "kiss", "fuss"],
+      "tricky_words": [], "distractor_letters": ["s", "z", "c", "x"],
+      "description": "Meet the double letter 'ss' as in 'hiss'"
+    },
+    {
+      "id": 24, "phase": 2, "title": "j – jug", "gpc": "j",
+      "phoneme": "dʒ", "grapheme": "j", "example_word": "jug",
+      "words": ["jam", "jet", "job", "jog", "jut"],
+      "tricky_words": [], "distractor_letters": ["g", "d", "ch", "zh"],
+      "description": "Meet the sound 'j' as in 'jug'"
+    },
+    {
+      "id": 25, "phase": 2, "title": "v, w, x, y, z, zz, qu", "gpc": "v",
+      "phoneme": "v", "grapheme": "v", "example_word": "van",
+      "words": ["van", "vet", "vim", "vat", "vex"],
+      "tricky_words": ["the", "to", "no", "go", "into"],
+      "distractor_letters": ["f", "b", "w", "u"],
+      "description": "Meet sounds v, w, x, y, z and tricky words"
+    },
+    {
+      "id": 26, "phase": 3, "title": "ch – chin", "gpc": "ch",
+      "phoneme": "tʃ", "grapheme": "ch", "example_word": "chin",
+      "words": ["chat", "chip", "chop", "rich", "such"],
+      "tricky_words": ["I", "he", "she", "we", "me", "be"],
+      "distractor_letters": ["sh", "th", "c", "h"],
+      "description": "Meet the digraph 'ch' as in 'chin'"
+    },
+    {
+      "id": 27, "phase": 3, "title": "sh – ship", "gpc": "sh",
+      "phoneme": "ʃ", "grapheme": "sh", "example_word": "ship",
+      "words": ["shed", "shin", "shop", "fish", "dish"],
+      "tricky_words": ["was", "you", "they", "all", "are"],
+      "distractor_letters": ["ch", "th", "s", "h"],
+      "description": "Meet the digraph 'sh' as in 'ship'"
+    },
+    {
+      "id": 28, "phase": 3, "title": "th – thin", "gpc": "th",
+      "phoneme": "θ", "grapheme": "th", "example_word": "thin",
+      "words": ["that", "them", "then", "this", "with"],
+      "tricky_words": ["my", "by", "here", "there", "where"],
+      "distractor_letters": ["sh", "ch", "t", "h"],
+      "description": "Meet the digraph 'th' as in 'thin'"
+    },
+    {
+      "id": 29, "phase": 3, "title": "ng – ring", "gpc": "ng",
+      "phoneme": "ŋ", "grapheme": "ng", "example_word": "ring",
+      "words": ["bang", "king", "long", "ring", "song"],
+      "tricky_words": ["love", "some", "come", "were", "there"],
+      "distractor_letters": ["n", "g", "nk", "ŋ"],
+      "description": "Meet the digraph 'ng' as in 'ring'"
+    },
+    {
+      "id": 30, "phase": 3, "title": "ai – rain", "gpc": "ai",
+      "phoneme": "eɪ", "grapheme": "ai", "example_word": "rain",
+      "words": ["main", "nail", "paid", "rain", "tail"],
+      "tricky_words": ["said", "have", "like", "so", "do"],
+      "distractor_letters": ["ay", "a-e", "ei", "eigh"],
+      "description": "Meet the vowel digraph 'ai' as in 'rain'"
+    },
+    {
+      "id": 31, "phase": 3, "title": "ee – feet", "gpc": "ee",
+      "phoneme": "iː", "grapheme": "ee", "example_word": "feet",
+      "words": ["feet", "need", "peel", "seed", "week"],
+      "tricky_words": ["come", "some", "one", "once", "ask"],
+      "distractor_letters": ["ea", "ie", "e-e", "y"],
+      "description": "Meet the vowel digraph 'ee' as in 'feet'"
+    },
+    {
+      "id": 32, "phase": 3, "title": "igh – night", "gpc": "igh",
+      "phoneme": "aɪ", "grapheme": "igh", "example_word": "night",
+      "words": ["high", "light", "might", "night", "right"],
+      "tricky_words": ["push", "pull", "full", "put", "bull"],
+      "distractor_letters": ["i-e", "ie", "y", "ai"],
+      "description": "Meet the trigraph 'igh' as in 'night'"
+    },
+    {
+      "id": 33, "phase": 3, "title": "oa – boat", "gpc": "oa",
+      "phoneme": "əʊ", "grapheme": "oa", "example_word": "boat",
+      "words": ["boat", "coat", "goat", "load", "road"],
+      "tricky_words": ["house", "our", "little", "one", "were"],
+      "distractor_letters": ["o-e", "ow", "oe", "au"],
+      "description": "Meet the vowel digraph 'oa' as in 'boat'"
+    },
+    {
+      "id": 34, "phase": 3, "title": "oo – moon", "gpc": "oo",
+      "phoneme": "uː", "grapheme": "oo", "example_word": "moon",
+      "words": ["food", "moon", "pool", "roof", "soon"],
+      "tricky_words": ["school", "door", "floor", "poor", "your"],
+      "distractor_letters": ["ue", "ew", "u-e", "ou"],
+      "description": "Meet the long 'oo' as in 'moon'"
+    },
+    {
+      "id": 35, "phase": 3, "title": "oo – book", "gpc": "oo_short",
+      "phoneme": "ʊ", "grapheme": "oo", "example_word": "book",
+      "words": ["book", "cook", "foot", "good", "look"],
+      "tricky_words": ["could", "would", "should", "water", "want"],
+      "distractor_letters": ["oo", "u", "ue", "ew"],
+      "description": "Meet the short 'oo' as in 'book'"
+    },
+    {
+      "id": 36, "phase": 3, "title": "ar – farm", "gpc": "ar",
+      "phoneme": "ɑː", "grapheme": "ar", "example_word": "farm",
+      "words": ["arm", "bar", "car", "farm", "hard"],
+      "tricky_words": ["what", "when", "why", "which", "who"],
+      "distractor_letters": ["a", "ah", "er", "or"],
+      "description": "Meet the r-controlled vowel 'ar' as in 'farm'"
+    },
+    {
+      "id": 37, "phase": 3, "title": "or – corn", "gpc": "or",
+      "phoneme": "ɔː", "grapheme": "or", "example_word": "corn",
+      "words": ["born", "corn", "fork", "horn", "sport"],
+      "tricky_words": ["people", "their", "called", "looked", "asked"],
+      "distractor_letters": ["aw", "au", "ar", "oor"],
+      "description": "Meet the r-controlled vowel 'or' as in 'corn'"
+    },
+    {
+      "id": 38, "phase": 3, "title": "ur – burn", "gpc": "ur",
+      "phoneme": "ɜː", "grapheme": "ur", "example_word": "burn",
+      "words": ["burn", "curl", "hurt", "turn", "purse"],
+      "tricky_words": ["Mr", "Mrs", "looked", "called", "asked"],
+      "distractor_letters": ["er", "ir", "ear", "or"],
+      "description": "Meet the r-controlled vowel 'ur' as in 'burn'"
+    },
+    {
+      "id": 39, "phase": 3, "title": "ow – cow", "gpc": "ow",
+      "phoneme": "aʊ", "grapheme": "ow", "example_word": "cow",
+      "words": ["bow", "cow", "down", "how", "town"],
+      "tricky_words": ["oh", "their", "people", "Mr", "Mrs"],
+      "distractor_letters": ["ou", "ow", "au", "ao"],
+      "description": "Meet the diphthong 'ow' as in 'cow'"
+    },
+    {
+      "id": 40, "phase": 3, "title": "oi – coin", "gpc": "oi",
+      "phoneme": "ɔɪ", "grapheme": "oi", "example_word": "coin",
+      "words": ["boil", "coin", "foil", "join", "soil"],
+      "tricky_words": ["called", "here", "little", "says", "there"],
+      "distractor_letters": ["oy", "aw", "ou", "ae"],
+      "description": "Meet the diphthong 'oi' as in 'coin'"
+    },
+    {
+      "id": 41, "phase": 3, "title": "ear – hear", "gpc": "ear",
+      "phoneme": "ɪə", "grapheme": "ear", "example_word": "hear",
+      "words": ["dear", "fear", "hear", "near", "year"],
+      "tricky_words": ["were", "here", "there", "very", "every"],
+      "distractor_letters": ["eer", "ier", "er", "air"],
+      "description": "Meet the trigraph 'ear' as in 'hear'"
+    },
+    {
+      "id": 42, "phase": 3, "title": "air – fair", "gpc": "air",
+      "phoneme": "ɛə", "grapheme": "air", "example_word": "fair",
+      "words": ["air", "fair", "hair", "pair", "stair"],
+      "tricky_words": ["want", "water", "again", "people", "their"],
+      "distractor_letters": ["are", "ear", "ere", "aer"],
+      "description": "Meet the trigraph 'air' as in 'fair'"
+    },
+    {
+      "id": 43, "phase": 3, "title": "ure – pure", "gpc": "ure",
+      "phoneme": "ʊə", "grapheme": "ure", "example_word": "pure",
+      "words": ["cure", "lure", "pure", "sure", "tour"],
+      "tricky_words": ["house", "mouse", "could", "would", "should"],
+      "distractor_letters": ["our", "oor", "ur", "eur"],
+      "description": "Meet the trigraph 'ure' as in 'pure'"
+    },
+    {
+      "id": 44, "phase": 3, "title": "er – butter", "gpc": "er",
+      "phoneme": "ə", "grapheme": "er", "example_word": "butter",
+      "words": ["butter", "dinner", "hammer", "letter", "summer"],
+      "tricky_words": ["after", "again", "another", "children", "every"],
+      "distractor_letters": ["ur", "ir", "or", "ar"],
+      "description": "Meet the r-controlled 'er' as in 'butter'"
+    },
+    {
+      "id": 45, "phase": 3, "title": "Review: Phase 3 digraphs", "gpc": "review_ph3_1",
+      "phoneme": "review", "grapheme": "ch sh th ng", "example_word": "check",
+      "words": ["check", "shelf", "three", "thing", "chunk"],
+      "tricky_words": ["he", "she", "we", "me", "be", "was"],
+      "distractor_letters": ["ch", "sh", "th", "ng"],
+      "description": "Review ch, sh, th, ng — listen and sort!"
+    },
+    {
+      "id": 46, "phase": 3, "title": "Review: Long vowel digraphs", "gpc": "review_ph3_2",
+      "phoneme": "review", "grapheme": "ai ee igh oa", "example_word": "snail",
+      "words": ["snail", "sweet", "bright", "float", "night"],
+      "tricky_words": ["said", "have", "like", "some", "come"],
+      "distractor_letters": ["ai", "ee", "igh", "oa"],
+      "description": "Review ai, ee, igh, oa long vowels"
+    },
+    {
+      "id": 47, "phase": 3, "title": "Review: oo, ar, or, ur", "gpc": "review_ph3_3",
+      "phoneme": "review", "grapheme": "oo ar or ur", "example_word": "spoon",
+      "words": ["spoon", "start", "storm", "church", "floor"],
+      "tricky_words": ["your", "their", "people", "water", "again"],
+      "distractor_letters": ["oo", "ar", "or", "ur"],
+      "description": "Review oo, ar, or, ur vowel sounds"
+    },
+    {
+      "id": 48, "phase": 3, "title": "Review: ow, oi, ear, air, ure, er", "gpc": "review_ph3_4",
+      "phoneme": "review", "grapheme": "ow oi ear air", "example_word": "tower",
+      "words": ["tower", "point", "clear", "chair", "butter"],
+      "tricky_words": ["could", "would", "should", "called", "asked"],
+      "distractor_letters": ["ow", "oi", "ear", "air"],
+      "description": "Review ow, oi, ear, air, ure, er"
+    },
+    {
+      "id": 49, "phase": 3, "title": "Tricky Words Set 1", "gpc": "tricky_1",
+      "phoneme": "tricky", "grapheme": "sight words", "example_word": "the",
+      "words": ["the", "to", "no", "go", "into"],
+      "tricky_words": ["the", "to", "no", "go", "into"],
+      "distractor_letters": [],
+      "description": "Learn to read tricky words: the, to, no, go, into"
+    },
+    {
+      "id": 50, "phase": 3, "title": "Tricky Words Set 2", "gpc": "tricky_2",
+      "phoneme": "tricky", "grapheme": "sight words", "example_word": "was",
+      "words": ["was", "you", "they", "all", "are"],
+      "tricky_words": ["was", "you", "they", "all", "are"],
+      "distractor_letters": [],
+      "description": "Learn to read tricky words: was, you, they, all, are"
+    },
+    {
+      "id": 51, "phase": 3, "title": "Tricky Words Set 3", "gpc": "tricky_3",
+      "phoneme": "tricky", "grapheme": "sight words", "example_word": "he",
+      "words": ["he", "she", "we", "me", "be"],
+      "tricky_words": ["he", "she", "we", "me", "be"],
+      "distractor_letters": [],
+      "description": "Learn to read tricky words: he, she, we, me, be"
+    },
+    {
+      "id": 52, "phase": 3, "title": "Tricky Words Set 4", "gpc": "tricky_4",
+      "phoneme": "tricky", "grapheme": "sight words", "example_word": "my",
+      "words": ["my", "by", "here", "little", "one"],
+      "tricky_words": ["my", "by", "here", "little", "one"],
+      "distractor_letters": [],
+      "description": "Learn to read tricky words: my, by, here, little, one"
+    },
+    {
+      "id": 53, "phase": 3, "title": "Tricky Words Set 5", "gpc": "tricky_5",
+      "phoneme": "tricky", "grapheme": "sight words", "example_word": "said",
+      "words": ["said", "have", "like", "so", "do"],
+      "tricky_words": ["said", "have", "like", "so", "do"],
+      "distractor_letters": [],
+      "description": "Learn to read tricky words: said, have, like, so, do"
+    },
+    {
+      "id": 54, "phase": 3, "title": "Tricky Words Set 6", "gpc": "tricky_6",
+      "phoneme": "tricky", "grapheme": "sight words", "example_word": "some",
+      "words": ["some", "come", "were", "there", "where"],
+      "tricky_words": ["some", "come", "were", "there", "where"],
+      "distractor_letters": [],
+      "description": "Learn to read tricky words: some, come, were, there, where"
+    },
+    {
+      "id": 55, "phase": 3, "title": "Tricky Words Set 7 + Review", "gpc": "tricky_7",
+      "phoneme": "tricky", "grapheme": "sight words", "example_word": "love",
+      "words": ["love", "once", "ask", "friend", "school"],
+      "tricky_words": ["love", "once", "ask", "friend", "school"],
+      "distractor_letters": [],
+      "description": "Learn: love, once, ask, friend, school"
+    },
+    {
+      "id": 56, "phase": 4, "title": "CVCC – tent", "gpc": "CVCC_1",
+      "phoneme": "blends", "grapheme": "CVCC", "example_word": "tent",
+      "words": ["tent", "belt", "bent", "best", "dent"],
+      "tricky_words": ["want", "water", "again", "thought", "through"],
+      "distractor_letters": ["e", "n", "t", "s", "b"],
+      "description": "Build CVCC words — add the final blend!"
+    },
+    {
+      "id": 57, "phase": 4, "title": "CVCC – lamp", "gpc": "CVCC_2",
+      "phoneme": "blends", "grapheme": "CVCC", "example_word": "lamp",
+      "words": ["camp", "damp", "lamp", "limp", "ramp"],
+      "tricky_words": ["because", "whole", "whose", "bought", "brought"],
+      "distractor_letters": ["a", "m", "p", "l", "r"],
+      "description": "More CVCC words with -mp ending"
+    },
+    {
+      "id": 58, "phase": 4, "title": "CVCC – fist", "gpc": "CVCC_3",
+      "phoneme": "blends", "grapheme": "CVCC", "example_word": "fist",
+      "words": ["fist", "gust", "just", "list", "mist"],
+      "tricky_words": ["people", "their", "water", "again", "every"],
+      "distractor_letters": ["i", "s", "t", "f", "g"],
+      "description": "CVCC words with -st ending"
+    },
+    {
+      "id": 59, "phase": 4, "title": "CCVC – frog", "gpc": "CCVC_1",
+      "phoneme": "blends", "grapheme": "CCVC", "example_word": "frog",
+      "words": ["frog", "crab", "drip", "grip", "trap"],
+      "tricky_words": ["thought", "through", "many", "eyes", "once"],
+      "distractor_letters": ["f", "r", "o", "g", "c"],
+      "description": "Build CCVC words — add the first blend!"
+    },
+    {
+      "id": 60, "phase": 4, "title": "CCVC – slim", "gpc": "CCVC_2",
+      "phoneme": "blends", "grapheme": "CCVC", "example_word": "slim",
+      "words": ["slim", "skin", "skip", "slab", "slap"],
+      "tricky_words": ["where", "here", "there", "every", "another"],
+      "distractor_letters": ["s", "l", "i", "m", "k"],
+      "description": "CCVC words starting with sl-, sk-"
+    },
+    {
+      "id": 61, "phase": 4, "title": "CCVC – twin", "gpc": "CCVC_3",
+      "phoneme": "blends", "grapheme": "CCVC", "example_word": "twin",
+      "words": ["twin", "swim", "swam", "twig", "twit"],
+      "tricky_words": ["special", "beautiful", "pretty", "little", "many"],
+      "distractor_letters": ["t", "w", "i", "n", "s"],
+      "description": "CCVC words with tw-, sw- blends"
+    },
+    {
+      "id": 62, "phase": 4, "title": "CCVCC – blend", "gpc": "CCVCC_1",
+      "phoneme": "blends", "grapheme": "CCVCC", "example_word": "blend",
+      "words": ["blend", "blank", "clamp", "cleft", "crisp"],
+      "tricky_words": ["great", "break", "steak", "eight", "weight"],
+      "distractor_letters": ["b", "l", "e", "n", "d"],
+      "description": "Build 5-letter words with blends at both ends"
+    },
+    {
+      "id": 63, "phase": 4, "title": "CCVCC – stamp", "gpc": "CCVCC_2",
+      "phoneme": "blends", "grapheme": "CCVCC", "example_word": "stamp",
+      "words": ["stamp", "stomp", "stump", "trump", "tramp"],
+      "tricky_words": ["climb", "lamb", "bomb", "comb", "thumb"],
+      "distractor_letters": ["s", "t", "a", "m", "p"],
+      "description": "Complex blends: st- with -mp endings"
+    },
+    {
+      "id": 64, "phase": 4, "title": "Final blends -nd, -nk, -nt", "gpc": "final_blends_1",
+      "phoneme": "blends", "grapheme": "nd nk nt", "example_word": "sand",
+      "words": ["sand", "sink", "hint", "bond", "bent"],
+      "tricky_words": ["could", "would", "should", "above", "move"],
+      "distractor_letters": ["n", "d", "k", "t", "s"],
+      "description": "Words ending in -nd, -nk, -nt"
+    },
+    {
+      "id": 65, "phase": 4, "title": "Final blends -ft, -lt, -lf", "gpc": "final_blends_2",
+      "phoneme": "blends", "grapheme": "ft lt lf", "example_word": "left",
+      "words": ["left", "loft", "bolt", "belt", "wolf"],
+      "tricky_words": ["half", "calf", "calm", "palm", "talk"],
+      "distractor_letters": ["f", "t", "l", "b", "s"],
+      "description": "Words ending in -ft, -lt, -lf"
+    },
+    {
+      "id": 66, "phase": 4, "title": "Three-letter initial blends: spl, spr, str", "gpc": "3_letter_blends_1",
+      "phoneme": "blends", "grapheme": "spl spr str", "example_word": "spring",
+      "words": ["splash", "spray", "street", "string", "strip"],
+      "tricky_words": ["straight", "strange", "stretch", "special", "station"],
+      "distractor_letters": ["s", "p", "r", "t", "l"],
+      "description": "Three-letter blends: spl-, spr-, str-"
+    },
+    {
+      "id": 67, "phase": 4, "title": "Three-letter blends: scr, squ, thr", "gpc": "3_letter_blends_2",
+      "phoneme": "blends", "grapheme": "scr squ thr", "example_word": "scream",
+      "words": ["scream", "squint", "three", "threw", "scrub"],
+      "tricky_words": ["through", "thought", "though", "thorough", "throat"],
+      "distractor_letters": ["s", "c", "r", "q", "u"],
+      "description": "Three-letter blends: scr-, squ-, thr-"
+    },
+    {
+      "id": 68, "phase": 4, "title": "Phase 4 Tricky Words 1", "gpc": "ph4_tricky_1",
+      "phoneme": "tricky", "grapheme": "sight", "example_word": "what",
+      "words": ["what", "when", "why", "which", "who"],
+      "tricky_words": ["what", "when", "why", "which", "who"],
+      "distractor_letters": [],
+      "description": "Tricky words: what, when, why, which, who"
+    },
+    {
+      "id": 69, "phase": 4, "title": "Phase 4 Tricky Words 2", "gpc": "ph4_tricky_2",
+      "phoneme": "tricky", "grapheme": "sight", "example_word": "people",
+      "words": ["people", "their", "called", "looked", "asked"],
+      "tricky_words": ["people", "their", "called", "looked", "asked"],
+      "distractor_letters": [],
+      "description": "Tricky words: people, their, called, looked, asked"
+    },
+    {
+      "id": 70, "phase": 4, "title": "Phase 4 Review", "gpc": "ph4_review",
+      "phoneme": "review", "grapheme": "CVCC CCVC blends", "example_word": "blend",
+      "words": ["sprint", "clumps", "strand", "crisp", "shelf"],
+      "tricky_words": ["people", "their", "water", "again", "every"],
+      "distractor_letters": ["s", "p", "r", "n", "t"],
+      "description": "Big Phase 4 Review — blends challenge!"
+    },
+    {
+      "id": 71, "phase": 5, "title": "ay – play", "gpc": "ay",
+      "phoneme": "eɪ", "grapheme": "ay", "example_word": "play",
+      "words": ["clay", "day", "lay", "play", "stay"],
+      "tricky_words": ["Mr", "Mrs", "looked", "called", "asked"],
+      "distractor_letters": ["ai", "a-e", "eigh", "ey"],
+      "description": "Alternative spelling for /eɪ/: 'ay' as in play"
+    },
+    {
+      "id": 72, "phase": 5, "title": "ou – out", "gpc": "ou",
+      "phoneme": "aʊ", "grapheme": "ou", "example_word": "out",
+      "words": ["cloud", "loud", "mouth", "out", "shout"],
+      "tricky_words": ["through", "although", "though", "thought", "bought"],
+      "distractor_letters": ["ow", "au", "oa", "ou"],
+      "description": "Alternative spelling for /aʊ/: 'ou' as in out"
+    },
+    {
+      "id": 73, "phase": 5, "title": "ie – tie", "gpc": "ie",
+      "phoneme": "aɪ", "grapheme": "ie", "example_word": "tie",
+      "words": ["die", "lie", "pie", "tie", "tried"],
+      "tricky_words": ["beautiful", "pretty", "special", "whole", "every"],
+      "distractor_letters": ["igh", "i-e", "y", "ai"],
+      "description": "Alternative spelling for /aɪ/: 'ie' as in tie"
+    },
+    {
+      "id": 74, "phase": 5, "title": "ea – eat", "gpc": "ea",
+      "phoneme": "iː", "grapheme": "ea", "example_word": "eat",
+      "words": ["beat", "clean", "dream", "eat", "team"],
+      "tricky_words": ["great", "break", "steak", "break", "area"],
+      "distractor_letters": ["ee", "e-e", "ie", "ey"],
+      "description": "Alternative spelling for /iː/: 'ea' as in eat"
+    },
+    {
+      "id": 75, "phase": 5, "title": "oy – boy", "gpc": "oy",
+      "phoneme": "ɔɪ", "grapheme": "oy", "example_word": "boy",
+      "words": ["boy", "joy", "ploy", "royal", "toy"],
+      "tricky_words": ["could", "would", "should", "thought", "taught"],
+      "distractor_letters": ["oi", "oe", "aw", "au"],
+      "description": "Alternative spelling for /ɔɪ/: 'oy' as in boy"
+    },
+    {
+      "id": 76, "phase": 5, "title": "ir – bird", "gpc": "ir",
+      "phoneme": "ɜː", "grapheme": "ir", "example_word": "bird",
+      "words": ["bird", "first", "girl", "shirt", "stir"],
+      "tricky_words": ["work", "word", "world", "worm", "worse"],
+      "distractor_letters": ["ur", "er", "ear", "or"],
+      "description": "Alternative spelling for /ɜː/: 'ir' as in bird"
+    },
+    {
+      "id": 77, "phase": 5, "title": "ue – blue", "gpc": "ue",
+      "phoneme": "uː", "grapheme": "ue", "example_word": "blue",
+      "words": ["blue", "clue", "glue", "sue", "true"],
+      "tricky_words": ["queue", "unique", "antique", "plaque", "technique"],
+      "distractor_letters": ["oo", "ew", "u-e", "ou"],
+      "description": "Alternative spelling for /uː/: 'ue' as in blue"
+    },
+    {
+      "id": 78, "phase": 5, "title": "aw – claw", "gpc": "aw",
+      "phoneme": "ɔː", "grapheme": "aw", "example_word": "claw",
+      "words": ["claw", "draw", "jaw", "law", "saw"],
+      "tricky_words": ["walk", "talk", "chalk", "stalk", "half"],
+      "distractor_letters": ["or", "au", "oa", "al"],
+      "description": "Alternative spelling for /ɔː/: 'aw' as in claw"
+    },
+    {
+      "id": 79, "phase": 5, "title": "wh – wheel", "gpc": "wh",
+      "phoneme": "w", "grapheme": "wh", "example_word": "wheel",
+      "words": ["whale", "wheat", "wheel", "when", "white"],
+      "tricky_words": ["what", "where", "which", "while", "whether"],
+      "distractor_letters": ["w", "h", "ch", "sh"],
+      "description": "Alternative spelling for /w/: 'wh' as in wheel"
+    },
+    {
+      "id": 80, "phase": 5, "title": "ph – phone", "gpc": "ph",
+      "phoneme": "f", "grapheme": "ph", "example_word": "phone",
+      "words": ["graph", "photo", "phone", "phrase", "trophy"],
+      "tricky_words": ["alphabet", "dolphin", "elephant", "nephew", "orphan"],
+      "distractor_letters": ["f", "ff", "v", "gh"],
+      "description": "Alternative spelling for /f/: 'ph' as in phone"
+    },
+    {
+      "id": 81, "phase": 5, "title": "ew – new", "gpc": "ew",
+      "phoneme": "uː", "grapheme": "ew", "example_word": "new",
+      "words": ["brew", "chew", "dew", "flew", "new"],
+      "tricky_words": ["sew", "few", "hew", "mew", "threw"],
+      "distractor_letters": ["oo", "ue", "u-e", "ou"],
+      "description": "Alternative spelling for /uː/: 'ew' as in new"
+    },
+    {
+      "id": 82, "phase": 5, "title": "oe – toe", "gpc": "oe",
+      "phoneme": "əʊ", "grapheme": "oe", "example_word": "toe",
+      "words": ["doe", "foe", "hoe", "roe", "toe"],
+      "tricky_words": ["shoe", "canoe", "oboe", "aloe", "sloe"],
+      "distractor_letters": ["oa", "ow", "o-e", "ou"],
+      "description": "Alternative spelling for /əʊ/: 'oe' as in toe"
+    },
+    {
+      "id": 83, "phase": 5, "title": "au – sauce", "gpc": "au",
+      "phoneme": "ɔː", "grapheme": "au", "example_word": "sauce",
+      "words": ["cause", "fault", "haul", "launch", "sauce"],
+      "tricky_words": ["because", "autumn", "caught", "taught", "daughter"],
+      "distractor_letters": ["aw", "or", "oa", "al"],
+      "description": "Alternative spelling for /ɔː/: 'au' as in sauce"
+    },
+    {
+      "id": 84, "phase": 5, "title": "ey – key", "gpc": "ey",
+      "phoneme": "iː", "grapheme": "ey", "example_word": "key",
+      "words": ["donkey", "honey", "jockey", "key", "monkey"],
+      "tricky_words": ["abbey", "hockey", "jersey", "kidney", "turkey"],
+      "distractor_letters": ["ee", "ea", "ie", "e-e"],
+      "description": "Alternative spelling for /iː/: 'ey' as in key"
+    },
+    {
+      "id": 85, "phase": 5, "title": "Split digraph a-e", "gpc": "a_e",
+      "phoneme": "eɪ", "grapheme": "a_e", "example_word": "cake",
+      "words": ["bake", "cake", "came", "lake", "name"],
+      "tricky_words": ["make", "take", "give", "live", "have"],
+      "distractor_letters": ["ai", "ay", "eigh", "ey"],
+      "description": "Split digraph a-e (magic e) as in cake"
+    },
+    {
+      "id": 86, "phase": 5, "title": "Split digraph e-e", "gpc": "e_e",
+      "phoneme": "iː", "grapheme": "e_e", "example_word": "these",
+      "words": ["eve", "here", "scheme", "theme", "these"],
+      "tricky_words": ["complete", "concrete", "extreme", "here", "scene"],
+      "distractor_letters": ["ee", "ea", "ie", "ey"],
+      "description": "Split digraph e-e (magic e) as in these"
+    },
+    {
+      "id": 87, "phase": 5, "title": "Split digraph i-e", "gpc": "i_e",
+      "phoneme": "aɪ", "grapheme": "i_e", "example_word": "kite",
+      "words": ["bike", "five", "hide", "kite", "line"],
+      "tricky_words": ["give", "live", "have", "come", "some"],
+      "distractor_letters": ["igh", "ie", "y", "ai"],
+      "description": "Split digraph i-e (magic e) as in kite"
+    },
+    {
+      "id": 88, "phase": 5, "title": "Split digraph o-e", "gpc": "o_e",
+      "phoneme": "əʊ", "grapheme": "o_e", "example_word": "home",
+      "words": ["bone", "home", "hope", "note", "rose"],
+      "tricky_words": ["come", "some", "done", "one", "gone"],
+      "distractor_letters": ["oa", "ow", "oe", "ou"],
+      "description": "Split digraph o-e (magic e) as in home"
+    },
+    {
+      "id": 89, "phase": 5, "title": "Split digraph u-e", "gpc": "u_e",
+      "phoneme": "uː", "grapheme": "u_e", "example_word": "tune",
+      "words": ["cube", "cute", "dune", "flute", "tune"],
+      "tricky_words": ["use", "used", "using", "sure", "pure"],
+      "distractor_letters": ["oo", "ue", "ew", "ou"],
+      "description": "Split digraph u-e (magic e) as in tune"
+    },
+    {
+      "id": 90, "phase": 5, "title": "Alternative /eɪ/ spellings", "gpc": "ei_eigh_ey",
+      "phoneme": "eɪ", "grapheme": "ei eigh ey", "example_word": "eight",
+      "words": ["eight", "they", "vein", "weigh", "grey"],
+      "tricky_words": ["great", "break", "steak", "eight", "weight"],
+      "distractor_letters": ["ai", "ay", "a-e", "ea"],
+      "description": "Review all /eɪ/ spellings: ai, ay, a-e, ei, eigh, ey"
+    },
+    {
+      "id": 91, "phase": 5, "title": "Alternative /iː/ spellings", "gpc": "ie_field",
+      "phoneme": "iː", "grapheme": "ie field", "example_word": "field",
+      "words": ["field", "grief", "niece", "piece", "yield"],
+      "tricky_words": ["believe", "achieve", "receive", "deceive", "ceiling"],
+      "distractor_letters": ["ee", "ea", "e-e", "ey"],
+      "description": "Review all /iː/ spellings: ee, ea, e-e, ie, ey, ey"
+    },
+    {
+      "id": 92, "phase": 5, "title": "Alternative /aɪ/ spellings", "gpc": "y_sky",
+      "phoneme": "aɪ", "grapheme": "y", "example_word": "sky",
+      "words": ["by", "cry", "fly", "sky", "try"],
+      "tricky_words": ["type", "style", "cycle", "python", "symbol"],
+      "distractor_letters": ["i-e", "ie", "igh", "ai"],
+      "description": "Review all /aɪ/ spellings: i-e, ie, igh, y"
+    },
+    {
+      "id": 93, "phase": 5, "title": "Alternative /əʊ/ spellings", "gpc": "ow_snow",
+      "phoneme": "əʊ", "grapheme": "ow", "example_word": "snow",
+      "words": ["blow", "flow", "grow", "snow", "throw"],
+      "tricky_words": ["though", "although", "dough", "shoulder", "boulder"],
+      "distractor_letters": ["oa", "o-e", "oe", "au"],
+      "description": "Review all /əʊ/ spellings: oa, o-e, ow, oe"
+    },
+    {
+      "id": 94, "phase": 5, "title": "Alternative /uː/ spellings", "gpc": "ui_fruit",
+      "phoneme": "uː", "grapheme": "ui", "example_word": "fruit",
+      "words": ["bruise", "cruise", "fruit", "juice", "suit"],
+      "tricky_words": ["through", "beautiful", "group", "youth", "routine"],
+      "distractor_letters": ["oo", "ue", "ew", "u-e"],
+      "description": "Review all /uː/ spellings: oo, ue, ew, u-e, ui"
+    },
+    {
+      "id": 95, "phase": 5, "title": "Alternative /ɔː/ spellings", "gpc": "al_walk",
+      "phoneme": "ɔː", "grapheme": "al", "example_word": "walk",
+      "words": ["all", "ball", "call", "fall", "wall"],
+      "tricky_words": ["talk", "walk", "chalk", "stalk", "always"],
+      "distractor_letters": ["aw", "au", "or", "oa"],
+      "description": "Review all /ɔː/ spellings: or, aw, au, al"
+    },
+    {
+      "id": 96, "phase": 5, "title": "Alternative /ɜː/ spellings", "gpc": "ear_learn",
+      "phoneme": "ɜː", "grapheme": "ear", "example_word": "learn",
+      "words": ["earn", "earth", "heard", "learn", "search"],
+      "tricky_words": ["word", "work", "worse", "worst", "worth"],
+      "distractor_letters": ["ur", "ir", "er", "or"],
+      "description": "Review all /ɜː/ spellings: ur, ir, er, ear"
+    },
+    {
+      "id": 97, "phase": 5, "title": "Phase 5 Tricky Words 1", "gpc": "ph5_tricky_1",
+      "phoneme": "tricky", "grapheme": "sight", "example_word": "people",
+      "words": ["beautiful", "pretty", "special", "whole", "whose"],
+      "tricky_words": ["beautiful", "pretty", "special", "whole", "whose"],
+      "distractor_letters": [],
+      "description": "Harder tricky words: beautiful, pretty, special, whole, whose"
+    },
+    {
+      "id": 98, "phase": 5, "title": "Phase 5 Tricky Words 2", "gpc": "ph5_tricky_2",
+      "phoneme": "tricky", "grapheme": "sight", "example_word": "great",
+      "words": ["great", "break", "steak", "eight", "weight"],
+      "tricky_words": ["great", "break", "steak", "eight", "weight"],
+      "distractor_letters": [],
+      "description": "Exception words with unusual spellings"
+    },
+    {
+      "id": 99, "phase": 5, "title": "Phase 5 Mega Review", "gpc": "ph5_review",
+      "phoneme": "review", "grapheme": "all phase 5", "example_word": "knight",
+      "words": ["knight", "bright", "flight", "straight", "weightless"],
+      "tricky_words": ["beautiful", "thought", "through", "people", "special"],
+      "distractor_letters": ["n", "k", "igh", "t", "igh"],
+      "description": "Phase 5 mega challenge — all alternative spellings!"
+    },
+    {
+      "id": 100, "phase": 5, "title": "The Grand Final! 🚀", "gpc": "grand_final",
+      "phoneme": "all", "grapheme": "all phases", "example_word": "astronaut",
+      "words": ["astronaut", "explorer", "scientist", "champion", "brilliant"],
+      "tricky_words": ["extraordinary", "magnificent", "wonderful", "achievement", "celebrate"],
+      "distractor_letters": ["a", "s", "t", "r", "o", "n", "u"],
+      "description": "You've made it to the Grand Final! Show what you know!"
+    }
+  ]
+}

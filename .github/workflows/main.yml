@@ -1,0 +1,215 @@
+name: Phonics Journey CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  FLUTTER_VERSION: '3.22.0'
+  JAVA_VERSION: '17'
+
+jobs:
+  # ────────────────────────────────────────────────────────────────────────────
+  # JOB 1: Analyse & Test
+  # ────────────────────────────────────────────────────────────────────────────
+  test:
+    name: Analyse & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Set up Flutter ${{ env.FLUTTER_VERSION }}
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate Hive adapters
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyse code
+        run: flutter analyze --no-fatal-infos
+
+      - name: Run unit tests
+        run: flutter test --coverage test/unit/
+
+      - name: Run widget tests
+        run: flutter test test/widget/
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          file: coverage/lcov.info
+          fail_ci_if_error: false
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # JOB 2: Build Android APK (debug) on every push
+  # ────────────────────────────────────────────────────────────────────────────
+  build-android-debug:
+    name: Build Android Debug APK
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate Hive adapters
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Build debug APK
+        run: flutter build apk --debug --no-shrink
+
+      - name: Upload debug APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk-${{ github.sha }}
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 14
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # JOB 3: Build Android Release APK (main branch only, requires secrets)
+  # ────────────────────────────────────────────────────────────────────────────
+  build-android-release:
+    name: Build Android Release APK
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate Hive adapters
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Decode keystore from secret
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/phonics-journey.jks
+
+      - name: Create key.properties
+        env:
+          KEY_ALIAS:      ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD:   ${{ secrets.ANDROID_KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=$STORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=phonics-journey.jks
+          EOF
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Build release App Bundle (AAB)
+        run: flutter build appbundle --release
+
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk-${{ github.sha }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 60
+
+      - name: Upload release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-aab-${{ github.sha }}
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 60
+
+      - name: Clean up keystore
+        if: always()
+        run: |
+          rm -f android/app/phonics-journey.jks
+          rm -f android/key.properties
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # JOB 4: Build iOS (macOS runner, main branch only)
+  # ────────────────────────────────────────────────────────────────────────────
+  build-ios:
+    name: Build iOS (no-codesign)
+    runs-on: macos-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate Hive adapters
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Build iOS (no code signing)
+        run: flutter build ios --release --no-codesign
+
+      - name: Upload iOS build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-${{ github.sha }}
+          path: build/ios/iphoneos/Runner.app
+          retention-days: 30

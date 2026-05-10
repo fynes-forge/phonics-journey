@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Fynes Forge
+Copyright (c) 2026 Fynes Forge (fynesforge.dev)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,55 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## Third-Party Licences
+
+### Andika Font
+Copyright (c) SIL International.
+Licensed under the SIL Open Font Licence, Version 1.1.
+https://scripts.sil.org/OFL
+
+### Flutter
+Copyright (c) Google LLC.
+Licensed under the BSD 3-Clause Licence.
+https://github.com/flutter/flutter/blob/master/LICENSE
+
+### Hive
+Copyright (c) Simon Leier.
+Licensed under the Apache Licence 2.0.
+https://github.com/isar/hive/blob/main/LICENSE
+
+### Lottie for Flutter
+Copyright (c) xvrh.
+Licensed under the BSD 3-Clause Licence.
+https://github.com/xvrh/lottie-flutter/blob/main/LICENSE
+
+### flutter_animate
+Copyright (c) GSkinner.
+Licensed under the MIT Licence.
+https://github.com/gskinner/flutter_animate/blob/main/LICENSE
+
+### flutter_tts
+Licensed under the BSD 3-Clause Licence.
+https://github.com/dlutton/flutter_tts/blob/master/LICENSE
+
+### audioplayers
+Copyright (c) Luan Nico.
+Licensed under the MIT Licence.
+https://github.com/bluefireteam/audioplayers/blob/main/LICENSE
+
+### go_router
+Copyright (c) Google LLC.
+Licensed under the BSD 3-Clause Licence.
+
+### get_it
+Copyright (c) Thomas Burkhart.
+Licensed under the MIT Licence.
+https://github.com/fluttercommunity/get_it/blob/master/LICENSE
+
+### flutter_bloc / bloc
+Copyright (c) Felix Angelov.
+Licensed under the MIT Licence.
+https://github.com/felangel/bloc/blob/master/LICENSE

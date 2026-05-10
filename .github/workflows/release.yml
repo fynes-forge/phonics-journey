@@ -1,0 +1,321 @@
+name: Release
+
+# ─────────────────────────────────────────────────────────────────
+# Triggers on version tags: v1.0.0, v1.2.3, etc.
+# Creates a full GitHub Release with:
+#   - Signed Android APK
+#   - Signed Android AAB (App Bundle for Play Store)
+#   - iOS build (no-codesign; ready for manual Xcode archive)
+#   - Auto-generated changelog from commit messages
+# ─────────────────────────────────────────────────────────────────
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'        # e.g. v1.0.0
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'      # e.g. v1.0.0-beta.1
+
+env:
+  FLUTTER_VERSION: '3.22.0'
+  JAVA_VERSION: '17'
+
+jobs:
+  # ───────────────────────────────────────────────────────────────
+  # JOB 1 — Validate the tag matches pubspec version
+  # ───────────────────────────────────────────────────────────────
+  validate-version:
+    name: Validate Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract.outputs.version }}
+      build_number: ${{ steps.extract.outputs.build_number }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: extract
+        run: |
+          TAG="${GITHUB_REF_NAME}"              # e.g. v1.2.3
+          VERSION="${TAG#v}"                    # strip leading 'v' → 1.2.3
+          # Extract build number from pubspec (the +N after version)
+          BUILD=$(grep '^version:' pubspec.yaml | sed 's/.*+//')
+          echo "version=$VERSION"        >> "$GITHUB_OUTPUT"
+          echo "build_number=$BUILD"     >> "$GITHUB_OUTPUT"
+          echo "Tag: $TAG  Version: $VERSION  Build: $BUILD"
+
+      - name: Verify pubspec.yaml matches tag
+        run: |
+          PUBSPEC_VER=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+          TAG_VER="${{ steps.extract.outputs.version }}"
+          # Strip pre-release suffix from tag for comparison (v1.0.0-beta.1 → 1.0.0)
+          TAG_BASE=$(echo "$TAG_VER" | cut -d'-' -f1)
+          if [ "$PUBSPEC_VER" != "$TAG_BASE" ]; then
+            echo "❌ pubspec.yaml version ($PUBSPEC_VER) does not match tag ($TAG_BASE)"
+            echo "   Update pubspec.yaml version before tagging."
+            exit 1
+          fi
+          echo "✅ Version match: $PUBSPEC_VER"
+
+  # ───────────────────────────────────────────────────────────────
+  # JOB 2 — Run tests (must pass before building release)
+  # ───────────────────────────────────────────────────────────────
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    needs: validate-version
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter pub run build_runner build --delete-conflicting-outputs
+      - run: dart format --output=none --set-exit-if-changed .
+      - run: flutter analyze --no-fatal-infos
+      - run: flutter test --coverage
+
+  # ───────────────────────────────────────────────────────────────
+  # JOB 3 — Build signed Android APK + AAB
+  # ───────────────────────────────────────────────────────────────
+  build-android:
+    name: Build Android Release
+    runs-on: ubuntu-latest
+    needs: test
+    outputs:
+      apk_path: ${{ steps.paths.outputs.apk }}
+      aab_path: ${{ steps.paths.outputs.aab }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Decode keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/phonics-journey.jks
+
+      - name: Write key.properties
+        env:
+          KEY_ALIAS:      ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD:   ${{ secrets.ANDROID_KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=${STORE_PASSWORD}
+          keyPassword=${KEY_PASSWORD}
+          keyAlias=${KEY_ALIAS}
+          storeFile=phonics-journey.jks
+          EOF
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Build release AAB
+        run: flutter build appbundle --release
+
+      - name: Rename artifacts with version
+        id: paths
+        run: |
+          VERSION="${{ needs.validate-version.outputs.version }}"
+          APK_SRC="build/app/outputs/flutter-apk/app-release.apk"
+          APK_DST="phonics-journey-v${VERSION}.apk"
+          AAB_SRC="build/app/outputs/bundle/release/app-release.aab"
+          AAB_DST="phonics-journey-v${VERSION}.aab"
+          cp "$APK_SRC" "$APK_DST"
+          cp "$AAB_SRC" "$AAB_DST"
+          echo "apk=$APK_DST" >> "$GITHUB_OUTPUT"
+          echo "aab=$AAB_DST" >> "$GITHUB_OUTPUT"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: phonics-journey-v${{ needs.validate-version.outputs.version }}.apk
+          retention-days: 90
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab
+          path: phonics-journey-v${{ needs.validate-version.outputs.version }}.aab
+          retention-days: 90
+
+      - name: Clean up signing files
+        if: always()
+        run: |
+          rm -f android/app/phonics-journey.jks
+          rm -f android/key.properties
+
+  # ───────────────────────────────────────────────────────────────
+  # JOB 4 — Build iOS (no-codesign; manual Xcode archive needed)
+  # ───────────────────────────────────────────────────────────────
+  build-ios:
+    name: Build iOS Release
+    runs-on: macos-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Build iOS (no code sign)
+        run: flutter build ios --release --no-codesign
+
+      - name: Zip iOS build
+        run: |
+          VERSION="${{ needs.validate-version.outputs.version }}"
+          cd build/ios/iphoneos
+          zip -r "../../../phonics-journey-ios-v${VERSION}.zip" Runner.app
+          cd -
+
+      - name: Upload iOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: phonics-journey-ios-v${{ needs.validate-version.outputs.version }}.zip
+          retention-days: 90
+
+  # ───────────────────────────────────────────────────────────────
+  # JOB 5 — Create GitHub Release
+  # ───────────────────────────────────────────────────────────────
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [validate-version, build-android, build-ios]
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # needed for changelog generation
+
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apk
+
+      - name: Download AAB artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: android-aab
+
+      - name: Download iOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-build
+
+      - name: Generate changelog from commits
+        id: changelog
+        run: |
+          VERSION="v${{ needs.validate-version.outputs.version }}"
+          # Get previous tag
+          PREV_TAG=$(git tag --sort=-version:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | sed -n '2p')
+
+          if [ -z "$PREV_TAG" ]; then
+            RANGE="HEAD"
+          else
+            RANGE="${PREV_TAG}..HEAD"
+          fi
+
+          echo "Generating changelog from $PREV_TAG to $VERSION"
+
+          # Categorise commits
+          FEATURES=$(git log $RANGE --pretty=format:"- %s" --grep="^feat" | head -20)
+          FIXES=$(git log $RANGE --pretty=format:"- %s" --grep="^fix" | head -20)
+          CURRICULUM=$(git log $RANGE --pretty=format:"- %s" --grep="^curriculum\|^level\|^phase" | head -20)
+          AUDIO=$(git log $RANGE --pretty=format:"- %s" --grep="^audio\|^sound\|^tts" | head -10)
+          DOCS=$(git log $RANGE --pretty=format:"- %s" --grep="^docs\|^doc" | head -10)
+
+          {
+            echo "CHANGELOG<<EOF"
+            echo "## What's New in ${VERSION}"
+            echo ""
+            if [ -n "$FEATURES" ]; then
+              echo "### ✨ Features"
+              echo "$FEATURES"
+              echo ""
+            fi
+            if [ -n "$FIXES" ]; then
+              echo "### 🐛 Bug Fixes"
+              echo "$FIXES"
+              echo ""
+            fi
+            if [ -n "$CURRICULUM" ]; then
+              echo "### 📚 Curriculum"
+              echo "$CURRICULUM"
+              echo ""
+            fi
+            if [ -n "$AUDIO" ]; then
+              echo "### 🔊 Audio"
+              echo "$AUDIO"
+              echo ""
+            fi
+            if [ -n "$DOCS" ]; then
+              echo "### 📖 Documentation"
+              echo "$DOCS"
+              echo ""
+            fi
+            echo "---"
+            echo ""
+            echo "## Install"
+            echo "- **Android**: Download \`phonics-journey-${VERSION}.apk\` and sideload, or use the AAB for Play Store submission"
+            echo "- **iOS**: Download the zip and archive via Xcode for App Store submission (see [RELEASE.md](RELEASE.md))"
+            echo ""
+            echo "## Privacy"
+            echo "🔒 This app is 100% offline. No internet access, no data collection, no analytics."
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.validate-version.outputs.version }}
+          name: "Phonics Journey v${{ needs.validate-version.outputs.version }}"
+          body: ${{ steps.changelog.outputs.CHANGELOG }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: |
+            phonics-journey-v${{ needs.validate-version.outputs.version }}.apk
+            phonics-journey-v${{ needs.validate-version.outputs.version }}.aab
+            phonics-journey-ios-v${{ needs.validate-version.outputs.version }}.zip
+          token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,44 @@
+version: 2
+updates:
+
+  # ── Flutter / Dart pub packages ──────────────────────────────
+  - package-ecosystem: pub
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: "Europe/London"
+    open-pull-requests-limit: 5
+    reviewers:
+      - fynesforge
+    labels:
+      - dependencies
+      - flutter
+    commit-message:
+      prefix: "chore(deps)"
+    ignore:
+      # Pin Flutter SDK version manually — don't auto-bump
+      - dependency-name: flutter
+      # Hive adapters need manual regeneration — review before bumping
+      - dependency-name: hive
+        update-types: ["version-update:semver-major"]
+      - dependency-name: hive_flutter
+        update-types: ["version-update:semver-major"]
+
+  # ── GitHub Actions ────────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: "Europe/London"
+    open-pull-requests-limit: 5
+    reviewers:
+      - fynesforge
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: "chore(ci)"

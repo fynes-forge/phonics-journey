@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussion / Question
+    url: https://github.com/fynesforge/phonics_journey/discussions
+    about: Ask questions and discuss ideas in GitHub Discussions
+  - name: 🔒 Security Vulnerability
+    url: https://github.com/fynesforge/phonics_journey/security/advisories/new
+    about: Please report security vulnerabilities privately
