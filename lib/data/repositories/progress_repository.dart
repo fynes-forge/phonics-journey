@@ -17,11 +17,13 @@ class ProgressRepository {
 
   /// Returns whether a level is unlocked for the given profile.
   /// Level 1 is always unlocked.
-  /// Level N is unlocked if Level N-1 has 3 stars.
+  /// Level N is unlocked if Level N-1 has at least 1 star.
   bool isLevelUnlocked(String profileId, int levelId) {
     if (levelId == 1) return true;
     final prevProgress = getProgress(profileId, levelId - 1);
-    return prevProgress?.stars == 3;
+    
+    // FIX: Changed from == 3 to > 0 so any pass unlocks the next level
+    return prevProgress != null && prevProgress.stars > 0;
   }
 
   /// Record a completed attempt and update stars if improved.
@@ -32,15 +34,21 @@ class ProgressRepository {
     required int totalQuestions,
   }) async {
     final existing = getProgress(profileId, levelId);
+    
+    // Calculate stars based on the new attempt
     final newStars =
         LevelProgressModel.calculateStars(correctAnswers, totalQuestions);
+    
     final newScore =
         totalQuestions > 0 ? (correctAnswers / totalQuestions * 100).round() : 0;
 
     final updated = LevelProgressModel(
       profileId: profileId,
       levelId: levelId,
-      stars: existing != null ? (newStars > existing.stars ? newStars : existing.stars) : newStars,
+      // Only update stars if the new attempt is better than the previous best
+      stars: existing != null 
+          ? (newStars > existing.stars ? newStars : existing.stars) 
+          : newStars,
       bestScore: existing != null
           ? (newScore > existing.bestScore ? newScore : existing.bestScore)
           : newScore,
@@ -51,18 +59,24 @@ class ProgressRepository {
       totalAttempted: (existing?.totalAttempted ?? 0) + totalQuestions,
     );
 
+    // Persist to Hive via DataSource
     await saveProgress(updated);
 
-    // Unlock next level if 3 stars achieved
-    if (updated.stars == 3) {
-      final nextExisting = getProgress(profileId, levelId + 1);
+    // FIX: Unlock next level if AT LEAST 1 star is achieved
+    if (updated.stars > 0) {
+      final nextLevelId = levelId + 1;
+      final nextExisting = getProgress(profileId, nextLevelId);
+      
       if (nextExisting == null) {
+        // If no progress exists for next level, create an unlocked entry
         await saveProgress(LevelProgressModel(
           profileId: profileId,
-          levelId: levelId + 1,
+          levelId: nextLevelId,
           isUnlocked: true,
+          stars: 0,
         ));
       } else if (!nextExisting.isUnlocked) {
+        // If it exists but is locked, unlock it
         await saveProgress(nextExisting.copyWith(isUnlocked: true));
       }
     }
@@ -70,7 +84,7 @@ class ProgressRepository {
     return updated;
   }
 
-  /// Initialise progress entries for a brand-new profile (only level 1 unlocked)
+  /// Initialise progress entries for a brand-new profile
   Future<void> initProgressForProfile(String profileId) async {
     final existing = getAllProgressForProfile(profileId);
     if (existing.isEmpty) {
@@ -78,6 +92,7 @@ class ProgressRepository {
         profileId: profileId,
         levelId: 1,
         isUnlocked: true,
+        stars: 0,
       ));
     }
   }

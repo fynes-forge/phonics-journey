@@ -21,35 +21,38 @@ import 'services/curriculum_service.dart';
 final GetIt sl = GetIt.instance;
 
 Future<void> main() async {
+  // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Lock to portrait
+  // 1. Lock to portrait mode for a consistent game experience
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  // Initialize Hive
+  // 2. Initialize Hive and Register Adapters
+  // These adapters must be registered BEFORE opening any boxes
   await Hive.initFlutter();
   Hive.registerAdapter(ProfileModelAdapter());
   Hive.registerAdapter(LevelProgressModelAdapter());
 
-  // Open Hive boxes
+  // 3. Open Hive boxes explicitly
+  // We open them here to ensure they are ready before the Blocs try to read them
   await Hive.openBox<ProfileModel>('profiles');
   await Hive.openBox<LevelProgressModel>('progress');
   await Hive.openBox('settings');
 
-  // Setup service locator
+  // 4. Setup service locator (Dependency Injection)
   await _setupDependencies();
 
   runApp(const PhonicsJourneyApp());
 }
 
 Future<void> _setupDependencies() async {
-  // Data sources
+  // --- Data sources ---
   sl.registerLazySingleton<HiveDatasource>(() => HiveDatasource());
 
-  // Repositories
+  // --- Repositories ---
   sl.registerLazySingleton<ProfileRepository>(
     () => ProfileRepository(sl<HiveDatasource>()),
   );
@@ -57,11 +60,11 @@ Future<void> _setupDependencies() async {
     () => ProgressRepository(sl<HiveDatasource>()),
   );
 
-  // Services
+  // --- Services ---
   sl.registerLazySingleton<CurriculumService>(() => CurriculumService());
   sl.registerLazySingleton<AudioService>(() => AudioService());
 
-  // Use cases
+  // --- Use cases ---
   sl.registerLazySingleton<GetCurriculum>(
     () => GetCurriculum(sl<CurriculumService>()),
   );
@@ -72,17 +75,20 @@ Future<void> _setupDependencies() async {
     () => ManageProgress(sl<ProgressRepository>()),
   );
 
-  // BLoCs
-  sl.registerFactory<ProfileBloc>(
+  // --- BLoCs (CRITICAL CHANGE) ---
+  // Changed from registerFactory to registerLazySingleton.
+  // This ensures that the entire app shares ONE instance of the state.
+  // If the Game updates progress, the Map Screen will see it immediately.
+  sl.registerLazySingleton<ProfileBloc>(
     () => ProfileBloc(sl<ManageProfile>()),
   );
-  sl.registerFactory<ProgressBloc>(
+  sl.registerLazySingleton<ProgressBloc>(
     () => ProgressBloc(sl<ManageProgress>()),
   );
 
-  // Init curriculum
+  // --- Init App Data ---
+  // Load the levels and sounds before the UI builds
   await sl<CurriculumService>().loadCurriculum();
-  // Init audio
   await sl<AudioService>().init();
 }
 

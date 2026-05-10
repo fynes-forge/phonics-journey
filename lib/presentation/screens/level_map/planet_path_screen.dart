@@ -12,7 +12,7 @@ import '../../blocs/profile/profile_bloc.dart';
 import '../../blocs/progress/progress_bloc.dart';
 import '../../widgets/planet/planet_node.dart';
 
-// Top-level constants accessible by all private classes in this file
+// Constants for the winding path layout
 const double kPlanetSpacing = 160.0;
 const double kHorizontalAmplitude = 90.0;
 
@@ -27,19 +27,24 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
   late final ProfileBloc _profileBloc;
   late final ProgressBloc _progressBloc;
   final ScrollController _scrollController = ScrollController();
-  int _longPressCount = 0; // For parental gate
+  int _longPressCount = 0;
 
   @override
   void initState() {
     super.initState();
-    _profileBloc = GetIt.I<ProfileBloc>()..add(LoadActiveProfile());
+    // Getting the singletons from GetIt
+    _profileBloc = GetIt.I<ProfileBloc>();
     _progressBloc = GetIt.I<ProgressBloc>();
+    
+    // Initial load of the active profile
+    _profileBloc.add(LoadActiveProfile());
   }
 
   @override
   void dispose() {
-    _profileBloc.close();
-    _progressBloc.close();
+    // IMPORTANT: We do NOT call _profileBloc.close() or _progressBloc.close() here.
+    // Since they are LazySingletons in GetIt, closing them here makes them 
+    // unusable (Bad State) for the rest of the app's lifecycle.
     _scrollController.dispose();
     super.dispose();
   }
@@ -54,6 +59,7 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
       child: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is ProfileLoaded) {
+            // Load progress as soon as we know which profile is active
             _progressBloc.add(LoadAllProgress(state.profile.id));
           } else if (state is ProfileNotFound) {
             context.go(AppRouter.profileSetup);
@@ -72,6 +78,7 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
 
           return BlocBuilder<ProgressBloc, ProgressState>(
             builder: (context, progressState) {
+              // Map state data to local variable
               Map<int, LevelProgressModel> progressMap = {};
               if (progressState is ProgressLoaded) {
                 progressMap = progressState.progressMap;
@@ -86,10 +93,10 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
                   decoration: AppTheme.spaceBackground,
                   child: Stack(
                     children: [
-                      // Starfield background
+                      // Animated background
                       const Positioned.fill(child: _ScrollingStarfield()),
-
-                      // Top bar
+                      
+                      // Custom Navigation/Top Bar
                       Positioned(
                         top: 0,
                         left: 0,
@@ -97,13 +104,12 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
                         child: _TopBar(
                           profile: profile,
                           themeColor: themeColor,
-                          onSettingsTap: () =>
-                              context.push(AppRouter.settings),
+                          onSettingsTap: () => context.push(AppRouter.settings),
                           onLongPress: _handleParentalGate,
                         ),
                       ),
-
-                      // Planet Path
+                      
+                      // Winding Planet Path
                       Positioned.fill(
                         top: 100,
                         child: _PlanetScrollView(
@@ -112,7 +118,7 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
                           themeColor: themeColor,
                           scrollController: _scrollController,
                           onLevelTap: (levelId) =>
-                              _onLevelTap(context, levelId, progressMap, profile.id),
+                              _onLevelTap(context, levelId, progressMap),
                         ),
                       ),
                     ],
@@ -126,58 +132,34 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
     );
   }
 
-  void _onLevelTap(
-    BuildContext context,
-    int levelId,
-    Map<int, LevelProgressModel> progressMap,
-    String profileId,
-  ) {
-    final isUnlocked = levelId == 1 ||
-        (progressMap[levelId - 1]?.stars ?? 0) == 3;
+  void _onLevelTap(BuildContext context, int levelId, Map<int, LevelProgressModel> progressMap) {
+    // Unlock Logic: Level 1 is always open, others require 1+ stars on the previous level
+    final bool isUnlocked = levelId == 1 || (progressMap[levelId - 1]?.stars ?? 0) > 0;
 
     if (!isUnlocked) {
       _showLockedDialog(context);
       return;
     }
-
     context.push('${AppRouter.game}/$levelId');
   }
 
   void _showLockedDialog(BuildContext context) {
     showDialog(
       context: context,
-      barrierColor: Colors.black54,
-      builder: (_) => Dialog(
-        backgroundColor: AppTheme.stardustBlue,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(25),
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF1C2329),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Planet Locked!', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Finish the previous planet to unlock this one!',
+          style: TextStyle(color: Colors.white70),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('🔒', style: TextStyle(fontSize: 56)),
-              const SizedBox(height: 16),
-              Text(
-                'Planet Locked!',
-                style: Theme.of(context).textTheme.headlineMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Get 3 stars on the previous level to unlock this planet!',
-                style: Theme.of(context).textTheme.bodyLarge,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK, I\'ll try again!'),
-              ),
-            ],
-          ),
-        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          )
+        ],
       ),
     );
   }
@@ -186,67 +168,13 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
     _longPressCount++;
     if (_longPressCount >= 3) {
       _longPressCount = 0;
-      _showParentalPinDialog();
+      context.push(AppRouter.settings);
     }
-  }
-
-  void _showParentalPinDialog() {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppTheme.stardustBlue,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        title: Text(
-          '👋 Parent/Carer Access',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Enter PIN to access settings',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              obscureText: true,
-              maxLength: 4,
-              decoration: const InputDecoration(
-                hintText: '4-digit PIN',
-                counterText: '',
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Default PIN: 1234. In production, user-configurable.
-              if (controller.text == '1234') {
-                Navigator.pop(context);
-                context.push(AppRouter.settings);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Incorrect PIN')),
-                );
-              }
-            },
-            child: const Text('Enter'),
-          ),
-        ],
-      ),
-    );
   }
 }
 
-// ── Top Bar ───────────────────────────────────────────────────────────────────
+// ── Supporting Widgets ───────────────────────────────────────────────────────
+
 class _TopBar extends StatelessWidget {
   final dynamic profile;
   final Color themeColor;
@@ -260,82 +188,49 @@ class _TopBar extends StatelessWidget {
     required this.onLongPress,
   });
 
-  static const _avatarEmojis = [
-    '🚀', '⭐', '🌙', '🪐', '☄️', '🌟', '🛸', '🌈',
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 100,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppTheme.deepSpace,
-            AppTheme.deepSpace.withOpacity(0),
-          ],
-        ),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: [
-              // Avatar + name
-              GestureDetector(
-                onLongPress: onLongPress,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: themeColor.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: themeColor, width: 2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: themeColor.withOpacity(0.4),
-                            blurRadius: 8,
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Text(
-                          _avatarEmojis[profile.avatarIndex % _avatarEmojis.length],
-                          style: const TextStyle(fontSize: 22),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      profile.name,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: themeColor,
-                      ),
-                    ),
-                  ],
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Row(
+          children: [
+            GestureDetector(
+              onLongPress: onLongPress,
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: themeColor, width: 2),
+                ),
+                child: CircleAvatar(
+                  backgroundColor: themeColor.withOpacity(0.2),
+                  child: const Text('🚀', style: TextStyle(fontSize: 20)),
                 ),
               ),
-
-              const Spacer(),
-
-              // Settings icon
-              IconButton(
-                onPressed: onSettingsTap,
-                icon: const Icon(Icons.settings_rounded, color: AppTheme.moonWhite),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              profile.name,
+              style: TextStyle(
+                color: themeColor,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
               ),
-            ],
-          ),
+            ),
+            const Spacer(),
+            IconButton(
+              icon: const Icon(Icons.settings_rounded, color: Colors.white, size: 28),
+              onPressed: onSettingsTap,
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-// ── Planet Scroll View ────────────────────────────────────────────────────────
 class _PlanetScrollView extends StatelessWidget {
   final List<CurriculumLevel> levels;
   final Map<int, LevelProgressModel> progressMap;
@@ -353,8 +248,7 @@ class _PlanetScrollView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Total height: spacing per planet + top/bottom padding
-    final totalHeight = levels.length * kPlanetSpacing + 200.0;
+    final totalHeight = levels.length * kPlanetSpacing + 250.0;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return SingleChildScrollView(
@@ -362,10 +256,9 @@ class _PlanetScrollView extends StatelessWidget {
       physics: const BouncingScrollPhysics(),
       child: SizedBox(
         height: totalHeight,
-        width: screenWidth,
         child: Stack(
           children: [
-            // Path line (drawn behind planets)
+            // Path Line Painter
             CustomPaint(
               size: Size(screenWidth, totalHeight),
               painter: _PathPainter(
@@ -376,43 +269,32 @@ class _PlanetScrollView extends StatelessWidget {
                 themeColor: themeColor,
               ),
             ),
-
-            // Planet nodes
+            // Map Nodes
             ...List.generate(levels.length, (index) {
               final level = levels[index];
-              // Levels are shown bottom-to-top (level 1 at bottom)
+              // Reverse index to put Level 1 at the bottom
               final reversedIndex = levels.length - 1 - index;
+              
               final progress = progressMap[level.id];
               final stars = progress?.stars ?? 0;
+              
+              // Standard game logic: unlock if previous level is passed (>0 stars)
+              final isUnlocked = level.id == 1 || (progressMap[level.id - 1]?.stars ?? 0) > 0;
 
-              final isUnlocked = level.id == 1 ||
-                  (progressMap[level.id - 1]?.stars ?? 0) == 3;
-
-              final isCurrent = isUnlocked &&
-                  stars < 3 &&
-                  (level.id == 1 ||
-                      (progressMap[level.id - 1]?.stars ?? 0) == 3);
-
-              // Winding path position
-              final t = reversedIndex / (levels.length - 1).clamp(1, 100);
+              // Visual calculations
               final wave = (reversedIndex % 4);
-              double xOffset;
-              if (wave == 0 || wave == 3) {
-                xOffset = screenWidth / 2 - kHorizontalAmplitude;
-              } else {
-                xOffset = screenWidth / 2 + kHorizontalAmplitude;
-              }
-
-              final double yPos = reversedIndex * kPlanetSpacing + 80.0;
+              double xOffset = (wave == 0 || wave == 3) 
+                  ? screenWidth / 2 - kHorizontalAmplitude 
+                  : screenWidth / 2 + kHorizontalAmplitude;
 
               return Positioned(
-                left: xOffset - 45,
-                top: yPos,
+                left: xOffset - 45, // Adjust based on PlanetNode width
+                top: reversedIndex * kPlanetSpacing + 80.0,
                 child: PlanetNode(
                   level: level,
                   stars: stars,
                   isUnlocked: isUnlocked,
-                  isCurrent: isCurrent,
+                  isCurrent: isUnlocked && stars == 0,
                   themeColor: themeColor,
                   onTap: () => onLevelTap(level.id),
                 ),
@@ -425,120 +307,65 @@ class _PlanetScrollView extends StatelessWidget {
   }
 }
 
-// ── Path Painter ──────────────────────────────────────────────────────────────
 class _PathPainter extends CustomPainter {
   final int levelCount;
-  final double spacing;
-  final double amplitude;
-  final double screenWidth;
+  final double spacing, amplitude, screenWidth;
   final Color themeColor;
 
   _PathPainter({
-    required this.levelCount,
-    required this.spacing,
-    required this.amplitude,
-    required this.screenWidth,
-    required this.themeColor,
+    required this.levelCount, 
+    required this.spacing, 
+    required this.amplitude, 
+    required this.screenWidth, 
+    required this.themeColor
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = themeColor.withOpacity(0.25)
-      ..strokeWidth = 3
+      ..color = themeColor.withOpacity(0.2)
       ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final dashPaint = Paint()
-      ..color = themeColor.withOpacity(0.15)
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 4;
 
     final path = Path();
-    bool first = true;
-
     for (int i = 0; i < levelCount; i++) {
       final wave = i % 4;
-      double x;
-      if (wave == 0 || wave == 3) {
-        x = screenWidth / 2 - amplitude;
-      } else {
-        x = screenWidth / 2 + amplitude;
-      }
-      final y = i * spacing + 125;
-
-      if (first) {
+      double x = (wave == 0 || wave == 3) 
+          ? screenWidth / 2 - amplitude 
+          : screenWidth / 2 + amplitude;
+      double y = i * spacing + 125;
+      
+      if (i == 0) {
         path.moveTo(x, y);
-        first = false;
       } else {
-        // Bezier curve for smooth winding
-        final prevWave = (i - 1) % 4;
-        double prevX;
-        if (prevWave == 0 || prevWave == 3) {
-          prevX = screenWidth / 2 - amplitude;
-        } else {
-          prevX = screenWidth / 2 + amplitude;
-        }
-        final prevY = (i - 1) * spacing + 125;
-        final midY = (prevY + y) / 2;
-        path.cubicTo(prevX, midY, x, midY, x, y);
+        path.lineTo(x, y);
       }
     }
-
     canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(_PathPainter old) =>
-      old.levelCount != levelCount || old.themeColor != themeColor;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// ── Scrolling Starfield ───────────────────────────────────────────────────────
 class _ScrollingStarfield extends StatelessWidget {
   const _ScrollingStarfield();
-
   @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _StaticStarPainter(),
-    );
-  }
+  Widget build(BuildContext context) => CustomPaint(painter: _StarPainter());
 }
 
-class _StaticStarPainter extends CustomPainter {
-  static final List<_Star> _stars = List.generate(
-    80,
-    (i) => _Star(
-      x: (i * 137.508 % 1000) / 1000,
-      y: (i * 73.1 % 1000) / 1000,
-      radius: 0.8 + (i % 3) * 0.6,
-      opacity: 0.2 + (i % 5) * 0.1,
-    ),
-  );
-
+class _StarPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..style = PaintingStyle.fill;
-    for (final star in _stars) {
-      paint.color = Colors.white.withOpacity(star.opacity);
-      canvas.drawCircle(
-        Offset(star.x * size.width, star.y * size.height),
-        star.radius,
-        paint,
-      );
+    final paint = Paint()..color = Colors.white.withOpacity(0.2);
+    // Simple static star field
+    for (int i = 0; i < 60; i++) {
+      double x = (i * 137.5) % 400; // Pseudo-random distribution
+      double y = (i * 240.0) % 800;
+      canvas.drawCircle(Offset(x, y), 1.2, paint);
     }
   }
-
   @override
-  bool shouldRepaint(_StaticStarPainter _) => false;
-}
-
-class _Star {
-  final double x, y, radius, opacity;
-  const _Star({
-    required this.x,
-    required this.y,
-    required this.radius,
-    required this.opacity,
-  });
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

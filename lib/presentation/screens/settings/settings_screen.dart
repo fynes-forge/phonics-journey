@@ -14,6 +14,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Accessing our singletons from GetIt
     final profileBloc = GetIt.I<ProfileBloc>();
     final audio = GetIt.I<AudioService>();
 
@@ -22,10 +23,7 @@ class SettingsScreen extends StatelessWidget {
       child: BlocBuilder<ProfileBloc, ProfileState>(
         builder: (context, state) {
           final profile = state is ProfileLoaded ? state.profile : null;
-          final themeColor = profile != null
-              ? Color(profile.themeColorValue)
-              : AppTheme.profileColors[0];
-
+          
           return Scaffold(
             body: Container(
               decoration: AppTheme.spaceBackground,
@@ -33,7 +31,7 @@ class SettingsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Top bar
+                    // --- Header ---
                     Padding(
                       padding: const EdgeInsets.all(16),
                       child: Row(
@@ -43,9 +41,14 @@ class SettingsScreen extends StatelessWidget {
                             icon: const Icon(Icons.arrow_back_rounded,
                                 color: AppTheme.moonWhite),
                           ),
-                          Text(
+                          const Text(
                             '⚙️ Parent Settings',
-                            style: Theme.of(context).textTheme.headlineMedium,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Andika',
+                            ),
                           ),
                         ],
                       ),
@@ -55,52 +58,52 @@ class SettingsScreen extends StatelessWidget {
                       child: ListView(
                         padding: const EdgeInsets.all(16),
                         children: [
-                          _SectionTitle('Profile'),
+                          const _SectionTitle('Profile'),
                           _SettingsTile(
                             icon: '✏️',
                             title: 'Edit Profile',
                             subtitle: profile != null
                                 ? 'Currently: ${profile.name}'
-                                : 'No profile',
+                                : 'No profile found',
                             onTap: () => context.push(
                               AppRouter.profileSetup,
-                              extra: true,
+                              extra: true, // Passing the edit flag to router
                             ),
-                          ).animate(delay: 100.ms).fadeIn().slideX(begin: -0.1),
+                          ).animate().fadeIn().slideX(begin: -0.1),
 
                           const SizedBox(height: 24),
-                          _SectionTitle('Voice & Audio'),
+                          const _SectionTitle('Voice & Audio'),
                           _SettingsTile(
                             icon: '🎙️',
                             title: 'Custom Voice Recordings',
                             subtitle: 'Record your own phoneme sounds',
                             onTap: () => _showVoiceRecorderList(context, audio),
-                          ).animate(delay: 200.ms).fadeIn().slideX(begin: -0.1),
+                          ).animate(delay: 100.ms).fadeIn().slideX(begin: -0.1),
 
                           const SizedBox(height: 24),
-                          _SectionTitle('About'),
+                          const _SectionTitle('About'),
                           _SettingsTile(
                             icon: 'ℹ️',
                             title: 'About Phonics Journey',
-                            subtitle: 'Little Wandle aligned • Offline only • v1.0.0',
+                            subtitle: 'Little Wandle aligned • Offline • v1.0.0',
                             onTap: () => _showAboutDialog(context),
-                          ).animate(delay: 300.ms).fadeIn().slideX(begin: -0.1),
+                          ).animate(delay: 200.ms).fadeIn().slideX(begin: -0.1),
 
                           _SettingsTile(
                             icon: '🔒',
                             title: 'Privacy',
-                            subtitle: 'All data stored locally. No tracking. No ads.',
+                            subtitle: 'Local storage only • No tracking',
                             onTap: () => _showPrivacyDialog(context),
-                          ).animate(delay: 350.ms).fadeIn().slideX(begin: -0.1),
+                          ).animate(delay: 250.ms).fadeIn().slideX(begin: -0.1),
 
                           const SizedBox(height: 24),
-                          _SectionTitle('Curriculum'),
+                          const _SectionTitle('Curriculum'),
                           _SettingsTile(
                             icon: '📚',
-                            title: 'About Little Wandle',
-                            subtitle: 'Phases 2, 3, 4 & 5 — 100 levels',
+                            title: 'Curriculum Info',
+                            subtitle: 'Phases 2, 3, 4 & 5',
                             onTap: () => _showCurriculumDialog(context),
-                          ).animate(delay: 400.ms).fadeIn().slideX(begin: -0.1),
+                          ).animate(delay: 300.ms).fadeIn().slideX(begin: -0.1),
                         ],
                       ),
                     ),
@@ -114,16 +117,14 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  // --- Utility Methods for Dialogs ---
+
   void _showVoiceRecorderList(BuildContext context, AudioService audio) {
-    final phonemes = [
-      's', 'a', 't', 'p', 'i', 'n', 'm', 'd', 'g', 'o',
-      'c', 'k', 'ck', 'e', 'u', 'r', 'h', 'b', 'f', 'l',
-      'ch', 'sh', 'th', 'ng', 'ai', 'ee', 'igh', 'oa', 'oo',
-    ];
+    final phonemes = ['s', 'a', 't', 'p', 'i', 'n', 'm', 'd', 'g', 'o', 'ck', 'ch', 'sh', 'th'];
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppTheme.stardustBlue,
+      backgroundColor: const Color(0xFF1C2329),
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
@@ -131,84 +132,14 @@ class SettingsScreen extends StatelessWidget {
       builder: (_) => DraggableScrollableSheet(
         expand: false,
         initialChildSize: 0.6,
-        builder: (_, scrollController) => Column(
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white38,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'Select a phoneme to record',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Expanded(
-              child: ListView.builder(
-                controller: scrollController,
-                itemCount: phonemes.length,
-                itemBuilder: (_, i) {
-                  final phoneme = phonemes[i];
-                  final hasCustom =
-                      audio.customVoicePaths.containsKey(phoneme);
-                  return ListTile(
-                    leading: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: hasCustom
-                            ? AppTheme.successGreen.withOpacity(0.2)
-                            : AppTheme.cosmicTeal.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: Text(
-                          phoneme,
-                          style: const TextStyle(
-                            fontFamily: 'Andika',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.moonWhite,
-                          ),
-                        ),
-                      ),
-                    ),
-                    title: Text(
-                      '"$phoneme" sound',
-                      style: const TextStyle(
-                        fontFamily: 'Andika',
-                        color: AppTheme.moonWhite,
-                      ),
-                    ),
-                    subtitle: Text(
-                      hasCustom ? '✅ Custom recording' : '🔊 Using TTS',
-                      style: TextStyle(
-                        fontFamily: 'Andika',
-                        color: hasCustom
-                            ? AppTheme.successGreen
-                            : Colors.white54,
-                        fontSize: 12,
-                      ),
-                    ),
-                    trailing: const Icon(Icons.chevron_right_rounded,
-                        color: Colors.white38),
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.push(
-                          '${AppRouter.voiceRecorder}/$phoneme');
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
+        builder: (_, scrollController) => ListView.builder(
+          controller: scrollController,
+          itemCount: phonemes.length,
+          itemBuilder: (_, i) => ListTile(
+            title: Text('Sound: ${phonemes[i]}', style: const TextStyle(color: Colors.white)),
+            trailing: const Icon(Icons.mic, color: AppTheme.starYellow),
+            onTap: () => context.push('${AppRouter.voiceRecorder}/${phonemes[i]}'),
+          ),
         ),
       ),
     );
@@ -218,25 +149,10 @@ class SettingsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppTheme.stardustBlue,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        title: const Text('🚀 Phonics Journey',
-            style: TextStyle(fontFamily: 'Andika', color: AppTheme.moonWhite)),
-        content: const Text(
-          'A privacy-first phonics app aligned to the '
-          'Little Wandle Letters and Sounds Revised programme.\n\n'
-          '100 levels across Phases 2–5.\n\n'
-          'All data is stored locally on this device. '
-          'No internet connection required. '
-          'No data is ever sent anywhere.',
-          style: TextStyle(fontFamily: 'Andika', color: AppTheme.moonWhite),
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
+        backgroundColor: const Color(0xFF1C2329),
+        title: const Text('Phonics Journey', style: TextStyle(color: Colors.white)),
+        content: const Text('Local, secure, and privacy-focused learning.', style: TextStyle(color: Colors.white70)),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
       ),
     );
   }
@@ -245,26 +161,10 @@ class SettingsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppTheme.stardustBlue,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        title: const Text('🔒 Privacy',
-            style: TextStyle(fontFamily: 'Andika', color: AppTheme.moonWhite)),
-        content: const Text(
-          '• No internet permissions required\n'
-          '• No analytics or tracking\n'
-          '• No advertising\n'
-          '• No cloud sync\n'
-          '• All profile and progress data lives on this device only\n'
-          '• No personal data is collected or transmitted',
-          style: TextStyle(
-              fontFamily: 'Andika', color: AppTheme.moonWhite, height: 1.8),
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Got it!'),
-          ),
-        ],
+        backgroundColor: const Color(0xFF1C2329),
+        title: const Text('Privacy', style: TextStyle(color: Colors.white)),
+        content: const Text('We do not collect any data. Everything stays on your device.', style: TextStyle(color: Colors.white70)),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))],
       ),
     );
   }
@@ -273,30 +173,16 @@ class SettingsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppTheme.stardustBlue,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        title: const Text('📚 Curriculum',
-            style: TextStyle(fontFamily: 'Andika', color: AppTheme.moonWhite)),
-        content: const Text(
-          'This app follows the Little Wandle Letters and Sounds Revised programme:\n\n'
-          '• Phase 2 (Levels 1–25): Single GPCs\n'
-          '• Phase 3 (Levels 26–55): Digraphs, trigraphs & tricky words\n'
-          '• Phase 4 (Levels 56–70): Adjacent consonants\n'
-          '• Phase 5 (Levels 71–100): Alternative spellings & split digraphs\n\n'
-          'Each level requires 3 stars (100% accuracy) to unlock the next.',
-          style: TextStyle(
-              fontFamily: 'Andika', color: AppTheme.moonWhite, height: 1.7),
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Got it!'),
-          ),
-        ],
+        backgroundColor: const Color(0xFF1C2329),
+        title: const Text('Curriculum', style: TextStyle(color: Colors.white)),
+        content: const Text('Aligned with Little Wandle Letters and Sounds.', style: TextStyle(color: Colors.white70)),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))],
       ),
     );
   }
 }
+
+// --- Internal Helper Widgets ---
 
 class _SectionTitle extends StatelessWidget {
   final String title;
@@ -309,7 +195,6 @@ class _SectionTitle extends StatelessWidget {
       child: Text(
         title.toUpperCase(),
         style: const TextStyle(
-          fontFamily: 'Andika',
           fontSize: 12,
           fontWeight: FontWeight.bold,
           color: AppTheme.starYellow,
@@ -340,7 +225,11 @@ class _SettingsTile extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(16),
-        decoration: AppTheme.cardDecoration(),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.white10),
+        ),
         child: Row(
           children: [
             Text(icon, style: const TextStyle(fontSize: 28)),
@@ -349,17 +238,8 @@ class _SettingsTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.moonWhite.withOpacity(0.6),
-                    ),
-                  ),
+                  Text(title, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(subtitle, style: const TextStyle(color: Colors.white54, fontSize: 12)),
                 ],
               ),
             ),
