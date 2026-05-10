@@ -13,7 +13,7 @@ import '../../../services/curriculum_service.dart';
 import '../../blocs/game/game_bloc.dart';
 import '../../blocs/profile/profile_bloc.dart';
 import '../../blocs/progress/progress_bloc.dart';
-import '../../widgets/game/word_peek_card.dart';
+import '../../widgets/game/word_peek_card.dart'; // Ensure this contains the WordPeek class
 
 class GameScreen extends StatefulWidget {
   final int levelId;
@@ -41,7 +41,6 @@ class _GameScreenState extends State<GameScreen> {
     final level = GetIt.I<CurriculumService>().getLevelById(widget.levelId);
     if (level != null) {
       _gameBloc.add(StartGame(level));
-      // Speak the level's key phoneme on entry
       Future.delayed(const Duration(milliseconds: 600), () {
         _audio.speakPhoneme(level.gpc);
       });
@@ -50,6 +49,8 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void dispose() {
+    // Safety: ensure peek is cleared if user exits while holding down
+    WordPeek.dismiss(); 
     _gameBloc.close();
     super.dispose();
   }
@@ -96,18 +97,14 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  // ── Game State Listener ──────────────────────────────────────────────────
-
   void _onGameStateChange(BuildContext context, GameState state) {
     if (state is GamePlaying && state.showFeedback) {
-      // Fire-and-forget audio — never await, never block save logic
       if (state.lastAnswerCorrect == true) {
         unawaited(_audio.playCorrect());
         unawaited(_audio.speakWord(state.currentQuestion.word));
       } else {
         unawaited(_audio.playWrong());
       }
-      // Auto-advance after feedback
       Future.delayed(const Duration(milliseconds: 1400), () {
         if (mounted) _gameBloc.add(NextQuestion());
       });
@@ -115,8 +112,6 @@ class _GameScreenState extends State<GameScreen> {
 
     if (state is GameComplete && !_celebrationShown) {
       _celebrationShown = true;
-
-      // SAVE FIRST — always runs regardless of audio
       final profileState = _profileBloc.state;
       if (profileState is ProfileLoaded) {
         _progressBloc.add(RecordLevelAttempt(
@@ -126,13 +121,9 @@ class _GameScreenState extends State<GameScreen> {
           totalQuestions: state.totalQuestions,
         ));
       }
-
-      // Audio fire-and-forget — never blocks save
       if (state.stars > 0) unawaited(_audio.playLevelComplete());
     }
   }
-
-  // ── Game UI ───────────────────────────────────────────────────────────────
 
   Widget _buildGameScreen(BuildContext context, GamePlaying state) {
     final profileState = _profileBloc.state;
@@ -164,16 +155,14 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildTopBar(
-      BuildContext context, GamePlaying state, Color themeColor) {
+  Widget _buildTopBar(BuildContext context, GamePlaying state, Color themeColor) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
           IconButton(
             onPressed: () => context.pop(),
-            icon: const Icon(Icons.arrow_back_rounded,
-                color: AppTheme.moonWhite),
+            icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.moonWhite),
           ),
           const Spacer(),
           Container(
@@ -185,11 +174,9 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
           const Spacer(),
-          // Phoneme speaker button
           IconButton(
             onPressed: () => _audio.speakPhoneme(state.level.gpc),
-            icon: const Icon(Icons.volume_up_rounded,
-                color: AppTheme.starYellow, size: 28),
+            icon: const Icon(Icons.volume_up_rounded, color: AppTheme.starYellow, size: 28),
           ),
         ],
       ),
@@ -204,11 +191,7 @@ class _GameScreenState extends State<GameScreen> {
         children: [
           Text(
             '${state.questionIndex + 1} / ${state.totalQuestions}',
-            style: const TextStyle(
-              fontFamily: 'Andika',
-              fontSize: 14,
-              color: AppTheme.moonWhite,
-            ),
+            style: const TextStyle(fontFamily: 'Andika', fontSize: 14, color: AppTheme.moonWhite),
           ),
           const SizedBox(height: 4),
           ClipRRect(
@@ -241,12 +224,7 @@ class _GameScreenState extends State<GameScreen> {
             ),
             child: Text(
               'Phase ${state.level.phase}',
-              style: TextStyle(
-                fontFamily: 'Andika',
-                fontSize: 14,
-                color: phaseColor,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontFamily: 'Andika', fontSize: 14, color: phaseColor, fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(width: 12),
@@ -265,68 +243,16 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildWordDisplay(BuildContext context, GamePlaying state) {
-    final isCorrect = state.lastAnswerCorrect;
-    final showFeedback = state.showFeedback;
-
     return Column(
       children: [
-        // Word interaction area: tap = hear, long-press = peek emoji
         _WordPeekButton(
           word: state.currentQuestion.word,
           audio: _audio,
         ),
-
         const SizedBox(height: 20),
-
-        // Feedback overlay
-        if (showFeedback)
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            decoration: BoxDecoration(
-              color: (isCorrect == true ? AppTheme.successGreen : AppTheme.errorRed)
-                  .withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: (isCorrect == true
-                    ? AppTheme.successGreen
-                    : AppTheme.errorRed),
-                width: 2,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  isCorrect == true ? '⭐ Brilliant!' : '❌ Try again!',
-                  style: TextStyle(
-                    fontFamily: 'Andika',
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: isCorrect == true
-                        ? AppTheme.successGreen
-                        : AppTheme.errorRed,
-                  ),
-                ),
-                if (isCorrect == true) ...[
-                  const SizedBox(width: 8),
-                  Text(
-                    state.currentQuestion.word,
-                    style: const TextStyle(
-                      fontFamily: 'Andika',
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.moonWhite,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ).animate().fadeIn(duration: 300.ms).scale(),
-
+        if (state.showFeedback)
+          _buildFeedbackOverlay(state.lastAnswerCorrect == true, state.currentQuestion.word),
         const SizedBox(height: 24),
-
-        // Drop slots
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Row(
@@ -339,6 +265,39 @@ class _GameScreenState extends State<GameScreen> {
         ),
       ],
     );
+  }
+
+  Widget _buildFeedbackOverlay(bool isCorrect, String word) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      decoration: BoxDecoration(
+        color: (isCorrect ? AppTheme.successGreen : AppTheme.errorRed).withOpacity(0.2),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: isCorrect ? AppTheme.successGreen : AppTheme.errorRed, width: 2),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            isCorrect ? '⭐ Brilliant!' : '❌ Try again!',
+            style: TextStyle(
+              fontFamily: 'Andika',
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: isCorrect ? AppTheme.successGreen : AppTheme.errorRed,
+            ),
+          ),
+          if (isCorrect) ...[
+            const SizedBox(width: 8),
+            Text(
+              word,
+              style: const TextStyle(fontFamily: 'Andika', fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.moonWhite),
+            ),
+          ],
+        ],
+      ),
+    ).animate().fadeIn(duration: 300.ms).scale();
   }
 
   Widget _buildDropSlot(BuildContext context, GamePlaying state, int index) {
@@ -383,14 +342,6 @@ class _GameScreenState extends State<GameScreen> {
                         : Colors.white24),
                 width: isHovering ? 2.5 : 1.5,
               ),
-              boxShadow: isHovering || letter != null
-                  ? [
-                      BoxShadow(
-                        color: AppTheme.cosmicTeal.withOpacity(0.3),
-                        blurRadius: 8,
-                      ),
-                    ]
-                  : null,
             ),
             child: Center(
               child: letter != null
@@ -398,14 +349,11 @@ class _GameScreenState extends State<GameScreen> {
                       letter,
                       style: TextStyle(
                         fontFamily: 'Andika',
-                        fontSize: _letterFontSize(
-                            state.currentQuestion.answer.length),
+                        fontSize: _letterFontSize(state.currentQuestion.answer.length),
                         fontWeight: FontWeight.bold,
                         color: AppTheme.moonWhite,
                       ),
-                    )
-                      .animate()
-                      .scale(begin: const Offset(0.5, 0.5), duration: 200.ms)
+                    ).animate().scale(begin: const Offset(0.5, 0.5), duration: 200.ms)
                   : null,
             ),
           ),
@@ -414,23 +362,11 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  double _slotWidth(int wordLength) {
-    if (wordLength <= 3) return 70;
-    if (wordLength <= 5) return 58;
-    if (wordLength <= 7) return 48;
-    return 42;
-  }
+  double _slotWidth(int wordLength) => wordLength <= 3 ? 70 : wordLength <= 5 ? 58 : wordLength <= 7 ? 48 : 42;
+  double _letterFontSize(int wordLength) => wordLength <= 3 ? 28 : wordLength <= 5 ? 24 : 20;
 
-  double _letterFontSize(int wordLength) {
-    if (wordLength <= 3) return 28;
-    if (wordLength <= 5) return 24;
-    return 20;
-  }
-
-  Widget _buildLetterTiles(
-      BuildContext context, GamePlaying state, Color themeColor) {
+  Widget _buildLetterTiles(BuildContext context, GamePlaying state, Color themeColor) {
     if (state.showFeedback) return const SizedBox();
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Wrap(
@@ -442,7 +378,6 @@ class _GameScreenState extends State<GameScreen> {
             letter: letter,
             themeColor: themeColor,
             onTap: () {
-              // Auto-place in first empty slot
               final emptyIndex = state.placedLetters.indexOf(null);
               if (emptyIndex != -1) {
                 _gameBloc.add(PlaceLetter(letter, emptyIndex));
@@ -455,34 +390,21 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildSubmitButton(
-      BuildContext context, GamePlaying state, Color themeColor) {
+  Widget _buildSubmitButton(BuildContext context, GamePlaying state, Color themeColor) {
     if (state.showFeedback) return const SizedBox();
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: ElevatedButton(
-        onPressed: state.allSlotsFilled
-            ? () => _gameBloc.add(SubmitAnswer())
-            : null,
+        onPressed: state.allSlotsFilled ? () => _gameBloc.add(SubmitAnswer()) : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: state.allSlotsFilled ? themeColor : Colors.grey.shade700,
           minimumSize: const Size.fromHeight(56),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            Text(
-              'Check!',
-              style: TextStyle(
-                fontFamily: 'Andika',
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text('Check!', style: TextStyle(fontFamily: 'Andika', fontSize: 22, fontWeight: FontWeight.bold)),
             SizedBox(width: 8),
             Text('✅', style: TextStyle(fontSize: 22)),
           ],
@@ -491,169 +413,48 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  // ── Complete Screen ───────────────────────────────────────────────────────
-
   Widget _buildCompleteScreen(BuildContext context, GameComplete state) {
     final profileState = _profileBloc.state;
-    final themeColor = profileState is ProfileLoaded
-        ? Color(profileState.profile.themeColorValue)
-        : AppTheme.profileColors[0];
-
+    final themeColor = profileState is ProfileLoaded ? Color(profileState.profile.themeColorValue) : AppTheme.profileColors[0];
     return Scaffold(
       body: Container(
         decoration: AppTheme.spaceBackground,
         child: Stack(
           children: [
-            // Confetti Lottie (only for 3 stars)
             if (state.stars == 3)
               Positioned.fill(
                 child: IgnorePointer(
-                  child: Lottie.asset(
-                    'assets/lottie/confetti.json',
-                    repeat: false,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const SizedBox(),
-                  ),
+                  child: Lottie.asset('assets/lottie/confetti.json', repeat: false, fit: BoxFit.cover),
                 ),
               ),
-
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(32),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Trophy emoji
-                    Text(
-                      state.stars == 3
-                          ? '🏆'
-                          : state.stars == 2
-                              ? '🥈'
-                              : state.stars == 1
-                                  ? '🥉'
-                                  : '💪',
-                      style: const TextStyle(fontSize: 80),
-                    )
-                        .animate()
-                        .scale(
-                          begin: const Offset(0, 0),
-                          curve: Curves.elasticOut,
-                          duration: 800.ms,
-                        )
-                        .fadeIn(),
-
+                    Text(state.stars == 3 ? '🏆' : state.stars == 2 ? '🥈' : state.stars == 1 ? '🥉' : '💪', style: const TextStyle(fontSize: 80))
+                        .animate().scale(begin: const Offset(0, 0), curve: Curves.elasticOut, duration: 800.ms).fadeIn(),
                     const SizedBox(height: 16),
-
-                    Text(
-                      state.stars == 3
-                          ? 'Amazing!'
-                          : state.stars >= 1
-                              ? 'Well Done!'
-                              : 'Keep Trying!',
-                      style: Theme.of(context)
-                          .textTheme
-                          .displaySmall
-                          ?.copyWith(color: themeColor),
-                    ).animate(delay: 300.ms).fadeIn().slideY(begin: 0.3),
-
+                    Text(state.stars == 3 ? 'Amazing!' : state.stars >= 1 ? 'Well Done!' : 'Keep Trying!',
+                            style: Theme.of(context).textTheme.displaySmall?.copyWith(color: themeColor))
+                        .animate(delay: 300.ms).fadeIn().slideY(begin: 0.3),
                     const SizedBox(height: 24),
-
-                    // Stars display
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(3, (i) {
-                        return Icon(
-                          i < state.stars
-                              ? Icons.star_rounded
-                              : Icons.star_outline_rounded,
-                          size: 44,
-                          color: i < state.stars
-                              ? AppTheme.starYellow
-                              : Colors.white24,
-                        )
-                            .animate(delay: Duration(milliseconds: 500 + i * 150))
-                            .scale(
-                              begin: const Offset(0.5, 0.5),
-                              curve: Curves.elasticOut,
-                              duration: 600.ms,
-                            );
+                        return Icon(i < state.stars ? Icons.star_rounded : Icons.star_outline_rounded, size: 44, color: i < state.stars ? AppTheme.starYellow : Colors.white24)
+                            .animate(delay: Duration(milliseconds: 500 + i * 150)).scale(begin: const Offset(0.5, 0.5), curve: Curves.elasticOut, duration: 600.ms);
                       }),
                     ),
-
                     const SizedBox(height: 24),
-
-                    // Score
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                       decoration: AppTheme.cardDecoration(glowColor: themeColor),
-                      child: Text(
-                        '${state.correctCount} / ${state.totalQuestions} correct',
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
+                      child: Text('${state.correctCount} / ${state.totalQuestions} correct', style: Theme.of(context).textTheme.headlineMedium),
                     ).animate(delay: 600.ms).fadeIn(),
-
-                    const SizedBox(height: 16),
-
-                    if (state.stars < 3)
-                      Text(
-                        'Get all ${state.totalQuestions} correct for 3 stars!',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppTheme.starYellow,
-                        ),
-                        textAlign: TextAlign.center,
-                      ).animate(delay: 700.ms).fadeIn(),
-
                     const SizedBox(height: 40),
-
-                    // Buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {
-                              _celebrationShown = false;
-                              _gameBloc.add(StartGame(state.level));
-                            },
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: themeColor),
-                              minimumSize: const Size.fromHeight(52),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(26),
-                              ),
-                            ),
-                            child: const Text(
-                              '🔄 Try Again',
-                              style: TextStyle(
-                                fontFamily: 'Andika',
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () => context.go(AppRouter.planetPath),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: themeColor,
-                              minimumSize: const Size.fromHeight(52),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(26),
-                              ),
-                            ),
-                            child: Text(
-                              state.stars == 3 ? '🚀 Next Level' : '🗺️ Map',
-                              style: const TextStyle(
-                                fontFamily: 'Andika',
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ).animate(delay: 800.ms).fadeIn().slideY(begin: 0.3),
+                    _buildEndButtons(state, themeColor),
                   ],
                 ),
               ),
@@ -663,11 +464,35 @@ class _GameScreenState extends State<GameScreen> {
       ),
     );
   }
+
+  Widget _buildEndButtons(GameComplete state, Color themeColor) {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton(
+            onPressed: () {
+              _celebrationShown = false;
+              _gameBloc.add(StartGame(state.level));
+            },
+            style: OutlinedButton.styleFrom(side: BorderSide(color: themeColor), minimumSize: const Size.fromHeight(52), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26))),
+            child: const Text('🔄 Try Again', style: TextStyle(fontFamily: 'Andika', fontSize: 16)),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () => context.go(AppRouter.planetPath),
+            style: ElevatedButton.styleFrom(backgroundColor: themeColor, minimumSize: const Size.fromHeight(52), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26))),
+            child: Text(state.stars == 3 ? '🚀 Next Level' : '🗺️ Map', style: const TextStyle(fontFamily: 'Andika', fontSize: 16, fontWeight: FontWeight.bold)),
+          ),
+        ),
+      ],
+    ).animate(delay: 800.ms).fadeIn().slideY(begin: 0.3);
+  }
 }
 
-// ── Word Peek Button ──────────────────────────────────────────────────────────
-/// Tap = hear the word via TTS.
-/// Long-press = show emoji peek overlay, dismiss on release.
+// ── FIXED WORD PEEK BUTTON ───────────────────────────────────────────────────
+
 class _WordPeekButton extends StatefulWidget {
   final String word;
   final AudioService audio;
@@ -683,16 +508,23 @@ class _WordPeekButtonState extends State<_WordPeekButton> {
 
   void _onLongPressStart(LongPressStartDetails _) {
     if (_peeking) return;
-    _peeking = true;
-    // Speak word when peek opens
+    setState(() => _peeking = true);
     unawaited(widget.audio.speakWord(widget.word));
-    WordPeekCard.show(context, widget.word);
+    // CALL THE NEW OVERLAY CLASS
+    WordPeek.show(context, widget.word);
   }
 
   void _onLongPressEnd(LongPressEndDetails _) {
     if (!_peeking) return;
-    _peeking = false;
-    WordPeekCard.dismiss(context);
+    setState(() => _peeking = false);
+    // REMOVE THE OVERLAY SAFELY
+    WordPeek.dismiss();
+  }
+
+  void _onLongPressCancel() {
+    if (!_peeking) return;
+    setState(() => _peeking = false);
+    WordPeek.dismiss();
   }
 
   @override
@@ -701,19 +533,14 @@ class _WordPeekButtonState extends State<_WordPeekButton> {
       onTap: () => unawaited(widget.audio.speakWord(widget.word)),
       onLongPressStart: _onLongPressStart,
       onLongPressEnd: _onLongPressEnd,
+      onLongPressCancel: _onLongPressCancel, // Added for system interrupts
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
-          color: _peeking
-              ? AppTheme.starYellow.withOpacity(0.15)
-              : Colors.transparent,
+          color: _peeking ? AppTheme.starYellow.withOpacity(0.15) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: _peeking
-                ? AppTheme.starYellow.withOpacity(0.5)
-                : Colors.transparent,
-          ),
+          border: Border.all(color: _peeking ? AppTheme.starYellow.withOpacity(0.5) : Colors.transparent),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -721,43 +548,20 @@ class _WordPeekButtonState extends State<_WordPeekButton> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.hearing_rounded,
-                  color: AppTheme.starYellow,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Tap to hear · Hold to peek',
-                  style: TextStyle(
-                    fontFamily: 'Andika',
-                    fontSize: 14,
-                    color: AppTheme.starYellow,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+              children: const [
+                Icon(Icons.hearing_rounded, color: AppTheme.starYellow, size: 20),
+                SizedBox(width: 8),
+                Text('Tap to hear · Hold to peek', style: TextStyle(fontFamily: 'Andika', fontSize: 14, color: AppTheme.starYellow, fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 4),
-            // Visual hint — finger + magnify icons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  '👆',
-                  style: TextStyle(fontSize: 14),
-                ),
+                const Text('👆', style: TextStyle(fontSize: 14)),
                 const SizedBox(width: 4),
-                Text(
-                  'long-press for emoji hint',
-                  style: TextStyle(
-                    fontFamily: 'Andika',
-                    fontSize: 11,
-                    color: AppTheme.stardustBlue.withOpacity(0.8),
-                  ),
-                ),
+                Text('long-press for emoji hint', style: TextStyle(fontFamily: 'Andika', fontSize: 11, color: AppTheme.stardustBlue.withOpacity(0.8))),
               ],
             ),
           ],
@@ -773,28 +577,15 @@ class _LetterTile extends StatelessWidget {
   final Color themeColor;
   final VoidCallback onTap;
 
-  const _LetterTile({
-    required this.letter,
-    required this.themeColor,
-    required this.onTap,
-  });
+  const _LetterTile({required this.letter, required this.themeColor, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Draggable<String>(
       data: letter,
-      feedback: Material(
-        color: Colors.transparent,
-        child: _tile(context, isDragging: true),
-      ),
-      childWhenDragging: Opacity(
-        opacity: 0.3,
-        child: _tile(context),
-      ),
-      child: GestureDetector(
-        onTap: onTap,
-        child: _tile(context),
-      ),
+      feedback: Material(color: Colors.transparent, child: _tile(context, isDragging: true)),
+      childWhenDragging: Opacity(opacity: 0.3, child: _tile(context)),
+      child: GestureDetector(onTap: onTap, child: _tile(context)),
     );
   }
 
@@ -804,38 +595,12 @@ class _LetterTile extends StatelessWidget {
       width: 58,
       height: 62,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            themeColor.withOpacity(0.4),
-            themeColor.withOpacity(0.15),
-          ],
-        ),
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [themeColor.withOpacity(0.4), themeColor.withOpacity(0.15)]),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: themeColor.withOpacity(0.7),
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: themeColor.withOpacity(isDragging ? 0.6 : 0.2),
-            blurRadius: isDragging ? 16 : 6,
-            offset: isDragging ? const Offset(0, 4) : const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(color: themeColor.withOpacity(0.7), width: 2),
+        boxShadow: [BoxShadow(color: themeColor.withOpacity(isDragging ? 0.6 : 0.2), blurRadius: isDragging ? 16 : 6, offset: isDragging ? const Offset(0, 4) : const Offset(0, 2))],
       ),
-      child: Center(
-        child: Text(
-          letter,
-          style: const TextStyle(
-            fontFamily: 'Andika',
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-            color: AppTheme.moonWhite,
-          ),
-        ),
-      ),
+      child: Center(child: Text(letter, style: const TextStyle(fontFamily: 'Andika', fontSize: 26, fontWeight: FontWeight.bold, color: AppTheme.moonWhite))),
     );
   }
 }
