@@ -230,17 +230,17 @@ jobs:
           fetch-depth: 0   # needed for changelog generation
 
       - name: Download APK artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: android-apk
 
       - name: Download AAB artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: android-aab
 
       - name: Download iOS artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ios-build
 
