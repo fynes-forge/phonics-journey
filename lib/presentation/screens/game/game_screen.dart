@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +13,7 @@ import '../../../services/curriculum_service.dart';
 import '../../blocs/game/game_bloc.dart';
 import '../../blocs/profile/profile_bloc.dart';
 import '../../blocs/progress/progress_bloc.dart';
+import '../../widgets/game/word_peek_card.dart';
 
 class GameScreen extends StatefulWidget {
   final int levelId;
@@ -98,11 +100,12 @@ class _GameScreenState extends State<GameScreen> {
 
   void _onGameStateChange(BuildContext context, GameState state) {
     if (state is GamePlaying && state.showFeedback) {
+      // Fire-and-forget audio — never await, never block save logic
       if (state.lastAnswerCorrect == true) {
-        _audio.playCorrect();
-        _audio.speakWord(state.currentQuestion.word);
+        unawaited(_audio.playCorrect());
+        unawaited(_audio.speakWord(state.currentQuestion.word));
       } else {
-        _audio.playWrong();
+        unawaited(_audio.playWrong());
       }
       // Auto-advance after feedback
       Future.delayed(const Duration(milliseconds: 1400), () {
@@ -112,9 +115,8 @@ class _GameScreenState extends State<GameScreen> {
 
     if (state is GameComplete && !_celebrationShown) {
       _celebrationShown = true;
-      if (state.stars > 0) _audio.playLevelComplete();
 
-      // Save progress
+      // SAVE FIRST — always runs regardless of audio
       final profileState = _profileBloc.state;
       if (profileState is ProfileLoaded) {
         _progressBloc.add(RecordLevelAttempt(
@@ -124,6 +126,9 @@ class _GameScreenState extends State<GameScreen> {
           totalQuestions: state.totalQuestions,
         ));
       }
+
+      // Audio fire-and-forget — never blocks save
+      if (state.stars > 0) unawaited(_audio.playLevelComplete());
     }
   }
 
@@ -265,23 +270,10 @@ class _GameScreenState extends State<GameScreen> {
 
     return Column(
       children: [
-        // "Spell this word:" prompt
-        GestureDetector(
-          onTap: () => _audio.speakWord(state.currentQuestion.word),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.hearing_rounded,
-                  color: AppTheme.starYellow, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                'Tap to hear the word!',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.starYellow,
-                ),
-              ),
-            ],
-          ),
+        // Word interaction area: tap = hear, long-press = peek emoji
+        _WordPeekButton(
+          word: state.currentQuestion.word,
+          audio: _audio,
         ),
 
         const SizedBox(height: 20),
@@ -570,14 +562,14 @@ class _GameScreenState extends State<GameScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(3, (i) {
-                        return Text(
-                          i < state.stars ? '⭐' : '☆',
-                          style: TextStyle(
-                            fontSize: 44,
-                            color: i < state.stars
-                                ? AppTheme.starYellow
-                                : Colors.white24,
-                          ),
+                        return Icon(
+                          i < state.stars
+                              ? Icons.star_rounded
+                              : Icons.star_outline_rounded,
+                          size: 44,
+                          color: i < state.stars
+                              ? AppTheme.starYellow
+                              : Colors.white24,
                         )
                             .animate(delay: Duration(milliseconds: 500 + i * 150))
                             .scale(
@@ -665,6 +657,108 @@ class _GameScreenState extends State<GameScreen> {
                   ],
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Word Peek Button ──────────────────────────────────────────────────────────
+/// Tap = hear the word via TTS.
+/// Long-press = show emoji peek overlay, dismiss on release.
+class _WordPeekButton extends StatefulWidget {
+  final String word;
+  final AudioService audio;
+
+  const _WordPeekButton({required this.word, required this.audio});
+
+  @override
+  State<_WordPeekButton> createState() => _WordPeekButtonState();
+}
+
+class _WordPeekButtonState extends State<_WordPeekButton> {
+  bool _peeking = false;
+
+  void _onLongPressStart(LongPressStartDetails _) {
+    if (_peeking) return;
+    _peeking = true;
+    // Speak word when peek opens
+    unawaited(widget.audio.speakWord(widget.word));
+    WordPeekCard.show(context, widget.word);
+  }
+
+  void _onLongPressEnd(LongPressEndDetails _) {
+    if (!_peeking) return;
+    _peeking = false;
+    WordPeekCard.dismiss(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => unawaited(widget.audio.speakWord(widget.word)),
+      onLongPressStart: _onLongPressStart,
+      onLongPressEnd: _onLongPressEnd,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        decoration: BoxDecoration(
+          color: _peeking
+              ? AppTheme.starYellow.withOpacity(0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: _peeking
+                ? AppTheme.starYellow.withOpacity(0.5)
+                : Colors.transparent,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.hearing_rounded,
+                  color: AppTheme.starYellow,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Tap to hear · Hold to peek',
+                  style: TextStyle(
+                    fontFamily: 'Andika',
+                    fontSize: 14,
+                    color: AppTheme.starYellow,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            // Visual hint — finger + magnify icons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '👆',
+                  style: TextStyle(fontSize: 14),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'long-press for emoji hint',
+                  style: TextStyle(
+                    fontFamily: 'Andika',
+                    fontSize: 11,
+                    color: AppTheme.stardustBlue.withOpacity(0.8),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
