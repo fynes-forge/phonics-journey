@@ -59,13 +59,15 @@ class PlanetNode extends StatelessWidget {
       onTap: onTap,
       child: SizedBox(
         width: _size,
-        height: _size + 40, // extra for label
+        height: _size + 50, // 90 planet + 6 gap + 18 stars + 22 label + 4 buffer
         child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             // Planet circle
             _buildPlanet(phaseColor),
             const SizedBox(height: 6),
-            // Level label
+            // Level label — constrained to avoid overflow
             _buildLabel(context),
           ],
         ),
@@ -135,8 +137,8 @@ class PlanetNode extends StatelessWidget {
           if (!isUnlocked)
             const Icon(Icons.lock_rounded, color: Colors.white38, size: 28)
           else if (stars == 3)
-            // Completed: show big star
-            const Text('⭐', style: TextStyle(fontSize: 30))
+            // Completed: show big star icon (avoids Noto font fetch on web)
+            const Icon(Icons.star_rounded, color: Color(0xFFFFD700), size: 32)
           else
             // Show level number
             Text(
@@ -159,19 +161,20 @@ class PlanetNode extends StatelessWidget {
   }
 
   Widget _buildLabel(BuildContext context) {
-    return Column(
-      children: [
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 90, maxHeight: 44),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
         // Stars row
         if (isUnlocked)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(3, (i) {
-              return Text(
-                i < stars ? '⭐' : '☆',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: i < stars ? AppTheme.starYellow : Colors.white24,
-                ),
+              return Icon(
+                i < stars ? Icons.star_rounded : Icons.star_outline_rounded,
+                size: 13,
+                color: i < stars ? AppTheme.starYellow : Colors.white24,
               );
             }),
           ),
@@ -198,6 +201,7 @@ class PlanetNode extends StatelessWidget {
           ),
         ),
       ],
+      ),
     );
   }
 }
