@@ -4,7 +4,7 @@
 > **Little Wandle Letters and Sounds Revised** programme.
 > Built with Flutter for children aged 4–7.
 
-[![CI/CD](https://github.com/yourname/phonics_journey/actions/workflows/main.yml/badge.svg)](https://github.com/yourname/phonics_journey/actions)
+[![CI/CD](https://github.com/fynes-forge/phonics-journey/actions/workflows/main.yml/badge.svg)](https://github.com/yourname/phonics_journey/actions)
 [![Flutter](https://img.shields.io/badge/Flutter-3.22-blue?logo=flutter)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Privacy: Offline Only](https://img.shields.io/badge/Privacy-Offline%20Only-green)](docs/privacy.md)
