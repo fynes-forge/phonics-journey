@@ -21,12 +21,19 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   Color _selectedColor = AppTheme.profileColors[0];
   int _selectedAvatar = 0;
   bool _hasLoadedInitialData = false;
-  
+
   // We hold a direct reference to the singleton to avoid context-based disposal errors
   late final ProfileBloc _profileBloc;
 
   final List<String> _avatarEmojis = [
-    '🚀', '⭐', '🌙', '🪐', '☄️', '🌟', '🛸', '🌈',
+    '🚀',
+    '⭐',
+    '🌙',
+    '🪐',
+    '☄️',
+    '🌟',
+    '🛸',
+    '🌈',
   ];
 
   @override
@@ -34,7 +41,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     super.initState();
     // Use the Service Locator directly to ensure we have the persistent Singleton
     _profileBloc = GetIt.I<ProfileBloc>();
-    
+
     if (widget.isEditing) {
       _profileBloc.add(LoadActiveProfile());
     }
@@ -43,7 +50,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    // DO NOT call _profileBloc.close() here. 
+    // DO NOT call _profileBloc.close() here.
     // It is a singleton and must live for the life of the app.
     super.dispose();
   }
@@ -78,35 +85,30 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: 20),
-
                     Text(
-                      widget.isEditing ? 'Edit Your Profile' : 'Welcome, Explorer!',
+                      widget.isEditing
+                          ? 'Edit Your Profile'
+                          : 'Welcome, Explorer!',
                       style: Theme.of(context).textTheme.displaySmall,
                       textAlign: TextAlign.center,
                     ).animate().fadeIn(duration: 500.ms).slideY(begin: -0.3),
-
                     const SizedBox(height: 8),
-
                     Text(
                       widget.isEditing
                           ? 'Update your space explorer details'
                           : 'Let\'s set up your space adventure!',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppTheme.starYellow,
-                      ),
+                            color: AppTheme.starYellow,
+                          ),
                       textAlign: TextAlign.center,
                     ).animate(delay: 200.ms).fadeIn(),
-
                     const SizedBox(height: 40),
-
                     Text(
                       'Choose your explorer!',
                       style: Theme.of(context).textTheme.titleMedium,
                       textAlign: TextAlign.center,
                     ).animate(delay: 300.ms).fadeIn(),
-
                     const SizedBox(height: 16),
-
                     Wrap(
                       alignment: WrapAlignment.center,
                       spacing: 12,
@@ -125,7 +127,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                   : AppTheme.stardustBlue.withOpacity(0.3),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: selected ? _selectedColor : Colors.white24,
+                                color:
+                                    selected ? _selectedColor : Colors.white24,
                                 width: selected ? 3 : 1,
                               ),
                               boxShadow: selected
@@ -145,21 +148,19 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                               ),
                             ),
                           ),
-                        ).animate(delay: Duration(milliseconds: 350 + i * 50))
+                        )
+                            .animate(
+                                delay: Duration(milliseconds: 350 + i * 50))
                             .fadeIn()
                             .scale(begin: const Offset(0.8, 0.8));
                       }),
                     ),
-
                     const SizedBox(height: 36),
-
                     Text(
                       'What\'s your name?',
                       style: Theme.of(context).textTheme.titleMedium,
                     ).animate(delay: 500.ms).fadeIn(),
-
                     const SizedBox(height: 12),
-
                     TextField(
                       controller: _nameController,
                       style: const TextStyle(
@@ -180,16 +181,12 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       textCapitalization: TextCapitalization.words,
                       onChanged: (_) => setState(() {}),
                     ).animate(delay: 550.ms).fadeIn().slideX(begin: -0.2),
-
                     const SizedBox(height: 36),
-
                     Text(
                       'Pick your planet colour!',
                       style: Theme.of(context).textTheme.titleMedium,
                     ).animate(delay: 650.ms).fadeIn(),
-
                     const SizedBox(height: 16),
-
                     Wrap(
                       spacing: 16,
                       runSpacing: 16,
@@ -205,7 +202,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                               color: color,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: selected ? Colors.white : Colors.transparent,
+                                color: selected
+                                    ? Colors.white
+                                    : Colors.transparent,
                                 width: 3,
                               ),
                               boxShadow: selected
@@ -219,19 +218,19 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                   : null,
                             ),
                             child: selected
-                                ? const Icon(Icons.check, color: Colors.white, size: 22)
+                                ? const Icon(Icons.check,
+                                    color: Colors.white, size: 22)
                                 : null,
                           ),
                         );
                       }).toList(),
                     ).animate(delay: 700.ms).fadeIn(),
-
                     const SizedBox(height: 48),
-
                     if (_nameController.text.isNotEmpty) ...[
                       Container(
                         padding: const EdgeInsets.all(20),
-                        decoration: AppTheme.cardDecoration(glowColor: _selectedColor),
+                        decoration:
+                            AppTheme.cardDecoration(glowColor: _selectedColor),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -258,7 +257,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                           .scale(begin: const Offset(0.95, 0.95)),
                       const SizedBox(height: 24),
                     ],
-
                     ElevatedButton(
                       onPressed: _canProceed()
                           ? () => _handleSubmit(context, state)
@@ -276,7 +274,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  widget.isEditing ? 'Save Changes' : 'Start My Journey!',
+                                  widget.isEditing
+                                      ? 'Save Changes'
+                                      : 'Start My Journey!',
                                   style: const TextStyle(
                                     fontFamily: 'Andika',
                                     fontSize: 20,
@@ -284,14 +284,14 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Text(widget.isEditing ? '✅' : '🚀', style: const TextStyle(fontSize: 20)),
+                                Text(widget.isEditing ? '✅' : '🚀',
+                                    style: const TextStyle(fontSize: 20)),
                               ],
                             ),
                     ).animate(delay: 800.ms).fadeIn().scale(
                           begin: const Offset(0.9, 0.9),
                           curve: Curves.elasticOut,
                         ),
-
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -311,7 +311,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
     // The Fix: Check if the bloc is closed before attempting to add an event
     if (_profileBloc.isClosed) {
-      debugPrint('🚨 CRITICAL ERROR: ProfileBloc is closed. This should not happen to a Singleton.');
+      debugPrint(
+          '🚨 CRITICAL ERROR: ProfileBloc is closed. This should not happen to a Singleton.');
       return;
     }
 

@@ -5,7 +5,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../services/emoji_dictionary_service.dart';
 
 /// A Navigation-safe Peek Overlay.
-/// 
+///
 /// Instead of using showDialog, this uses an [OverlayEntry] to ensure
 /// that dismissing the peek never accidentally pops the game screen.
 class WordPeek {
@@ -119,9 +119,7 @@ class _PeekCardContent extends StatelessWidget {
             emoji,
             style: const TextStyle(fontSize: 110, height: 1.1),
             textAlign: TextAlign.center,
-          )
-              .animate(onPlay: (c) => c.repeat(reverse: true))
-              .scale(
+          ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
                 begin: const Offset(0.95, 0.95),
                 end: const Offset(1.05, 1.05),
                 duration: 1200.ms,

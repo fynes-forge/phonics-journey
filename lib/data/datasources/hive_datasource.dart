@@ -42,8 +42,7 @@ class HiveDatasource {
 
   // ── Progress operations ───────────────────────────────────────────────────
 
-  String _progressKey(String profileId, int levelId) =>
-      '${profileId}_$levelId';
+  String _progressKey(String profileId, int levelId) => '${profileId}_$levelId';
 
   Future<void> saveProgress(LevelProgressModel progress) async {
     final key = _progressKey(progress.profileId, progress.levelId);
@@ -55,9 +54,7 @@ class HiveDatasource {
   }
 
   List<LevelProgressModel> getAllProgressForProfile(String profileId) {
-    return _progress.values
-        .where((p) => p.profileId == profileId)
-        .toList()
+    return _progress.values.where((p) => p.profileId == profileId).toList()
       ..sort((a, b) => a.levelId.compareTo(b.levelId));
   }
 

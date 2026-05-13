@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
@@ -91,7 +90,7 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
                       // 2. Middle Layer: Winding Planet Path
                       // top: 0 allows the scroll area to go full screen
                       Positioned.fill(
-                        top: 0, 
+                        top: 0,
                         child: _PlanetScrollView(
                           levels: levels,
                           progressMap: progressMap,
@@ -122,7 +121,8 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
                           child: _TopBar(
                             profile: profile,
                             themeColor: themeColor,
-                            onSettingsTap: () => context.push(AppRouter.settings),
+                            onSettingsTap: () =>
+                                context.push(AppRouter.settings),
                             onLongPress: _handleParentalGate,
                           ),
                         ),
@@ -138,9 +138,11 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
     );
   }
 
-  void _onLevelTap(BuildContext context, int levelId, Map<int, LevelProgressModel> progressMap) {
+  void _onLevelTap(BuildContext context, int levelId,
+      Map<int, LevelProgressModel> progressMap) {
     // 3-STAR GATE: Level 1 is always open, others require 3 stars on previous level
-    final bool isUnlocked = levelId == 1 || (progressMap[levelId - 1]?.stars ?? 0) >= 3;
+    final bool isUnlocked =
+        levelId == 1 || (progressMap[levelId - 1]?.stars ?? 0) >= 3;
 
     if (!isUnlocked) {
       _showLockedDialog(context);
@@ -155,7 +157,8 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1C2329),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Planet Locked!', style: TextStyle(color: Colors.white)),
+        title:
+            const Text('Planet Locked!', style: TextStyle(color: Colors.white)),
         content: const Text(
           'Master the previous planet with 3 stars to unlock this one!',
           style: TextStyle(color: Colors.white70),
@@ -212,7 +215,16 @@ class _TopBar extends StatelessWidget {
                 child: CircleAvatar(
                   backgroundColor: themeColor.withOpacity(0.2),
                   child: Text(
-                    ['🚀', '⭐', '🌙', '🪐', '☄️', '🌟', '🛸', '🌈'][profile.avatarIndex % 8],
+                    [
+                      '🚀',
+                      '⭐',
+                      '🌙',
+                      '🪐',
+                      '☄️',
+                      '🌟',
+                      '🛸',
+                      '🌈'
+                    ][profile.avatarIndex % 8],
                     style: const TextStyle(fontSize: 20),
                   ),
                 ),
@@ -227,13 +239,17 @@ class _TopBar extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
                 shadows: [
-                  Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 4, offset: const Offset(2, 2)),
+                  Shadow(
+                      color: Colors.black.withOpacity(0.5),
+                      blurRadius: 4,
+                      offset: const Offset(2, 2)),
                 ],
               ),
             ),
             const Spacer(),
             IconButton(
-              icon: const Icon(Icons.settings_rounded, color: Colors.white, size: 28),
+              icon: const Icon(Icons.settings_rounded,
+                  color: Colors.white, size: 28),
               onPressed: onSettingsTap,
             ),
           ],
@@ -288,16 +304,18 @@ class _PlanetScrollView extends StatelessWidget {
               final stars = progress?.stars ?? 0;
 
               // 3-STAR GATE logic for visual unlocking
-              final isUnlocked = level.id == 1 || (progressMap[level.id - 1]?.stars ?? 0) >= 3;
+              final isUnlocked =
+                  level.id == 1 || (progressMap[level.id - 1]?.stars ?? 0) >= 3;
 
               final wave = (reversedIndex % 4);
-              double xOffset = (wave == 0 || wave == 3) 
-                  ? screenWidth / 2 - kHorizontalAmplitude 
+              double xOffset = (wave == 0 || wave == 3)
+                  ? screenWidth / 2 - kHorizontalAmplitude
                   : screenWidth / 2 + kHorizontalAmplitude;
 
               return Positioned(
                 left: xOffset - 45,
-                top: reversedIndex * kPlanetSpacing + 120.0, // Adjusted padding for TopBar
+                top: reversedIndex * kPlanetSpacing +
+                    120.0, // Adjusted padding for TopBar
                 child: PlanetNode(
                   level: level,
                   stars: stars,
@@ -320,13 +338,12 @@ class _PathPainter extends CustomPainter {
   final double spacing, amplitude, screenWidth;
   final Color themeColor;
 
-  _PathPainter({
-    required this.levelCount, 
-    required this.spacing, 
-    required this.amplitude, 
-    required this.screenWidth, 
-    required this.themeColor
-  });
+  _PathPainter(
+      {required this.levelCount,
+      required this.spacing,
+      required this.amplitude,
+      required this.screenWidth,
+      required this.themeColor});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -339,8 +356,8 @@ class _PathPainter extends CustomPainter {
     final path = Path();
     for (int i = 0; i < levelCount; i++) {
       final wave = i % 4;
-      double x = (wave == 0 || wave == 3) 
-          ? screenWidth / 2 - amplitude 
+      double x = (wave == 0 || wave == 3)
+          ? screenWidth / 2 - amplitude
           : screenWidth / 2 + amplitude;
       double y = i * spacing + 165; // Offset to match node positions
 
@@ -373,6 +390,7 @@ class _StarPainter extends CustomPainter {
       canvas.drawCircle(Offset(x, y), 1.2, paint);
     }
   }
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

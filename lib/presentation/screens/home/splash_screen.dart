@@ -73,34 +73,29 @@ class _SplashScreenState extends State<SplashScreen> {
                         )
                         .then()
                         .shimmer(duration: 1200.ms),
-
                     const SizedBox(height: 24),
-
                     Text(
                       'Phonics Journey',
-                      style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        color: AppTheme.moonWhite,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.displayMedium?.copyWith(
+                                color: AppTheme.moonWhite,
+                                fontWeight: FontWeight.bold,
+                              ),
                     )
                         .animate(delay: 400.ms)
                         .fadeIn(duration: 600.ms)
                         .slideY(begin: 0.3, end: 0),
-
                     const SizedBox(height: 8),
-
                     Text(
                       'A Space Adventure in Reading',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppTheme.starYellow,
-                      ),
+                            color: AppTheme.starYellow,
+                          ),
                     )
                         .animate(delay: 700.ms)
                         .fadeIn(duration: 600.ms)
                         .slideY(begin: 0.3, end: 0),
-
                     const SizedBox(height: 48),
-
                     _LoadingDots()
                         .animate(delay: 1000.ms)
                         .fadeIn(duration: 400.ms),

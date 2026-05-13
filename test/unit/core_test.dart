@@ -12,20 +12,20 @@ void main() {
     });
 
     test('calculateStars returns 2 for 80–99%', () {
-      expect(LevelProgressModel.calculateStars(4, 5), 2);  // 80%
+      expect(LevelProgressModel.calculateStars(4, 5), 2); // 80%
       expect(LevelProgressModel.calculateStars(8, 10), 2); // 80%
       expect(LevelProgressModel.calculateStars(9, 10), 2); // 90%
     });
 
     test('calculateStars returns 1 for 60–79%', () {
-      expect(LevelProgressModel.calculateStars(3, 5), 1);  // 60%
+      expect(LevelProgressModel.calculateStars(3, 5), 1); // 60%
       expect(LevelProgressModel.calculateStars(6, 10), 1); // 60%
       expect(LevelProgressModel.calculateStars(7, 10), 1); // 70%
     });
 
     test('calculateStars returns 0 for < 60%', () {
-      expect(LevelProgressModel.calculateStars(2, 5), 0);  // 40%
-      expect(LevelProgressModel.calculateStars(0, 5), 0);  // 0%
+      expect(LevelProgressModel.calculateStars(2, 5), 0); // 40%
+      expect(LevelProgressModel.calculateStars(0, 5), 0); // 0%
       expect(LevelProgressModel.calculateStars(5, 10), 0); // 50%
     });
 

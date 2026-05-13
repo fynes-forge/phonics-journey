@@ -16,7 +16,8 @@ class CreateProfile extends ProfileEvent {
   final String name;
   final Color themeColor;
   final int avatarIndex;
-  CreateProfile({required this.name, required this.themeColor, this.avatarIndex = 0});
+  CreateProfile(
+      {required this.name, required this.themeColor, this.avatarIndex = 0});
   @override
   List<Object?> get props => [name, themeColor.value, avatarIndex];
 }
@@ -56,7 +57,8 @@ class ProfileLoaded extends ProfileState {
   final ProfileModel profile;
   ProfileLoaded(this.profile);
   @override
-  List<Object?> get props => [profile.id, profile.name, profile.themeColorValue];
+  List<Object?> get props =>
+      [profile.id, profile.name, profile.themeColorValue];
 }
 
 class ProfileNotFound extends ProfileState {}
@@ -80,7 +82,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<DeleteProfile>(_onDelete);
   }
 
-  Future<void> _onLoad(LoadActiveProfile event, Emitter<ProfileState> emit) async {
+  Future<void> _onLoad(
+      LoadActiveProfile event, Emitter<ProfileState> emit) async {
     emit(ProfileLoading());
     final profile = _manageProfile.getActiveProfile();
     if (profile == null) {
@@ -90,7 +93,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
   }
 
-  Future<void> _onCreate(CreateProfile event, Emitter<ProfileState> emit) async {
+  Future<void> _onCreate(
+      CreateProfile event, Emitter<ProfileState> emit) async {
     emit(ProfileLoading());
     try {
       final profile = await _manageProfile.createProfile(
@@ -104,12 +108,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
   }
 
-  Future<void> _onUpdate(UpdateProfileEvent event, Emitter<ProfileState> emit) async {
+  Future<void> _onUpdate(
+      UpdateProfileEvent event, Emitter<ProfileState> emit) async {
     await _manageProfile.updateProfile(event.profile);
     emit(ProfileLoaded(event.profile));
   }
 
-  Future<void> _onSwitch(SwitchProfile event, Emitter<ProfileState> emit) async {
+  Future<void> _onSwitch(
+      SwitchProfile event, Emitter<ProfileState> emit) async {
     emit(ProfileLoading());
     await _manageProfile.switchProfile(event.profileId);
     final profile = _manageProfile.getActiveProfile();
@@ -120,7 +126,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
   }
 
-  Future<void> _onDelete(DeleteProfile event, Emitter<ProfileState> emit) async {
+  Future<void> _onDelete(
+      DeleteProfile event, Emitter<ProfileState> emit) async {
     await _manageProfile.deleteProfile(event.profileId);
     final profile = _manageProfile.getActiveProfile();
     if (profile == null) {

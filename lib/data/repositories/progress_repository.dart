@@ -21,7 +21,7 @@ class ProgressRepository {
   bool isLevelUnlocked(String profileId, int levelId) {
     if (levelId == 1) return true;
     final prevProgress = getProgress(profileId, levelId - 1);
-    
+
     // FIX: Changed from == 3 to > 0 so any pass unlocks the next level
     return prevProgress != null && prevProgress.stars > 0;
   }
@@ -34,20 +34,21 @@ class ProgressRepository {
     required int totalQuestions,
   }) async {
     final existing = getProgress(profileId, levelId);
-    
+
     // Calculate stars based on the new attempt
     final newStars =
         LevelProgressModel.calculateStars(correctAnswers, totalQuestions);
-    
-    final newScore =
-        totalQuestions > 0 ? (correctAnswers / totalQuestions * 100).round() : 0;
+
+    final newScore = totalQuestions > 0
+        ? (correctAnswers / totalQuestions * 100).round()
+        : 0;
 
     final updated = LevelProgressModel(
       profileId: profileId,
       levelId: levelId,
       // Only update stars if the new attempt is better than the previous best
-      stars: existing != null 
-          ? (newStars > existing.stars ? newStars : existing.stars) 
+      stars: existing != null
+          ? (newStars > existing.stars ? newStars : existing.stars)
           : newStars,
       bestScore: existing != null
           ? (newScore > existing.bestScore ? newScore : existing.bestScore)
@@ -66,7 +67,7 @@ class ProgressRepository {
     if (updated.stars > 0) {
       final nextLevelId = levelId + 1;
       final nextExisting = getProgress(profileId, nextLevelId);
-      
+
       if (nextExisting == null) {
         // If no progress exists for next level, create an unlocked entry
         await saveProgress(LevelProgressModel(

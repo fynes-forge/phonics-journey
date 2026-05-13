@@ -7,7 +7,7 @@ import '../../../services/curriculum_service.dart';
 class GameQuestion {
   final String word;
   final List<String> letters; // shuffled + distractors
-  final List<String> answer;  // correct letter sequence
+  final List<String> answer; // correct letter sequence
 
   const GameQuestion({
     required this.word,
@@ -81,9 +81,8 @@ class GamePlaying extends GameState {
 
   bool get allSlotsFilled => placedLetters.every((l) => l != null);
 
-  double get progress => totalQuestions == 0
-      ? 0
-      : questionIndex / totalQuestions;
+  double get progress =>
+      totalQuestions == 0 ? 0 : questionIndex / totalQuestions;
 
   @override
   List<Object?> get props => [

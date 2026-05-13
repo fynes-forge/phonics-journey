@@ -189,9 +189,8 @@ class AudioService {
     final dir = await getApplicationDocumentsDirectory();
     final indexFile = File('${dir.path}/custom_voices/index.txt');
     await indexFile.parent.create(recursive: true);
-    final lines = _customVoicePaths.entries
-        .map((e) => '${e.key}=${e.value}')
-        .join('\n');
+    final lines =
+        _customVoicePaths.entries.map((e) => '${e.key}=${e.value}').join('\n');
     await indexFile.writeAsString(lines);
   }
 
@@ -225,9 +224,8 @@ class AudioService {
     if (kIsWeb) return;
     final dir = await getApplicationDocumentsDirectory();
     final indexFile = File('${dir.path}/custom_voices/index.txt');
-    final lines = _customVoicePaths.entries
-        .map((e) => '${e.key}=${e.value}')
-        .join('\n');
+    final lines =
+        _customVoicePaths.entries.map((e) => '${e.key}=${e.value}').join('\n');
     await indexFile.writeAsString(lines);
   }
 
@@ -246,9 +244,8 @@ class AudioService {
     // AssetSource() must NOT have 'assets/' — Flutter adds it automatically.
     // This method receives paths WITHOUT 'assets/' and adds it for the check.
     try {
-      final fullPath = assetPath.startsWith('assets/')
-          ? assetPath
-          : 'assets/$assetPath';
+      final fullPath =
+          assetPath.startsWith('assets/') ? assetPath : 'assets/$assetPath';
       await rootBundle.load(fullPath);
       return true;
     } catch (_) {
