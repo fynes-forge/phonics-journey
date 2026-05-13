@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get_it/get_it.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; // Added for BlocProvider
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -33,8 +33,8 @@ Future<void> main() async {
 
   // 2. Initialize Hive and Register Adapters
   await Hive.initFlutter();
-  Hive.registerAdapter(ProfileModelAdapter());
-  Hive.registerAdapter(LevelProgressModelAdapter());
+  if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(ProfileModelAdapter());
+  if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(LevelProgressModelAdapter());
 
   // 3. Open Hive boxes explicitly
   await Hive.openBox<ProfileModel>('profiles');
@@ -75,12 +75,14 @@ Future<void> _setupDependencies() async {
   );
 
   // --- BLoCs ---
-  // LazySingletons ensure shared state across the entire app
-  sl.registerLazySingleton<ProfileBloc>(
-    () => ProfileBloc(sl<ManageProfile>()),
+  // FIX: Changed from LazySingleton to Eager Singleton for Blocs.
+  // This ensures they are fully initialized and listening BEFORE 
+  // the UI can even attempt to add an event.
+  sl.registerSingleton<ProfileBloc>(
+    ProfileBloc(sl<ManageProfile>()),
   );
-  sl.registerLazySingleton<ProgressBloc>(
-    () => ProgressBloc(sl<ManageProgress>()),
+  sl.registerSingleton<ProgressBloc>(
+    ProgressBloc(sl<ManageProgress>()),
   );
 
   // --- Init App Data ---
@@ -93,9 +95,9 @@ class PhonicsJourneyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // FIX: Provide the Blocs globally to the MaterialApp.router.
-    // Using .value ensures we don't accidentally close the singletons 
-    // when a screen is popped, fixing the 'Bad State' on Android.
+    // We use BlocProvider.value here because the Blocs are managed by GetIt (Singletons).
+    // This prevents the MultiBlocProvider from trying to dispose of them 
+    // when this widget is rebuilt or the app is paused.
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: sl<ProfileBloc>()),
