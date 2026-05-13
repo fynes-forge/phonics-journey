@@ -597,87 +597,72 @@ class _WordPeekButton extends StatefulWidget {
 }
 
 class _WordPeekButtonState extends State<_WordPeekButton> {
-  bool _peeking = false;
-
-  void _onLongPressStart(LongPressStartDetails _) {
-    if (_peeking) return;
-    setState(() => _peeking = true);
-    unawaited(widget.audio.speakWord(widget.word));
-    // CALL THE NEW OVERLAY CLASS
-    WordPeek.show(context, widget.word);
-  }
-
-  void _onLongPressEnd(LongPressEndDetails _) {
-    if (!_peeking) return;
-    setState(() => _peeking = false);
-    // REMOVE THE OVERLAY SAFELY
-    WordPeek.dismiss();
-  }
-
-  void _onLongPressCancel() {
-    if (!_peeking) return;
-    setState(() => _peeking = false);
-    WordPeek.dismiss();
-  }
+  bool _isPressing = false;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => unawaited(widget.audio.speakWord(widget.word)),
-      onLongPressStart: _onLongPressStart,
-      onLongPressEnd: _onLongPressEnd,
-      onLongPressCancel: _onLongPressCancel, // Added for system interrupts
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        decoration: BoxDecoration(
-          color: _peeking
-              ? AppTheme.starYellow.withOpacity(0.15)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-              color: _peeking
-                  ? AppTheme.starYellow.withOpacity(0.5)
-                  : Colors.transparent),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.hearing_rounded,
-                    color: AppTheme.starYellow, size: 20),
-                SizedBox(width: 8),
-                Text('Tap to hear · Hold to peek',
-                    style: TextStyle(
-                        fontFamily: 'Andika',
-                        fontSize: 14,
-                        color: AppTheme.starYellow,
-                        fontWeight: FontWeight.w600)),
-              ],
+      onPanDown: (_) {
+        setState(() => _isPressing = true);
+        widget.audio.playButtonTap();
+        
+        // This is the specific fix: showText is set to false 
+        // so the child only sees the emoji hint.
+        WordPeek.show(context, widget.word, showText: false); 
+      },
+      onPanEnd: (_) {
+        setState(() => _isPressing = false);
+        WordPeek.dismiss();
+      },
+      onPanCancel: () {
+        setState(() => _isPressing = false);
+        WordPeek.dismiss();
+      },
+      child: Column(
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 100),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: _isPressing 
+                  ? AppTheme.starYellow.withOpacity(0.4) 
+                  : Colors.white.withOpacity(0.05),
+              border: Border.all(
+                color: _isPressing ? AppTheme.starYellow : Colors.white24,
+                width: 2,
+              ),
+              boxShadow: _isPressing ? [
+                BoxShadow(
+                  color: AppTheme.starYellow.withOpacity(0.3),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                )
+              ] : [],
             ),
-            const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('👆', style: TextStyle(fontSize: 14)),
-                const SizedBox(width: 4),
-                Text('long-press for emoji hint',
-                    style: TextStyle(
-                        fontFamily: 'Andika',
-                        fontSize: 11,
-                        color: AppTheme.stardustBlue.withOpacity(0.8))),
-              ],
+            child: Icon(
+              Icons.help_outline_rounded,
+              size: 48,
+              color: _isPressing ? AppTheme.starYellow : AppTheme.moonWhite,
             ),
-          ],
-        ),
+          ).animate(target: _isPressing ? 1 : 0).scale(begin: const Offset(1, 1), end: const Offset(0.9, 0.9)),
+          const SizedBox(height: 8),
+          Text(
+            'HOLD TO PEEK',
+            style: TextStyle(
+              fontFamily: 'Andika',
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: _isPressing ? AppTheme.starYellow : AppTheme.moonWhite.withOpacity(0.5),
+              letterSpacing: 1.2,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
+
 
 // ── Letter Tile Widget ────────────────────────────────────────────────────────
 class _LetterTile extends StatelessWidget {
