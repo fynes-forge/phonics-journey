@@ -14,7 +14,6 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Accessing our singletons from GetIt
     final profileBloc = GetIt.I<ProfileBloc>();
     final audio = GetIt.I<AudioService>();
 
@@ -67,7 +66,7 @@ class SettingsScreen extends StatelessWidget {
                                 : 'No profile found',
                             onTap: () => context.push(
                               AppRouter.profileSetup,
-                              extra: true, // Passing the edit flag to router
+                              extra: true,
                             ),
                           ).animate().fadeIn().slideX(begin: -0.1),
 
@@ -150,9 +149,28 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1C2329),
-        title: const Text('Phonics Journey', style: TextStyle(color: Colors.white)),
-        content: const Text('Local, secure, and privacy-focused learning.', style: TextStyle(color: Colors.white70)),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+        title: const Text(
+          'Phonics Journey', 
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
+        ),
+        content: const Text(
+          '''
+Local, secure, and privacy-focused learning.
+
+This app is designed to help children master phonics 
+through a fun space adventure! All progress data 
+stays on your device and is never shared.
+
+Version: 1.0.0
+Made for Explorers 🚀''',
+          style: TextStyle(color: Colors.white70, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: const Text('Close', style: TextStyle(color: Colors.white))
+          )
+        ],
       ),
     );
   }
@@ -162,9 +180,23 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1C2329),
-        title: const Text('Privacy', style: TextStyle(color: Colors.white)),
-        content: const Text('We do not collect any data. Everything stays on your device.', style: TextStyle(color: Colors.white70)),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))],
+        title: const Text('Privacy', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: const Text(
+          '''
+Your privacy is our priority. 
+        
+• All recordings are stored locally.
+• No personal data is collected.
+• No internet connection is required to play.
+• No third-party tracking or analytics.''', 
+          style: TextStyle(color: Colors.white70, fontSize: 14)
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: const Text('OK', style: TextStyle(color: Colors.white))
+          )
+        ],
       ),
     );
   }
@@ -174,10 +206,76 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1C2329),
-        title: const Text('Curriculum', style: TextStyle(color: Colors.white)),
-        content: const Text('Aligned with Little Wandle Letters and Sounds.', style: TextStyle(color: Colors.white70)),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))],
+        title: const Text(
+          'Space Curriculum', 
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '''
+Aligned with Little Wandle Letters and Sounds Revised.
+
+Systematic synthetic phonics progression:''',
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+                const SizedBox(height: 16),
+                _buildCurriculumTable(),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: const Text('OK', style: TextStyle(color: Colors.white))
+          )
+        ],
       ),
+    );
+  }
+
+  Widget _buildCurriculumTable() {
+    const headerStyle = TextStyle(color: AppTheme.starYellow, fontWeight: FontWeight.bold, fontSize: 11);
+
+    return Table(
+      columnWidths: const {
+        0: FlexColumnWidth(1),
+        1: FlexColumnWidth(1),
+        2: FlexColumnWidth(3),
+      },
+      border: TableBorder.all(color: Colors.white10),
+      children: [
+        const TableRow(
+          // FIX: Use decoration instead of backgroundColor
+          decoration: BoxDecoration(color: Colors.white12),
+          children: [
+            Padding(padding: EdgeInsets.all(8), child: Text('Levels', style: headerStyle)),
+            Padding(padding: EdgeInsets.all(8), child: Text('Phase', style: headerStyle)),
+            Padding(padding: EdgeInsets.all(8), child: Text('Content', style: headerStyle)),
+          ],
+        ),
+        _buildRow('1–25', '2', 's a t p i n m d g o c k ck e u r h b f l ff ll ss j v'),
+        _buildRow('26–55', '3', 'ch sh th ng ai ee igh oa oo ar or ur ow oi ear air ure er'),
+        _buildRow('56–70', '4', 'CVCC, CCVC, CCVCC; 3-letter blends; Tricky words'),
+        _buildRow('71–100', '5', 'Alternative spellings: ay ou ie ea oy ir ue aw wh ph ew oe au ey; Split digraphs'),
+      ],
+    );
+  }
+
+  TableRow _buildRow(String levels, String phase, String content) {
+    const cellStyle = TextStyle(color: Colors.white70, fontSize: 10);
+    return TableRow(
+      children: [
+        Padding(padding: EdgeInsets.all(8), child: Text(levels, style: cellStyle)),
+        Padding(padding: EdgeInsets.all(8), child: Text(phase, style: cellStyle)),
+        Padding(padding: EdgeInsets.all(8), child: Text(content, style: cellStyle)),
+      ],
     );
   }
 }

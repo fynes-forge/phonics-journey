@@ -1,10 +1,10 @@
 name: phonics_journey
 description: A privacy-first, offline phonics app aligned to Little Wandle Letters and Sounds Revised.
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
+  sdk: ">=3.2.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -37,6 +37,8 @@ dependencies:
   # State management
   flutter_bloc: ^8.1.5
   bloc: ^8.1.4
+  record: ^6.2.0
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:
@@ -45,6 +47,7 @@ dev_dependencies:
   build_runner: ^2.4.9
   flutter_lints: ^3.0.0
   mockito: ^5.4.4
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -66,3 +69,10 @@ flutter:
           weight: 700
         - asset: assets/fonts/Andika-Italic.ttf
           style: italic
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/phonics_journey_logo.png"
+  adaptive_icon_background: "#1A1B2E"
+  adaptive_icon_foreground: "assets/images/phonics_journey_logo.png"

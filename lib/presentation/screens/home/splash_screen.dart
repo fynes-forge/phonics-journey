@@ -21,12 +21,15 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    // Initialize the singleton and trigger the initial load
     _profileBloc = GetIt.I<ProfileBloc>()..add(LoadActiveProfile());
   }
 
   @override
   void dispose() {
-    _profileBloc.close();
+    // IMPORTANT: We do NOT close _profileBloc here.
+    // It is a global singleton managed by GetIt and used throughout the app.
+    // Closing it here would prevent any other screen from using it.
     super.dispose();
   }
 
@@ -35,6 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return BlocListener<ProfileBloc, ProfileState>(
       bloc: _profileBloc,
       listener: (context, state) {
+        // We add a slight delay to ensure the splash animations can be seen
         if (state is ProfileLoaded) {
           Future.delayed(const Duration(milliseconds: 1800), () {
             if (mounted) context.go(AppRouter.planetPath);
@@ -50,14 +54,11 @@ class _SplashScreenState extends State<SplashScreen> {
           decoration: AppTheme.spaceBackground,
           child: Stack(
             children: [
-              // Animated stars background
               const _StarField(),
-              // Main content
               Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Rocket emoji as logo placeholder
                     const Text(
                       '🚀',
                       style: TextStyle(fontSize: 96),
@@ -100,7 +101,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
                     const SizedBox(height: 48),
 
-                    // Loading dots
                     _LoadingDots()
                         .animate(delay: 1000.ms)
                         .fadeIn(duration: 400.ms),
@@ -207,6 +207,7 @@ class _LoadingDots extends StatelessWidget {
               begin: const Offset(1, 1),
               end: const Offset(1.5, 1.5),
               duration: 600.ms,
+              delay: Duration(milliseconds: i * 200),
             );
       }),
     );

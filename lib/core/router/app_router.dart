@@ -29,6 +29,7 @@ class AppRouter {
         name: 'profileSetup',
         builder: (context, state) {
           final isEditing = state.extra as bool? ?? false;
+          // Clean: No extra provider needed here because it's in main.dart
           return ProfileSetupScreen(isEditing: isEditing);
         },
       ),

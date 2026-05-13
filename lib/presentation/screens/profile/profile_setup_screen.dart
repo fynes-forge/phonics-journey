@@ -20,6 +20,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final _nameController = TextEditingController();
   Color _selectedColor = AppTheme.profileColors[0];
   int _selectedAvatar = 0;
+  bool _hasLoadedInitialData = false;
+  
+  // We hold a direct reference to the singleton to avoid context-based disposal errors
   late final ProfileBloc _profileBloc;
 
   final List<String> _avatarEmojis = [
@@ -29,7 +32,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   @override
   void initState() {
     super.initState();
+    // Use the Service Locator directly to ensure we have the persistent Singleton
     _profileBloc = GetIt.I<ProfileBloc>();
+    
     if (widget.isEditing) {
       _profileBloc.add(LoadActiveProfile());
     }
@@ -38,21 +43,26 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   @override
   void dispose() {
     _nameController.dispose();
+    // DO NOT call _profileBloc.close() here. 
+    // It is a singleton and must live for the life of the app.
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ProfileBloc, ProfileState>(
-      bloc: _profileBloc,
+      bloc: _profileBloc, // Explicitly pass the bloc instance
       listener: (context, state) {
         if (state is ProfileLoaded) {
-          if (widget.isEditing) {
-            // Pre-fill fields
+          if (widget.isEditing && !_hasLoadedInitialData) {
+            // Initial data fill
             _nameController.text = state.profile.name;
             _selectedColor = Color(state.profile.themeColorValue);
             _selectedAvatar = state.profile.avatarIndex;
-          } else {
+            _hasLoadedInitialData = true;
+            setState(() {});
+          } else if (_hasLoadedInitialData || !widget.isEditing) {
+            // A ProfileLoaded state after a submission triggers navigation
             context.go(AppRouter.planetPath);
           }
         }
@@ -69,7 +79,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   children: [
                     const SizedBox(height: 20),
 
-                    // Title
                     Text(
                       widget.isEditing ? 'Edit Your Profile' : 'Welcome, Explorer!',
                       style: Theme.of(context).textTheme.displaySmall,
@@ -90,7 +99,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
                     const SizedBox(height: 40),
 
-                    // Avatar selection
                     Text(
                       'Choose your explorer!',
                       style: Theme.of(context).textTheme.titleMedium,
@@ -117,9 +125,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                   : AppTheme.stardustBlue.withOpacity(0.3),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: selected
-                                    ? _selectedColor
-                                    : Colors.white24,
+                                color: selected ? _selectedColor : Colors.white24,
                                 width: selected ? 3 : 1,
                               ),
                               boxShadow: selected
@@ -147,7 +153,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
                     const SizedBox(height: 36),
 
-                    // Name input
                     Text(
                       'What\'s your name?',
                       style: Theme.of(context).textTheme.titleMedium,
@@ -164,13 +169,12 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       ),
                       decoration: InputDecoration(
                         hintText: 'Type your name here...',
-                        prefixIcon: Text(
-                          _avatarEmojis[_selectedAvatar],
-                          style: const TextStyle(fontSize: 22),
-                        ),
-                        prefixIconConstraints: const BoxConstraints(
-                          minWidth: 56,
-                          minHeight: 56,
+                        prefixIcon: Center(
+                          widthFactor: 1.0,
+                          child: Text(
+                            _avatarEmojis[_selectedAvatar],
+                            style: const TextStyle(fontSize: 22),
+                          ),
                         ),
                       ),
                       textCapitalization: TextCapitalization.words,
@@ -179,7 +183,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
                     const SizedBox(height: 36),
 
-                    // Colour picker
                     Text(
                       'Pick your planet colour!',
                       style: Theme.of(context).textTheme.titleMedium,
@@ -216,11 +219,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                   : null,
                             ),
                             child: selected
-                                ? const Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 22,
-                                  )
+                                ? const Icon(Icons.check, color: Colors.white, size: 22)
                                 : null,
                           ),
                         );
@@ -229,7 +228,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
                     const SizedBox(height: 48),
 
-                    // Preview
                     if (_nameController.text.isNotEmpty) ...[
                       Container(
                         padding: const EdgeInsets.all(20),
@@ -261,7 +259,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       const SizedBox(height: 24),
                     ],
 
-                    // Start button
                     ElevatedButton(
                       onPressed: _canProceed()
                           ? () => _handleSubmit(context, state)
@@ -279,9 +276,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  widget.isEditing
-                                      ? 'Save Changes'
-                                      : 'Start My Journey!',
+                                  widget.isEditing ? 'Save Changes' : 'Start My Journey!',
                                   style: const TextStyle(
                                     fontFamily: 'Andika',
                                     fontSize: 20,
@@ -289,10 +284,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Text(
-                                  widget.isEditing ? '✅' : '🚀',
-                                  style: const TextStyle(fontSize: 20),
-                                ),
+                                Text(widget.isEditing ? '✅' : '🚀', style: const TextStyle(fontSize: 20)),
                               ],
                             ),
                     ).animate(delay: 800.ms).fadeIn().scale(
@@ -317,6 +309,12 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
 
+    // The Fix: Check if the bloc is closed before attempting to add an event
+    if (_profileBloc.isClosed) {
+      debugPrint('🚨 CRITICAL ERROR: ProfileBloc is closed. This should not happen to a Singleton.');
+      return;
+    }
+
     if (widget.isEditing && state is ProfileLoaded) {
       _profileBloc.add(
         UpdateProfileEvent(
@@ -327,7 +325,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           ),
         ),
       );
-      context.go(AppRouter.planetPath);
     } else {
       _profileBloc.add(
         CreateProfile(
