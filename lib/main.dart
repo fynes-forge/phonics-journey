@@ -34,7 +34,9 @@ Future<void> main() async {
   // 2. Initialize Hive and Register Adapters
   await Hive.initFlutter();
   if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(ProfileModelAdapter());
-  if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(LevelProgressModelAdapter());
+  if (!Hive.isAdapterRegistered(1)) {
+    Hive.registerAdapter(LevelProgressModelAdapter());
+  }
 
   // 3. Open Hive boxes explicitly
   await Hive.openBox<ProfileModel>('profiles');
@@ -76,7 +78,7 @@ Future<void> _setupDependencies() async {
 
   // --- BLoCs ---
   // FIX: Changed from LazySingleton to Eager Singleton for Blocs.
-  // This ensures they are fully initialized and listening BEFORE 
+  // This ensures they are fully initialized and listening BEFORE
   // the UI can even attempt to add an event.
   sl.registerSingleton<ProfileBloc>(
     ProfileBloc(sl<ManageProfile>()),
@@ -96,7 +98,7 @@ class PhonicsJourneyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // We use BlocProvider.value here because the Blocs are managed by GetIt (Singletons).
-    // This prevents the MultiBlocProvider from trying to dispose of them 
+    // This prevents the MultiBlocProvider from trying to dispose of them
     // when this widget is rebuilt or the app is paused.
     return MultiBlocProvider(
       providers: [

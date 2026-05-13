@@ -26,21 +26,31 @@ class PlanetNode extends StatelessWidget {
 
   // Different planet visual styles based on level id
   static const List<String> _planetEmojis = [
-    '🌍', '🌕', '🪐', '🔴', '🌑', '🟤', '⚫', '🌐',
-    '🌏', '🌖', '💙', '🟠',
+    '🌍',
+    '🌕',
+    '🪐',
+    '🔴',
+    '🌑',
+    '🟤',
+    '⚫',
+    '🌐',
+    '🌏',
+    '🌖',
+    '💙',
+    '🟠',
   ];
 
   static const List<List<Color>> _planetGradients = [
-    [Color(0xFF4CAF82), Color(0xFF2E7D52)],    // green
-    [Color(0xFF2196F3), Color(0xFF0D47A1)],    // blue
-    [Color(0xFFFF8C42), Color(0xFFE65100)],    // orange
-    [Color(0xFFAB47BC), Color(0xFF6A1B9A)],    // purple
-    [Color(0xFFEF5350), Color(0xFFB71C1C)],    // red
-    [Color(0xFF26C6DA), Color(0xFF00838F)],    // teal
-    [Color(0xFF7E57C2), Color(0xFF311B92)],    // deep purple
-    [Color(0xFF66BB6A), Color(0xFF1B5E20)],    // dark green
-    [Color(0xFFEC407A), Color(0xFF880E4F)],    // pink
-    [Color(0xFFFFCA28), Color(0xFFF57F17)],    // yellow
+    [Color(0xFF4CAF82), Color(0xFF2E7D52)], // green
+    [Color(0xFF2196F3), Color(0xFF0D47A1)], // blue
+    [Color(0xFFFF8C42), Color(0xFFE65100)], // orange
+    [Color(0xFFAB47BC), Color(0xFF6A1B9A)], // purple
+    [Color(0xFFEF5350), Color(0xFFB71C1C)], // red
+    [Color(0xFF26C6DA), Color(0xFF00838F)], // teal
+    [Color(0xFF7E57C2), Color(0xFF311B92)], // deep purple
+    [Color(0xFF66BB6A), Color(0xFF1B5E20)], // dark green
+    [Color(0xFFEC407A), Color(0xFF880E4F)], // pink
+    [Color(0xFFFFCA28), Color(0xFFF57F17)], // yellow
   ];
 
   List<Color> get _gradient {
@@ -59,7 +69,8 @@ class PlanetNode extends StatelessWidget {
       onTap: onTap,
       child: SizedBox(
         width: _size,
-        height: _size + 50, // 90 planet + 6 gap + 18 stars + 22 label + 4 buffer
+        height:
+            _size + 50, // 90 planet + 6 gap + 18 stars + 22 label + 4 buffer
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -120,9 +131,7 @@ class PlanetNode extends StatelessWidget {
               ]
             : null,
         border: Border.all(
-          color: isUnlocked
-              ? gradient.first.withOpacity(0.6)
-              : Colors.white12,
+          color: isUnlocked ? gradient.first.withOpacity(0.6) : Colors.white12,
           width: 2,
         ),
       ),
@@ -166,41 +175,39 @@ class PlanetNode extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-        // Stars row
-        if (isUnlocked)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(3, (i) {
-              return Icon(
-                i < stars ? Icons.star_rounded : Icons.star_outline_rounded,
-                size: 13,
-                color: i < stars ? AppTheme.starYellow : Colors.white24,
-              );
-            }),
-          ),
+          // Stars row
+          if (isUnlocked)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(3, (i) {
+                return Icon(
+                  i < stars ? Icons.star_rounded : Icons.star_outline_rounded,
+                  size: 13,
+                  color: i < stars ? AppTheme.starYellow : Colors.white24,
+                );
+              }),
+            ),
 
-        // GPC label (grapheme)
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-          decoration: BoxDecoration(
-            color: isUnlocked
-                ? AppTheme.stardustBlue.withOpacity(0.7)
-                : AppTheme.lockedGrey.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            level.grapheme.length > 6
-                ? 'L${level.id}'
-                : level.grapheme,
-            style: TextStyle(
-              fontFamily: 'Andika',
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: isUnlocked ? Colors.white : Colors.white38,
+          // GPC label (grapheme)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: isUnlocked
+                  ? AppTheme.stardustBlue.withOpacity(0.7)
+                  : AppTheme.lockedGrey.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              level.grapheme.length > 6 ? 'L${level.id}' : level.grapheme,
+              style: TextStyle(
+                fontFamily: 'Andika',
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: isUnlocked ? Colors.white : Colors.white38,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
       ),
     );
   }

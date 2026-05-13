@@ -30,7 +30,8 @@ class RecordLevelAttempt extends ProgressEvent {
   });
 
   @override
-  List<Object?> get props => [profileId, levelId, correctAnswers, totalQuestions];
+  List<Object?> get props =>
+      [profileId, levelId, correctAnswers, totalQuestions];
 }
 
 // ── States ────────────────────────────────────────────────────────────────
@@ -100,7 +101,8 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
     on<RecordLevelAttempt>(_onRecord);
   }
 
-  Future<void> _onLoad(LoadAllProgress event, Emitter<ProgressState> emit) async {
+  Future<void> _onLoad(
+      LoadAllProgress event, Emitter<ProgressState> emit) async {
     emit(ProgressLoading());
     try {
       // Ensure level 1 is always initialised
@@ -115,7 +117,8 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
     }
   }
 
-  Future<void> _onRecord(RecordLevelAttempt event, Emitter<ProgressState> emit) async {
+  Future<void> _onRecord(
+      RecordLevelAttempt event, Emitter<ProgressState> emit) async {
     try {
       final updated = await _manageProgress.recordAttempt(
         profileId: event.profileId,

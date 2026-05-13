@@ -22,7 +22,7 @@ class SettingsScreen extends StatelessWidget {
       child: BlocBuilder<ProfileBloc, ProfileState>(
         builder: (context, state) {
           final profile = state is ProfileLoaded ? state.profile : null;
-          
+
           return Scaffold(
             body: Container(
               decoration: AppTheme.spaceBackground,
@@ -69,7 +69,6 @@ class SettingsScreen extends StatelessWidget {
                               extra: true,
                             ),
                           ).animate().fadeIn().slideX(begin: -0.1),
-
                           const SizedBox(height: 24),
                           const _SectionTitle('Voice & Audio'),
                           _SettingsTile(
@@ -78,23 +77,21 @@ class SettingsScreen extends StatelessWidget {
                             subtitle: 'Record your own phoneme sounds',
                             onTap: () => _showVoiceRecorderList(context, audio),
                           ).animate(delay: 100.ms).fadeIn().slideX(begin: -0.1),
-
                           const SizedBox(height: 24),
                           const _SectionTitle('About'),
                           _SettingsTile(
                             icon: 'ℹ️',
                             title: 'About Phonics Journey',
-                            subtitle: 'Little Wandle aligned • Offline • v1.0.0',
+                            subtitle:
+                                'Little Wandle aligned • Offline • v1.0.0',
                             onTap: () => _showAboutDialog(context),
                           ).animate(delay: 200.ms).fadeIn().slideX(begin: -0.1),
-
                           _SettingsTile(
                             icon: '🔒',
                             title: 'Privacy',
                             subtitle: 'Local storage only • No tracking',
                             onTap: () => _showPrivacyDialog(context),
                           ).animate(delay: 250.ms).fadeIn().slideX(begin: -0.1),
-
                           const SizedBox(height: 24),
                           const _SectionTitle('Curriculum'),
                           _SettingsTile(
@@ -119,7 +116,22 @@ class SettingsScreen extends StatelessWidget {
   // --- Utility Methods for Dialogs ---
 
   void _showVoiceRecorderList(BuildContext context, AudioService audio) {
-    final phonemes = ['s', 'a', 't', 'p', 'i', 'n', 'm', 'd', 'g', 'o', 'ck', 'ch', 'sh', 'th'];
+    final phonemes = [
+      's',
+      'a',
+      't',
+      'p',
+      'i',
+      'n',
+      'm',
+      'd',
+      'g',
+      'o',
+      'ck',
+      'ch',
+      'sh',
+      'th'
+    ];
 
     showModalBottomSheet(
       context: context,
@@ -135,9 +147,11 @@ class SettingsScreen extends StatelessWidget {
           controller: scrollController,
           itemCount: phonemes.length,
           itemBuilder: (_, i) => ListTile(
-            title: Text('Sound: ${phonemes[i]}', style: const TextStyle(color: Colors.white)),
+            title: Text('Sound: ${phonemes[i]}',
+                style: const TextStyle(color: Colors.white)),
             trailing: const Icon(Icons.mic, color: AppTheme.starYellow),
-            onTap: () => context.push('${AppRouter.voiceRecorder}/${phonemes[i]}'),
+            onTap: () =>
+                context.push('${AppRouter.voiceRecorder}/${phonemes[i]}'),
           ),
         ),
       ),
@@ -149,10 +163,8 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1C2329),
-        title: const Text(
-          'Phonics Journey', 
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
-        ),
+        title: const Text('Phonics Journey',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         content: const Text(
           '''
 Local, secure, and privacy-focused learning.
@@ -167,9 +179,8 @@ Made for Explorers 🚀''',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), 
-            child: const Text('Close', style: TextStyle(color: Colors.white))
-          )
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close', style: TextStyle(color: Colors.white)))
         ],
       ),
     );
@@ -180,22 +191,20 @@ Made for Explorers 🚀''',
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1C2329),
-        title: const Text('Privacy', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: const Text(
-          '''
+        title: const Text('Privacy',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: const Text('''
 Your privacy is our priority. 
         
 • All recordings are stored locally.
 • No personal data is collected.
 • No internet connection is required to play.
-• No third-party tracking or analytics.''', 
-          style: TextStyle(color: Colors.white70, fontSize: 14)
-        ),
+• No third-party tracking or analytics.''',
+            style: TextStyle(color: Colors.white70, fontSize: 14)),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), 
-            child: const Text('OK', style: TextStyle(color: Colors.white))
-          )
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK', style: TextStyle(color: Colors.white)))
         ],
       ),
     );
@@ -206,10 +215,8 @@ Your privacy is our priority.
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1C2329),
-        title: const Text(
-          'Space Curriculum', 
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
-        ),
+        title: const Text('Space Curriculum',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         content: SizedBox(
           width: double.maxFinite,
           child: SingleChildScrollView(
@@ -232,16 +239,16 @@ Systematic synthetic phonics progression:''',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), 
-            child: const Text('OK', style: TextStyle(color: Colors.white))
-          )
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK', style: TextStyle(color: Colors.white)))
         ],
       ),
     );
   }
 
   Widget _buildCurriculumTable() {
-    const headerStyle = TextStyle(color: AppTheme.starYellow, fontWeight: FontWeight.bold, fontSize: 11);
+    const headerStyle = TextStyle(
+        color: AppTheme.starYellow, fontWeight: FontWeight.bold, fontSize: 11);
 
     return Table(
       columnWidths: const {
@@ -255,15 +262,25 @@ Systematic synthetic phonics progression:''',
           // FIX: Use decoration instead of backgroundColor
           decoration: BoxDecoration(color: Colors.white12),
           children: [
-            Padding(padding: EdgeInsets.all(8), child: Text('Levels', style: headerStyle)),
-            Padding(padding: EdgeInsets.all(8), child: Text('Phase', style: headerStyle)),
-            Padding(padding: EdgeInsets.all(8), child: Text('Content', style: headerStyle)),
+            Padding(
+                padding: EdgeInsets.all(8),
+                child: Text('Levels', style: headerStyle)),
+            Padding(
+                padding: EdgeInsets.all(8),
+                child: Text('Phase', style: headerStyle)),
+            Padding(
+                padding: EdgeInsets.all(8),
+                child: Text('Content', style: headerStyle)),
           ],
         ),
-        _buildRow('1–25', '2', 's a t p i n m d g o c k ck e u r h b f l ff ll ss j v'),
-        _buildRow('26–55', '3', 'ch sh th ng ai ee igh oa oo ar or ur ow oi ear air ure er'),
-        _buildRow('56–70', '4', 'CVCC, CCVC, CCVCC; 3-letter blends; Tricky words'),
-        _buildRow('71–100', '5', 'Alternative spellings: ay ou ie ea oy ir ue aw wh ph ew oe au ey; Split digraphs'),
+        _buildRow('1–25', '2',
+            's a t p i n m d g o c k ck e u r h b f l ff ll ss j v'),
+        _buildRow('26–55', '3',
+            'ch sh th ng ai ee igh oa oo ar or ur ow oi ear air ure er'),
+        _buildRow(
+            '56–70', '4', 'CVCC, CCVC, CCVCC; 3-letter blends; Tricky words'),
+        _buildRow('71–100', '5',
+            'Alternative spellings: ay ou ie ea oy ir ue aw wh ph ew oe au ey; Split digraphs'),
       ],
     );
   }
@@ -272,9 +289,12 @@ Systematic synthetic phonics progression:''',
     const cellStyle = TextStyle(color: Colors.white70, fontSize: 10);
     return TableRow(
       children: [
-        Padding(padding: EdgeInsets.all(8), child: Text(levels, style: cellStyle)),
-        Padding(padding: EdgeInsets.all(8), child: Text(phase, style: cellStyle)),
-        Padding(padding: EdgeInsets.all(8), child: Text(content, style: cellStyle)),
+        Padding(
+            padding: const EdgeInsets.all(8), child: Text(levels, style: cellStyle)),
+        Padding(
+            padding: const EdgeInsets.all(8), child: Text(phase, style: cellStyle)),
+        Padding(
+            padding: const EdgeInsets.all(8), child: Text(content, style: cellStyle)),
       ],
     );
   }
@@ -336,8 +356,14 @@ class _SettingsTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                  Text(subtitle, style: const TextStyle(color: Colors.white54, fontSize: 12)),
+                  Text(title,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold)),
+                  Text(subtitle,
+                      style:
+                          const TextStyle(color: Colors.white54, fontSize: 12)),
                 ],
               ),
             ),

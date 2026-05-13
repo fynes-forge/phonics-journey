@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../presentation/screens/home/splash_screen.dart';
@@ -9,11 +8,11 @@ import '../../presentation/screens/settings/settings_screen.dart';
 import '../../presentation/screens/settings/voice_recorder_screen.dart';
 
 class AppRouter {
-  static const String splash        = '/';
-  static const String profileSetup  = '/profile-setup';
-  static const String planetPath    = '/planet-path';
-  static const String game          = '/game';
-  static const String settings      = '/settings';
+  static const String splash = '/';
+  static const String profileSetup = '/profile-setup';
+  static const String planetPath = '/planet-path';
+  static const String game = '/game';
+  static const String settings = '/settings';
   static const String voiceRecorder = '/voice-recorder';
 
   static final GoRouter router = GoRouter(

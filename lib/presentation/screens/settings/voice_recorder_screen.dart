@@ -70,7 +70,7 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
 
       try {
         final path = await _audio.getCustomRecordingPath(widget.phoneme);
-        
+
         // Ensure directory exists
         final directory = Directory(path).parent;
         if (!await directory.exists()) {
@@ -80,7 +80,7 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
         // 2. Start Recording
         // AAC LC is highly compatible with both Android and iOS
         const config = RecordConfig(encoder: AudioEncoder.aacLc);
-        
+
         await _recorder.start(config, path: path);
 
         setState(() {
@@ -88,7 +88,6 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
           _recordingPath = path;
         });
         _pulseController.repeat(reverse: true);
-        
       } catch (e) {
         _showError('Failed to start recording: $e');
       }
@@ -101,7 +100,7 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
         if (path != null) {
           // Notify your audio service that a custom voice exists now
           await _audio.saveCustomVoicePath(widget.phoneme, path);
-          
+
           setState(() {
             _state = _RecordingState.saved;
             _hasExistingRecording = true;
@@ -146,7 +145,8 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.moonWhite),
+                      icon: const Icon(Icons.arrow_back_rounded,
+                          color: AppTheme.moonWhite),
                     ),
                     Expanded(
                       child: Text(
@@ -159,7 +159,8 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                 const SizedBox(height: 32),
                 Center(
                   child: Container(
-                    width: 120, height: 120,
+                    width: 120,
+                    height: 120,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
@@ -174,8 +175,10 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                       child: Text(
                         widget.phoneme,
                         style: const TextStyle(
-                          fontFamily: 'Andika', fontSize: 44,
-                          fontWeight: FontWeight.bold, color: AppTheme.moonWhite,
+                          fontFamily: 'Andika',
+                          fontSize: 44,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.moonWhite,
                         ),
                       ),
                     ),
@@ -192,7 +195,8 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                   decoration: AppTheme.cardDecoration(),
                   child: Column(
                     children: [
-                      Text('🎙️ Recording Tips', style: Theme.of(context).textTheme.titleMedium),
+                      Text('🎙️ Recording Tips',
+                          style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 12),
                       _tip('Speak clearly and at a normal pace'),
                       _tip('Say just the sound, not the letter name'),
@@ -205,7 +209,10 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                 Center(
                   child: Text(
                     _statusText,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: _statusColor),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(color: _statusColor),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -219,17 +226,26 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                       height: _state == _RecordingState.recording ? 100 : 84,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: _state == _RecordingState.recording ? AppTheme.errorRed : AppTheme.successGreen,
+                        color: _state == _RecordingState.recording
+                            ? AppTheme.errorRed
+                            : AppTheme.successGreen,
                         boxShadow: [
                           BoxShadow(
-                            color: (_state == _RecordingState.recording ? AppTheme.errorRed : AppTheme.successGreen).withOpacity(0.5),
-                            blurRadius: 24, spreadRadius: 4,
+                            color: (_state == _RecordingState.recording
+                                    ? AppTheme.errorRed
+                                    : AppTheme.successGreen)
+                                .withOpacity(0.5),
+                            blurRadius: 24,
+                            spreadRadius: 4,
                           ),
                         ],
                       ),
                       child: Icon(
-                        _state == _RecordingState.recording ? Icons.stop_rounded : Icons.mic_rounded,
-                        color: Colors.white, size: 44,
+                        _state == _RecordingState.recording
+                            ? Icons.stop_rounded
+                            : Icons.mic_rounded,
+                        color: Colors.white,
+                        size: 44,
                       ),
                     ),
                   ),
@@ -247,7 +263,8 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                             side: const BorderSide(color: AppTheme.cosmicTeal),
                             foregroundColor: AppTheme.cosmicTeal,
                             padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25)),
                           ),
                         ),
                       ),
@@ -261,7 +278,8 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                             side: const BorderSide(color: AppTheme.errorRed),
                             foregroundColor: AppTheme.errorRed,
                             padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25)),
                           ),
                         ),
                       ),
@@ -284,8 +302,14 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('• ', style: TextStyle(color: AppTheme.starYellow, fontSize: 16)),
-          Expanded(child: Text(text, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme.moonWhite.withOpacity(0.85)))),
+          const Text('• ',
+              style: TextStyle(color: AppTheme.starYellow, fontSize: 16)),
+          Expanded(
+              child: Text(text,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppTheme.moonWhite.withOpacity(0.85)))),
         ],
       ),
     );
@@ -293,17 +317,25 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
 
   String get _statusText {
     switch (_state) {
-      case _RecordingState.idle: return _hasExistingRecording ? '✅ Custom recording active\nTap mic to re-record' : 'Tap the mic to start recording';
-      case _RecordingState.recording: return '🔴 Recording... tap stop when done';
-      case _RecordingState.saved: return '✅ Recording saved!';
+      case _RecordingState.idle:
+        return _hasExistingRecording
+            ? '✅ Custom recording active\nTap mic to re-record'
+            : 'Tap the mic to start recording';
+      case _RecordingState.recording:
+        return '🔴 Recording... tap stop when done';
+      case _RecordingState.saved:
+        return '✅ Recording saved!';
     }
   }
 
   Color get _statusColor {
     switch (_state) {
-      case _RecordingState.recording: return AppTheme.errorRed;
-      case _RecordingState.saved: return AppTheme.successGreen;
-      default: return AppTheme.moonWhite;
+      case _RecordingState.recording:
+        return AppTheme.errorRed;
+      case _RecordingState.saved:
+        return AppTheme.successGreen;
+      default:
+        return AppTheme.moonWhite;
     }
   }
 
@@ -319,10 +351,14 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
       builder: (_) => AlertDialog(
         backgroundColor: AppTheme.stardustBlue,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Delete recording?', style: Theme.of(context).textTheme.titleLarge),
-        content: Text('This will remove your custom recording for "${widget.phoneme}".'),
+        title: Text('Delete recording?',
+            style: Theme.of(context).textTheme.titleLarge),
+        content: Text(
+            'This will remove your custom recording for "${widget.phoneme}".'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.errorRed),

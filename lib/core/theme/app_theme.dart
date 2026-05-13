@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   // ── Space Palette ─────────────────────────────────────────────────────────
-  static const Color deepSpace     = Color(0xFF0A0E2A);
-  static const Color nebulaPurple  = Color(0xFF2D1B69);
-  static const Color stardustBlue  = Color(0xFF1A3A6B);
-  static const Color cosmicTeal    = Color(0xFF0D6E8A);
-  static const Color starYellow    = Color(0xFFFFD700);
-  static const Color moonWhite     = Color(0xFFF0F4FF);
-  static const Color lockedGrey    = Color(0xFF4A4E6B);
-  static const Color successGreen  = Color(0xFF4CAF82);
-  static const Color errorRed      = Color(0xFFFF6B6B);
-  static const Color accentOrange  = Color(0xFFFF8C42);
+  static const Color deepSpace = Color(0xFF0A0E2A);
+  static const Color nebulaPurple = Color(0xFF2D1B69);
+  static const Color stardustBlue = Color(0xFF1A3A6B);
+  static const Color cosmicTeal = Color(0xFF0D6E8A);
+  static const Color starYellow = Color(0xFFFFD700);
+  static const Color moonWhite = Color(0xFFF0F4FF);
+  static const Color lockedGrey = Color(0xFF4A4E6B);
+  static const Color successGreen = Color(0xFF4CAF82);
+  static const Color errorRed = Color(0xFFFF6B6B);
+  static const Color accentOrange = Color(0xFFFF8C42);
 
   // ── Phase colour badges ───────────────────────────────────────────────────
   static const Map<int, Color> phaseColors = {
-    2: Color(0xFF4CAF82),   // green
-    3: Color(0xFF2196F3),   // blue
-    4: Color(0xFFFF8C42),   // orange
-    5: Color(0xFFAB47BC),   // purple
+    2: Color(0xFF4CAF82), // green
+    3: Color(0xFF2196F3), // blue
+    4: Color(0xFFFF8C42), // orange
+    5: Color(0xFFAB47BC), // purple
   };
 
   static Color phaseColor(int phase) => phaseColors[phase] ?? cosmicTeal;
@@ -57,9 +57,9 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         elevation: 0,
         titleTextStyle: _buildTextTheme().titleLarge?.copyWith(
-          color: moonWhite,
-          fontFamily: 'Andika',
-        ),
+              color: moonWhite,
+              fontFamily: 'Andika',
+            ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -178,29 +178,33 @@ class AppTheme {
   );
 
   static LinearGradient planetGlow(Color color) => RadialGradient(
-    colors: [color.withOpacity(0.9), color.withOpacity(0.4), Colors.transparent],
-    stops: const [0.3, 0.7, 1.0],
-  ) as dynamic;
+        colors: [
+          color.withOpacity(0.9),
+          color.withOpacity(0.4),
+          Colors.transparent
+        ],
+        stops: const [0.3, 0.7, 1.0],
+      ) as dynamic;
 
   static BoxDecoration spaceBackground = BoxDecoration(
     gradient: spaceGradient,
   );
 
   static BoxDecoration cardDecoration({Color? glowColor}) => BoxDecoration(
-    color: stardustBlue.withOpacity(0.3),
-    borderRadius: BorderRadius.circular(25),
-    border: Border.all(
-      color: (glowColor ?? cosmicTeal).withOpacity(0.4),
-      width: 1.5,
-    ),
-    boxShadow: glowColor != null
-        ? [
-            BoxShadow(
-              color: glowColor.withOpacity(0.3),
-              blurRadius: 20,
-              spreadRadius: 2,
-            ),
-          ]
-        : null,
-  );
+        color: stardustBlue.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(
+          color: (glowColor ?? cosmicTeal).withOpacity(0.4),
+          width: 1.5,
+        ),
+        boxShadow: glowColor != null
+            ? [
+                BoxShadow(
+                  color: glowColor.withOpacity(0.3),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+              ]
+            : null,
+      );
 }
