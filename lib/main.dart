@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // Added for BlocProvider
 
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -24,25 +25,23 @@ Future<void> main() async {
   // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 1. Lock to portrait mode for a consistent game experience
+  // 1. Lock to portrait mode
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
   // 2. Initialize Hive and Register Adapters
-  // These adapters must be registered BEFORE opening any boxes
   await Hive.initFlutter();
   Hive.registerAdapter(ProfileModelAdapter());
   Hive.registerAdapter(LevelProgressModelAdapter());
 
   // 3. Open Hive boxes explicitly
-  // We open them here to ensure they are ready before the Blocs try to read them
   await Hive.openBox<ProfileModel>('profiles');
   await Hive.openBox<LevelProgressModel>('progress');
   await Hive.openBox('settings');
 
-  // 4. Setup service locator (Dependency Injection)
+  // 4. Setup service locator
   await _setupDependencies();
 
   runApp(const PhonicsJourneyApp());
@@ -75,10 +74,8 @@ Future<void> _setupDependencies() async {
     () => ManageProgress(sl<ProgressRepository>()),
   );
 
-  // --- BLoCs (CRITICAL CHANGE) ---
-  // Changed from registerFactory to registerLazySingleton.
-  // This ensures that the entire app shares ONE instance of the state.
-  // If the Game updates progress, the Map Screen will see it immediately.
+  // --- BLoCs ---
+  // LazySingletons ensure shared state across the entire app
   sl.registerLazySingleton<ProfileBloc>(
     () => ProfileBloc(sl<ManageProfile>()),
   );
@@ -87,7 +84,6 @@ Future<void> _setupDependencies() async {
   );
 
   // --- Init App Data ---
-  // Load the levels and sounds before the UI builds
   await sl<CurriculumService>().loadCurriculum();
   await sl<AudioService>().init();
 }
@@ -97,11 +93,20 @@ class PhonicsJourneyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Phonics Journey',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.defaultTheme,
-      routerConfig: AppRouter.router,
+    // FIX: Provide the Blocs globally to the MaterialApp.router.
+    // Using .value ensures we don't accidentally close the singletons 
+    // when a screen is popped, fixing the 'Bad State' on Android.
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: sl<ProfileBloc>()),
+        BlocProvider.value(value: sl<ProgressBloc>()),
+      ],
+      child: MaterialApp.router(
+        title: 'Phonics Journey',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.defaultTheme,
+        routerConfig: AppRouter.router,
+      ),
     );
   }
 }

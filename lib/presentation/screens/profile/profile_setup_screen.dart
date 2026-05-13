@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:get_it/get_it.dart';
 
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
@@ -29,7 +28,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   @override
   void initState() {
     super.initState();
-    _profileBloc = GetIt.I<ProfileBloc>();
+    // Get the Bloc from the global provider context
+    _profileBloc = context.read<ProfileBloc>();
+    
     if (widget.isEditing) {
       _profileBloc.add(LoadActiveProfile());
     }
@@ -44,15 +45,17 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ProfileBloc, ProfileState>(
-      bloc: _profileBloc,
+      // We no longer pass the 'bloc' explicitly here to avoid lifecycle collisions
       listener: (context, state) {
         if (state is ProfileLoaded) {
-          if (widget.isEditing) {
-            // Pre-fill fields
+          // If editing, we fill the fields only once
+          if (widget.isEditing && _nameController.text.isEmpty) {
             _nameController.text = state.profile.name;
             _selectedColor = Color(state.profile.themeColorValue);
             _selectedAvatar = state.profile.avatarIndex;
-          } else {
+            setState(() {});
+          } else if (!widget.isEditing) {
+            // If just created, go to the map
             context.go(AppRouter.planetPath);
           }
         }
@@ -164,13 +167,12 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       ),
                       decoration: InputDecoration(
                         hintText: 'Type your name here...',
-                        prefixIcon: Text(
-                          _avatarEmojis[_selectedAvatar],
-                          style: const TextStyle(fontSize: 22),
-                        ),
-                        prefixIconConstraints: const BoxConstraints(
-                          minWidth: 56,
-                          minHeight: 56,
+                        prefixIcon: Center(
+                          widthFactor: 1.0,
+                          child: Text(
+                            _avatarEmojis[_selectedAvatar],
+                            style: const TextStyle(fontSize: 22),
+                          ),
                         ),
                       ),
                       textCapitalization: TextCapitalization.words,
@@ -327,6 +329,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           ),
         ),
       );
+      // Navigation is handled by the listener to ensure the Bloc state 
+      // is fully updated before moving.
       context.go(AppRouter.planetPath);
     } else {
       _profileBloc.add(
