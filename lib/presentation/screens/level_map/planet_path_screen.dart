@@ -1,4 +1,6 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
@@ -26,7 +28,6 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
   late final ProfileBloc _profileBloc;
   late final ProgressBloc _progressBloc;
   final ScrollController _scrollController = ScrollController();
-  int _longPressCount = 0;
 
   @override
   void initState() {
@@ -40,6 +41,53 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  /// Triggers the math-based Parental Gate before allowing access to settings
+  void _showParentalGate(BuildContext context) {
+    HapticFeedback.mediumImpact();
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => _ParentalGateDialog(
+        onPassed: () {
+          context.push(AppRouter.settings);
+        },
+      ),
+    );
+  }
+
+  void _onLevelTap(BuildContext context, int levelId, Map<int, LevelProgressModel> progressMap) {
+    // 3-STAR GATE: Level 1 is always open, others require 3 stars on previous level
+    final bool isUnlocked = levelId == 1 || (progressMap[levelId - 1]?.stars ?? 0) >= 3;
+
+    if (!isUnlocked) {
+      _showLockedDialog(context);
+      return;
+    }
+    context.push('${AppRouter.game}/$levelId');
+  }
+
+  void _showLockedDialog(BuildContext context) {
+    HapticFeedback.warningVerticalImpact();
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF1C2329),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Planet Locked!', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Master the previous planet with 3 stars to unlock this one!',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -84,11 +132,7 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
                   decoration: AppTheme.spaceBackground,
                   child: Stack(
                     children: [
-                      // 1. Background Layer
                       const Positioned.fill(child: _ScrollingStarfield()),
-
-                      // 2. Middle Layer: Winding Planet Path
-                      // top: 0 allows the scroll area to go full screen
                       Positioned.fill(
                         top: 0,
                         child: _PlanetScrollView(
@@ -96,35 +140,17 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
                           progressMap: progressMap,
                           themeColor: themeColor,
                           scrollController: _scrollController,
-                          onLevelTap: (levelId) =>
-                              _onLevelTap(context, levelId, progressMap),
+                          onLevelTap: (levelId) => _onLevelTap(context, levelId, progressMap),
                         ),
                       ),
-
-                      // 3. Front Layer: Custom Navigation/Top Bar
-                      // Placing this LAST in the stack keeps it in front of scrolling planets
                       Positioned(
                         top: 0,
                         left: 0,
                         right: 0,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                AppTheme.deepSpace.withOpacity(0.8),
-                                AppTheme.deepSpace.withOpacity(0.0),
-                              ],
-                            ),
-                          ),
-                          child: _TopBar(
-                            profile: profile,
-                            themeColor: themeColor,
-                            onSettingsTap: () =>
-                                context.push(AppRouter.settings),
-                            onLongPress: _handleParentalGate,
-                          ),
+                        child: _TopBar(
+                          profile: profile,
+                          themeColor: themeColor,
+                          onSettingsTap: () => _showParentalGate(context),
                         ),
                       ),
                     ],
@@ -137,48 +163,62 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
       ),
     );
   }
+}
 
-  void _onLevelTap(BuildContext context, int levelId,
-      Map<int, LevelProgressModel> progressMap) {
-    // 3-STAR GATE: Level 1 is always open, others require 3 stars on previous level
-    final bool isUnlocked =
-        levelId == 1 || (progressMap[levelId - 1]?.stars ?? 0) >= 3;
+// ── Parental Gate Logic ──────────────────────────────────────────────────────
 
-    if (!isUnlocked) {
-      _showLockedDialog(context);
-      return;
-    }
-    context.push('${AppRouter.game}/$levelId');
+class _ParentalGateDialog extends StatefulWidget {
+  final VoidCallback onPassed;
+  const _ParentalGateDialog({required this.onPassed});
+
+  @override
+  State<_ParentalGateDialog> createState() => _ParentalGateDialogState();
+}
+
+class _ParentalGateDialogState extends State<_ParentalGateDialog> {
+  late int num1, num2, answer;
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final random = Random();
+    num1 = random.nextInt(10) + 5;
+    num2 = random.nextInt(10) + 2;
+    answer = num1 + num2;
   }
 
-  void _showLockedDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF1C2329),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title:
-            const Text('Planet Locked!', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'Master the previous planet with 3 stars to unlock this one!',
-          style: TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          )
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: const Color(0xFF1A1A2E),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      title: const Text("Parental Gate", style: TextStyle(color: Colors.white)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text("Solve to enter settings:", style: TextStyle(color: Colors.white70)),
+          const SizedBox(height: 16),
+          Text("$num1 + $num2 = ?", 
+            style: const TextStyle(color: AppTheme.starYellow, fontSize: 32, fontWeight: FontWeight.bold)),
+          TextField(
+            controller: _controller,
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white, fontSize: 24),
+            decoration: const InputDecoration(enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.cosmicTeal))),
+            onChanged: (value) {
+              if (int.tryParse(value) == answer) {
+                HapticFeedback.lightImpact();
+                Navigator.pop(context);
+                widget.onPassed();
+              }
+            },
+          ),
         ],
       ),
     );
-  }
-
-  void _handleParentalGate() {
-    _longPressCount++;
-    if (_longPressCount >= 3) {
-      _longPressCount = 0;
-      context.push(AppRouter.settings);
-    }
   }
 }
 
@@ -188,25 +228,29 @@ class _TopBar extends StatelessWidget {
   final dynamic profile;
   final Color themeColor;
   final VoidCallback onSettingsTap;
-  final VoidCallback onLongPress;
 
   const _TopBar({
     required this.profile,
     required this.themeColor,
     required this.onSettingsTap,
-    required this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Row(
-          children: [
-            GestureDetector(
-              onLongPress: onLongPress,
-              child: Container(
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppTheme.deepSpace.withOpacity(0.9), AppTheme.deepSpace.withOpacity(0.0)],
+        ),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Row(
+            children: [
+              Container(
                 padding: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -215,44 +259,29 @@ class _TopBar extends StatelessWidget {
                 child: CircleAvatar(
                   backgroundColor: themeColor.withOpacity(0.2),
                   child: Text(
-                    [
-                      '🚀',
-                      '⭐',
-                      '🌙',
-                      '🪐',
-                      '☄️',
-                      '🌟',
-                      '🛸',
-                      '🌈'
-                    ][profile.avatarIndex % 8],
+                    ['🚀', '⭐', '🌙', '🪐', '☄️', '🌟', '🛸', '🌈'][profile.avatarIndex % 8],
                     style: const TextStyle(fontSize: 20),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              profile.name,
-              style: TextStyle(
-                color: themeColor,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-                shadows: [
-                  Shadow(
-                      color: Colors.black.withOpacity(0.5),
-                      blurRadius: 4,
-                      offset: const Offset(2, 2)),
-                ],
+              const SizedBox(width: 12),
+              Text(
+                profile.name,
+                style: TextStyle(
+                  color: themeColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  shadows: [Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 4, offset: const Offset(2, 2))],
+                ),
               ),
-            ),
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.settings_rounded,
-                  color: Colors.white, size: 28),
-              onPressed: onSettingsTap,
-            ),
-          ],
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.settings_rounded, color: Colors.white, size: 28),
+                onPressed: onSettingsTap,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -299,13 +328,9 @@ class _PlanetScrollView extends StatelessWidget {
             ...List.generate(levels.length, (index) {
               final level = levels[index];
               final reversedIndex = levels.length - 1 - index;
-
               final progress = progressMap[level.id];
               final stars = progress?.stars ?? 0;
-
-              // 3-STAR GATE logic for visual unlocking
-              final isUnlocked =
-                  level.id == 1 || (progressMap[level.id - 1]?.stars ?? 0) >= 3;
+              final isUnlocked = level.id == 1 || (progressMap[level.id - 1]?.stars ?? 0) >= 3;
 
               final wave = (reversedIndex % 4);
               double xOffset = (wave == 0 || wave == 3)
@@ -314,8 +339,7 @@ class _PlanetScrollView extends StatelessWidget {
 
               return Positioned(
                 left: xOffset - 45,
-                top: reversedIndex * kPlanetSpacing +
-                    120.0, // Adjusted padding for TopBar
+                top: reversedIndex * kPlanetSpacing + 120.0,
                 child: PlanetNode(
                   level: level,
                   stars: stars,
@@ -338,17 +362,18 @@ class _PathPainter extends CustomPainter {
   final double spacing, amplitude, screenWidth;
   final Color themeColor;
 
-  _PathPainter(
-      {required this.levelCount,
-      required this.spacing,
-      required this.amplitude,
-      required this.screenWidth,
-      required this.themeColor});
+  _PathPainter({
+    required this.levelCount,
+    required this.spacing,
+    required this.amplitude,
+    required this.screenWidth,
+    required this.themeColor
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = themeColor.withOpacity(0.2)
+      ..color = themeColor.withOpacity(0.15)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 4;
@@ -356,16 +381,9 @@ class _PathPainter extends CustomPainter {
     final path = Path();
     for (int i = 0; i < levelCount; i++) {
       final wave = i % 4;
-      double x = (wave == 0 || wave == 3)
-          ? screenWidth / 2 - amplitude
-          : screenWidth / 2 + amplitude;
-      double y = i * spacing + 165; // Offset to match node positions
-
-      if (i == 0) {
-        path.moveTo(x, y);
-      } else {
-        path.lineTo(x, y);
-      }
+      double x = (wave == 0 || wave == 3) ? screenWidth / 2 - amplitude : screenWidth / 2 + amplitude;
+      double y = i * spacing + 165;
+      if (i == 0) path.moveTo(x, y); else path.lineTo(x, y);
     }
     canvas.drawPath(path, paint);
   }
@@ -383,11 +401,10 @@ class _ScrollingStarfield extends StatelessWidget {
 class _StarPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white.withOpacity(0.2);
-    for (int i = 0; i < 60; i++) {
-      double x = (i * 137.5) % 400;
-      double y = (i * 240.0) % 800;
-      canvas.drawCircle(Offset(x, y), 1.2, paint);
+    final paint = Paint()..color = Colors.white.withOpacity(0.15);
+    final random = Random(42); // Fixed seed for consistent star positions
+    for (int i = 0; i < 80; i++) {
+      canvas.drawCircle(Offset(random.nextDouble() * 500, random.nextDouble() * 2000), random.nextDouble() * 1.5, paint);
     }
   }
 
