@@ -5,14 +5,12 @@ import '../../../core/theme/app_theme.dart';
 import '../../../services/emoji_dictionary_service.dart';
 
 /// A Navigation-safe Peek Overlay.
-///
-/// Instead of using showDialog, this uses an [OverlayEntry] to ensure
-/// that dismissing the peek never accidentally pops the game screen.
 class WordPeek {
   static OverlayEntry? _currentEntry;
 
   /// Shows the peek at the center of the screen.
-  static void show(BuildContext context, String word) {
+  /// Set [showText] to false to hide the word and only show the emoji hint.
+  static void show(BuildContext context, String word, {bool showText = true}) {
     // If one is already showing, remove it first to prevent stacking
     dismiss();
 
@@ -32,6 +30,7 @@ class WordPeek {
               child: _PeekCardContent(
                 word: word,
                 emoji: emoji,
+                showText: showText,
               )
                   .animate()
                   .scale(
@@ -60,10 +59,12 @@ class WordPeek {
 class _PeekCardContent extends StatelessWidget {
   final String word;
   final String emoji;
+  final bool showText;
 
   const _PeekCardContent({
     required this.word,
     required this.emoji,
+    required this.showText,
   });
 
   @override
@@ -102,9 +103,9 @@ class _PeekCardContent extends StatelessWidget {
               color: AppTheme.stardustBlue.withOpacity(0.4),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text(
-              'WORD PEEK',
-              style: TextStyle(
+            child: Text(
+              showText ? 'WORD PEEK' : 'HINT',
+              style: const TextStyle(
                 fontFamily: 'Andika',
                 fontSize: 10,
                 letterSpacing: 3,
@@ -126,34 +127,43 @@ class _PeekCardContent extends StatelessWidget {
                 curve: Curves.easeInOut,
               ),
           const SizedBox(height: 24),
-          // Divider
-          Container(
-            height: 1,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.transparent,
-                  AppTheme.stardustBlue.withOpacity(0.3),
-                  Colors.transparent,
-                ],
+          
+          // Only show word details if showText is true
+          if (showText) ...[
+            // Divider
+            Container(
+              height: 1,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.transparent,
+                    AppTheme.stardustBlue.withOpacity(0.3),
+                    Colors.transparent,
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 20),
-          // The word
-          Text(
-            word.toLowerCase(),
-            style: const TextStyle(
-              fontFamily: 'Andika',
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.moonWhite,
-              letterSpacing: 6,
+            const SizedBox(height: 20),
+            // The word
+            Text(
+              word.toLowerCase(),
+              style: const TextStyle(
+                fontFamily: 'Andika',
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.moonWhite,
+                letterSpacing: 6,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          _PhonemeDotsRow(word: word),
+            const SizedBox(height: 8),
+            _PhonemeDotsRow(word: word),
+          ] else ...[
+            // Even if word is hidden, show the "Sound Buttons" (dots)
+            // to help the child visualize the number of sounds to find.
+            _PhonemeDotsRow(word: word),
+          ],
+          
           const SizedBox(height: 20),
           Text(
             'Release to continue',
