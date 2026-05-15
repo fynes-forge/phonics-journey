@@ -7,7 +7,10 @@ import 'package:get_it/get_it.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../services/audio_service.dart';
+import '../../../services/curriculum_service.dart';
 import '../../blocs/profile/profile_bloc.dart';
+import '../../blocs/progress/progress_bloc.dart';
+import '../../../data/models/progress_model.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -15,10 +18,14 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profileBloc = GetIt.I<ProfileBloc>();
+    final progressBloc = GetIt.I<ProgressBloc>();
     final audio = GetIt.I<AudioService>();
 
-    return BlocProvider.value(
-      value: profileBloc,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: profileBloc),
+        BlocProvider.value(value: progressBloc),
+      ],
       child: BlocBuilder<ProfileBloc, ProfileState>(
         builder: (context, state) {
           final profile = state is ProfileLoaded ? state.profile : null;
@@ -116,22 +123,7 @@ class SettingsScreen extends StatelessWidget {
   // --- Utility Methods for Dialogs ---
 
   void _showVoiceRecorderList(BuildContext context, AudioService audio) {
-    final phonemes = [
-      's',
-      'a',
-      't',
-      'p',
-      'i',
-      'n',
-      'm',
-      'd',
-      'g',
-      'o',
-      'ck',
-      'ch',
-      'sh',
-      'th'
-    ];
+    final phonemes = ['s', 'a', 't', 'p', 'i', 'n', 'm', 'd', 'g', 'o', 'ck', 'ch', 'sh', 'th'];
 
     showModalBottomSheet(
       context: context,
@@ -211,42 +203,53 @@ Your privacy is our priority.
   }
 
   void _showCurriculumDialog(BuildContext context) {
+    // We wrap the dialog in a BlocBuilder to access the real progressMap
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF1C2329),
-        title: const Text('Space Curriculum',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '''
+      builder: (dialogContext) => BlocProvider.value(
+        value: BlocProvider.of<ProgressBloc>(context),
+        child: BlocBuilder<ProgressBloc, ProgressState>(
+          builder: (context, state) {
+            Map<int, LevelProgressModel> progressMap = {};
+            if (state is ProgressLoaded) progressMap = state.progressMap;
+
+            return AlertDialog(
+              backgroundColor: const Color(0xFF1C2329),
+              title: const Text('Space Curriculum',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '''
 Aligned with Little Wandle Letters and Sounds Revised.
 
 Systematic synthetic phonics progression:''',
-                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                        style: TextStyle(color: Colors.white70, fontSize: 13),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildCurriculumTable(progressMap),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 16),
-                _buildCurriculumTable(),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: const Text('OK', style: TextStyle(color: Colors.white)))
               ],
-            ),
-          ),
+            );
+          },
         ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK', style: TextStyle(color: Colors.white)))
-        ],
       ),
     );
   }
 
-  Widget _buildCurriculumTable() {
+  Widget _buildCurriculumTable(Map<int, LevelProgressModel> progressMap) {
     const headerStyle = TextStyle(
         color: AppTheme.starYellow, fontWeight: FontWeight.bold, fontSize: 11);
 
@@ -259,7 +262,6 @@ Systematic synthetic phonics progression:''',
       border: TableBorder.all(color: Colors.white10),
       children: [
         const TableRow(
-          // FIX: Use decoration instead of backgroundColor
           decoration: BoxDecoration(color: Colors.white12),
           children: [
             Padding(
@@ -273,20 +275,27 @@ Systematic synthetic phonics progression:''',
                 child: Text('Content', style: headerStyle)),
           ],
         ),
-        _buildRow('1–25', '2',
-            's a t p i n m d g o c k ck e u r h b f l ff ll ss j v'),
-        _buildRow('26–55', '3',
-            'ch sh th ng ai ee igh oa oo ar or ur ow oi ear air ure er'),
-        _buildRow(
-            '56–70', '4', 'CVCC, CCVC, CCVCC; 3-letter blends; Tricky words'),
-        _buildRow('71–100', '5',
-            'Alternative spellings: ay ou ie ea oy ir ue aw wh ph ew oe au ey; Split digraphs'),
+        // Helper to check progress for these specific ranges
+        _buildRow('1–25', '2', 's a t p i n m d g o c k ck e u r h b f l ff ll ss j v', _isPhaseStarted(1, 25, progressMap)),
+        _buildRow('26–55', '3', 'ch sh th ng ai ee igh oa oo ar or ur ow oi ear air ure er', _isPhaseStarted(26, 55, progressMap)),
+        _buildRow('56–70', '4', 'CVCC, CCVC, CCVCC; 3-letter blends; Tricky words', _isPhaseStarted(56, 70, progressMap)),
+        _buildRow('71–100', '5', 'Alternative spellings: ay ou ie ea oy ir ue aw wh ph ew oe au ey; Split digraphs', _isPhaseStarted(71, 100, progressMap)),
       ],
     );
   }
 
-  TableRow _buildRow(String levels, String phase, String content) {
-    const cellStyle = TextStyle(color: Colors.white70, fontSize: 10);
+  bool _isPhaseStarted(int start, int end, Map<int, LevelProgressModel> progressMap) {
+    for (int i = start; i <= end; i++) {
+      if (progressMap.containsKey(i)) return true;
+    }
+    return false;
+  }
+
+  TableRow _buildRow(String levels, String phase, String content, bool isStarted) {
+    // Text color shifts to Cosmic Teal if the phase has been started
+    final Color textColor = isStarted ? AppTheme.cosmicTeal : Colors.white70;
+    final cellStyle = TextStyle(color: textColor, fontSize: 10, fontWeight: isStarted ? FontWeight.bold : FontWeight.normal);
+    
     return TableRow(
       children: [
         Padding(
