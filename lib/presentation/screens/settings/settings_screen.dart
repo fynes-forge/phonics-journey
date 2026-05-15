@@ -27,8 +27,8 @@ class SettingsScreen extends StatelessWidget {
         BlocProvider.value(value: progressBloc),
       ],
       child: BlocBuilder<ProfileBloc, ProfileState>(
-        builder: (context, profileState) {
-          final profile = profileState is ProfileLoaded ? profileState.profile : null;
+        builder: (context, state) {
+          final profile = state is ProfileLoaded ? state.profile : null;
 
           return Scaffold(
             body: Container(
@@ -48,7 +48,7 @@ class SettingsScreen extends StatelessWidget {
                                 color: AppTheme.moonWhite),
                           ),
                           const Text(
-                            '⚙️ Parent Mission Control',
+                            '⚙️ Parent Settings',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 24,
@@ -64,11 +64,7 @@ class SettingsScreen extends StatelessWidget {
                       child: ListView(
                         padding: const EdgeInsets.all(16),
                         children: [
-                          // --- Privacy Banner ---
-                          _buildPrivacyBanner(),
-                          const SizedBox(height: 24),
-
-                          const _SectionTitle('Explorer Profile'),
+                          const _SectionTitle('Profile'),
                           _SettingsTile(
                             icon: '✏️',
                             title: 'Edit Profile',
@@ -80,16 +76,6 @@ class SettingsScreen extends StatelessWidget {
                               extra: true,
                             ),
                           ).animate().fadeIn().slideX(begin: -0.1),
-
-                          const SizedBox(height: 24),
-                          const _SectionTitle('Curriculum & Progress'),
-                          _SettingsTile(
-                            icon: '📊',
-                            title: 'View Progress Table',
-                            subtitle: 'Track Little Wandle Phase mastery',
-                            onTap: () => _showCurriculumDialog(context),
-                          ).animate(delay: 100.ms).fadeIn().slideX(begin: -0.1),
-
                           const SizedBox(height: 24),
                           const _SectionTitle('Voice & Audio'),
                           _SettingsTile(
@@ -97,15 +83,29 @@ class SettingsScreen extends StatelessWidget {
                             title: 'Custom Voice Recordings',
                             subtitle: 'Record your own phoneme sounds',
                             onTap: () => _showVoiceRecorderList(context, audio),
-                          ).animate(delay: 200.ms).fadeIn().slideX(begin: -0.1),
-
+                          ).animate(delay: 100.ms).fadeIn().slideX(begin: -0.1),
                           const SizedBox(height: 24),
-                          const _SectionTitle('Ship Info'),
+                          const _SectionTitle('About'),
                           _SettingsTile(
                             icon: 'ℹ️',
                             title: 'About Phonics Journey',
-                            subtitle: 'Version 1.0.0 • Offline Only',
+                            subtitle:
+                                'Little Wandle aligned • Offline • v1.0.0',
                             onTap: () => _showAboutDialog(context),
+                          ).animate(delay: 200.ms).fadeIn().slideX(begin: -0.1),
+                          _SettingsTile(
+                            icon: '🔒',
+                            title: 'Privacy',
+                            subtitle: 'Local storage only • No tracking',
+                            onTap: () => _showPrivacyDialog(context),
+                          ).animate(delay: 250.ms).fadeIn().slideX(begin: -0.1),
+                          const SizedBox(height: 24),
+                          const _SectionTitle('Curriculum'),
+                          _SettingsTile(
+                            icon: '📚',
+                            title: 'Curriculum Info',
+                            subtitle: 'Phases 2, 3, 4 & 5',
+                            onTap: () => _showCurriculumDialog(context),
                           ).animate(delay: 300.ms).fadeIn().slideX(begin: -0.1),
                         ],
                       ),
@@ -120,126 +120,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPrivacyBanner() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.cosmicTeal.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: AppTheme.cosmicTeal.withOpacity(0.3)),
-      ),
-      child: const Row(
-        children: [
-          Icon(Icons.lock_outline_rounded, color: AppTheme.cosmicTeal),
-          SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              "Your child's data is safe. Everything is stored locally on this Pixel 10. No tracking, no cloud, no stress.",
-              style: TextStyle(color: Colors.white70, fontSize: 12),
-            ),
-          ),
-        ],
-      ),
-    ).animate().fadeIn(duration: 600.ms);
-  }
-
-  // --- Dialogs & Lists ---
-
-  void _showCurriculumDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => BlocProvider.value(
-        value: BlocProvider.of<ProgressBloc>(context),
-        child: BlocBuilder<ProgressBloc, ProgressState>(
-          builder: (context, state) {
-            Map<int, LevelProgressModel> progressMap = {};
-            if (state is ProgressLoaded) progressMap = state.progressMap;
-
-            return AlertDialog(
-              backgroundColor: const Color(0xFF1A1A2E),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              title: const Text('Curriculum Progress',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'Mapped to Little Wandle Letters and Sounds Revised.',
-                        style: TextStyle(color: Colors.white60, fontSize: 12),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildProgressTable(progressMap),
-                    ],
-                  ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                    onPressed: () => Navigator.pop(dialogContext),
-                    child: const Text('Close', style: TextStyle(color: AppTheme.cosmicTeal)))
-              ],
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProgressTable(Map<int, LevelProgressModel> progressMap) {
-    const headerStyle = TextStyle(color: AppTheme.starYellow, fontWeight: FontWeight.bold, fontSize: 12);
-    
-    // Grouping logic for summary (Simulated based on your level ranges)
-    final phases = [
-      {'range': '1-25', 'phase': '2', 'sounds': 's, a, t, p, i, n...'},
-      {'range': '26-55', 'phase': '3', 'sounds': 'ch, sh, th, ai...'},
-      {'range': '56-70', 'phase': '4', 'sounds': 'Blends (CVCC)'},
-      {'range': '71-100', 'phase': '5', 'sounds': 'Alt spellings'},
-    ];
-
-    return Table(
-      columnWidths: const {
-        0: FlexColumnWidth(1),
-        1: FlexColumnWidth(3),
-        2: FlexColumnWidth(1.5),
-      },
-      children: [
-        const TableRow(
-          children: [
-            Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Text('Phase', style: headerStyle)),
-            Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Text('Focus', style: headerStyle)),
-            Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Text('Status', style: headerStyle)),
-          ],
-        ),
-        ...phases.map((p) => TableRow(
-          decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white10))),
-          children: [
-            Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Text(p['phase']!, style: const TextStyle(color: Colors.white))),
-            Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Text(p['sounds']!, style: const TextStyle(color: Colors.white70, fontSize: 11))),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: _getPhaseStatusWidget(p['phase']!, progressMap),
-            ),
-          ],
-        )),
-      ],
-    );
-  }
-
-  Widget _getPhaseStatusWidget(String phase, Map<int, LevelProgressModel> progressMap) {
-    // Basic logic to show if a phase is "started" or "done"
-    bool hasStarted = false;
-    if (phase == '2' && progressMap.containsKey(1)) hasStarted = true;
-    if (phase == '3' && progressMap.containsKey(26)) hasStarted = true;
-
-    return Icon(
-      hasStarted ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
-      size: 18,
-      color: hasStarted ? AppTheme.cosmicTeal : Colors.white24,
-    );
-  }
+  // --- Utility Methods for Dialogs ---
 
   void _showVoiceRecorderList(BuildContext context, AudioService audio) {
     final phonemes = ['s', 'a', 't', 'p', 'i', 'n', 'm', 'd', 'g', 'o', 'ck', 'ch', 'sh', 'th'];
@@ -248,29 +129,22 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       backgroundColor: const Color(0xFF1C2329),
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
       builder: (_) => DraggableScrollableSheet(
         expand: false,
-        initialChildSize: 0.7,
-        builder: (_, scrollController) => Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(20),
-              child: Text("Custom Recordings", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
-            Expanded(
-              child: ListView.builder(
-                controller: scrollController,
-                itemCount: phonemes.length,
-                itemBuilder: (_, i) => ListTile(
-                  leading: const CircleAvatar(backgroundColor: Colors.white10, child: Icon(Icons.volume_up, size: 18, color: Colors.white70)),
-                  title: Text('Phoneme: /${phonemes[i]}/', style: const TextStyle(color: Colors.white)),
-                  trailing: const Icon(Icons.mic_none_rounded, color: AppTheme.starYellow),
-                  onTap: () => context.push('${AppRouter.voiceRecorder}/${phonemes[i]}'),
-                ),
-              ),
-            ),
-          ],
+        initialChildSize: 0.6,
+        builder: (_, scrollController) => ListView.builder(
+          controller: scrollController,
+          itemCount: phonemes.length,
+          itemBuilder: (_, i) => ListTile(
+            title: Text('Sound: ${phonemes[i]}',
+                style: const TextStyle(color: Colors.white)),
+            trailing: const Icon(Icons.mic, color: AppTheme.starYellow),
+            onTap: () =>
+                context.push('${AppRouter.voiceRecorder}/${phonemes[i]}'),
+          ),
         ),
       ),
     );
@@ -281,16 +155,156 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1C2329),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Phonics Journey', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('Phonics Journey',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         content: const Text(
-          "A systematic phonics adventure built on the Little Wandle framework. Designed for offline safety and maximum fun.",
+          '''
+Local, secure, and privacy-focused learning.
+
+This app is designed to help children master phonics 
+through a fun space adventure! All progress data 
+stays on your device and is never shared.
+
+Version: 1.0.0
+Made for Explorers 🚀''',
           style: TextStyle(color: Colors.white70, fontSize: 14),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Dismiss', style: TextStyle(color: Colors.white)))
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close', style: TextStyle(color: Colors.white)))
         ],
       ),
+    );
+  }
+
+  void _showPrivacyDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF1C2329),
+        title: const Text('Privacy',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: const Text('''
+Your privacy is our priority. 
+        
+• All recordings are stored locally.
+• No personal data is collected.
+• No internet connection is required to play.
+• No third-party tracking or analytics.''',
+            style: TextStyle(color: Colors.white70, fontSize: 14)),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK', style: TextStyle(color: Colors.white)))
+        ],
+      ),
+    );
+  }
+
+  void _showCurriculumDialog(BuildContext context) {
+    // We wrap the dialog in a BlocBuilder to access the real progressMap
+    showDialog(
+      context: context,
+      builder: (dialogContext) => BlocProvider.value(
+        value: BlocProvider.of<ProgressBloc>(context),
+        child: BlocBuilder<ProgressBloc, ProgressState>(
+          builder: (context, state) {
+            Map<int, LevelProgressModel> progressMap = {};
+            if (state is ProgressLoaded) progressMap = state.progressMap;
+
+            return AlertDialog(
+              backgroundColor: const Color(0xFF1C2329),
+              title: const Text('Space Curriculum',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '''
+Aligned with Little Wandle Letters and Sounds Revised.
+
+Systematic synthetic phonics progression:''',
+                        style: TextStyle(color: Colors.white70, fontSize: 13),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildCurriculumTable(progressMap),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: const Text('OK', style: TextStyle(color: Colors.white)))
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCurriculumTable(Map<int, LevelProgressModel> progressMap) {
+    const headerStyle = TextStyle(
+        color: AppTheme.starYellow, fontWeight: FontWeight.bold, fontSize: 11);
+
+    return Table(
+      columnWidths: const {
+        0: FlexColumnWidth(1),
+        1: FlexColumnWidth(1),
+        2: FlexColumnWidth(3),
+      },
+      border: TableBorder.all(color: Colors.white10),
+      children: [
+        const TableRow(
+          decoration: BoxDecoration(color: Colors.white12),
+          children: [
+            Padding(
+                padding: EdgeInsets.all(8),
+                child: Text('Levels', style: headerStyle)),
+            Padding(
+                padding: EdgeInsets.all(8),
+                child: Text('Phase', style: headerStyle)),
+            Padding(
+                padding: EdgeInsets.all(8),
+                child: Text('Content', style: headerStyle)),
+          ],
+        ),
+        // Helper to check progress for these specific ranges
+        _buildRow('1–25', '2', 's a t p i n m d g o c k ck e u r h b f l ff ll ss j v', _isPhaseStarted(1, 25, progressMap)),
+        _buildRow('26–55', '3', 'ch sh th ng ai ee igh oa oo ar or ur ow oi ear air ure er', _isPhaseStarted(26, 55, progressMap)),
+        _buildRow('56–70', '4', 'CVCC, CCVC, CCVCC; 3-letter blends; Tricky words', _isPhaseStarted(56, 70, progressMap)),
+        _buildRow('71–100', '5', 'Alternative spellings: ay ou ie ea oy ir ue aw wh ph ew oe au ey; Split digraphs', _isPhaseStarted(71, 100, progressMap)),
+      ],
+    );
+  }
+
+  bool _isPhaseStarted(int start, int end, Map<int, LevelProgressModel> progressMap) {
+    for (int i = start; i <= end; i++) {
+      if (progressMap.containsKey(i)) return true;
+    }
+    return false;
+  }
+
+  TableRow _buildRow(String levels, String phase, String content, bool isStarted) {
+    // Text color shifts to Cosmic Teal if the phase has been started
+    final Color textColor = isStarted ? AppTheme.cosmicTeal : Colors.white70;
+    final cellStyle = TextStyle(color: textColor, fontSize: 10, fontWeight: isStarted ? FontWeight.bold : FontWeight.normal);
+    
+    return TableRow(
+      children: [
+        Padding(
+            padding: const EdgeInsets.all(8), child: Text(levels, style: cellStyle)),
+        Padding(
+            padding: const EdgeInsets.all(8), child: Text(phase, style: cellStyle)),
+        Padding(
+            padding: const EdgeInsets.all(8), child: Text(content, style: cellStyle)),
+      ],
     );
   }
 }
@@ -304,14 +318,14 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12, left: 4),
+      padding: const EdgeInsets.only(bottom: 8, left: 4),
       child: Text(
         title.toUpperCase(),
         style: const TextStyle(
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: FontWeight.bold,
           color: AppTheme.starYellow,
-          letterSpacing: 1.5,
+          letterSpacing: 2,
         ),
       ),
     );
@@ -333,35 +347,37 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(15),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.white10),
-          ),
-          child: Row(
-            children: [
-              Text(icon, style: const TextStyle(fontSize: 24)),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 2),
-                    Text(subtitle, style: const TextStyle(color: Colors.white54, fontSize: 12)),
-                  ],
-                ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.white10),
+        ),
+        child: Row(
+          children: [
+            Text(icon, style: const TextStyle(fontSize: 28)),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold)),
+                  Text(subtitle,
+                      style:
+                          const TextStyle(color: Colors.white54, fontSize: 12)),
+                ],
               ),
-              const Icon(Icons.chevron_right_rounded, color: Colors.white30),
-            ],
-          ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: Colors.white38),
+          ],
         ),
       ),
     );
