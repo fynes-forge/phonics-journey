@@ -5,7 +5,7 @@
     {
       "id": 1, "phase": 2, "title": "s – sun", "gpc": "s",
       "phoneme": "s", "grapheme": "s", "example_word": "sun",
-      "words": ["sat", "sit", "sip", "sob", "pot"],
+      "words": ["sat", "sit", "sip", "sob", "sun"],
       "tricky_words": [], "distractor_letters": ["a", "t", "p", "n"],
       "description": "Meet the sound 's' as in 'sun'",
       "unlocked": true
