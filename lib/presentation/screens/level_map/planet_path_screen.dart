@@ -50,9 +50,7 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
       context: context,
       barrierDismissible: true,
       builder: (context) => _ParentalGateDialog(
-        onPassed: () {
-          context.push(AppRouter.settings);
-        },
+        onPassed: () => context.push(AppRouter.settings),
       ),
     );
   }
@@ -137,7 +135,6 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
                     children: [
                       const Positioned.fill(child: _ScrollingStarfield()),
                       Positioned.fill(
-                        top: 0,
                         child: _PlanetScrollView(
                           levels: levels,
                           progressMap: progressMap,
@@ -148,9 +145,7 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
                         ),
                       ),
                       Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
+                        top: 0, left: 0, right: 0,
                         child: _TopBar(
                           profile: profile,
                           themeColor: themeColor,
@@ -189,20 +184,20 @@ class _RocketHero extends StatelessWidget {
       children: [
         Icon(
           Icons.rocket_launch_rounded,
-          size: 40,
+          size: 32, // Slightly smaller for corner docking
           color: rocketColor,
         )
         .animate(onPlay: (c) => c.repeat())
         .shimmer(duration: 2.seconds, color: Colors.white30)
-        .shake(hz: 2, curve: Curves.easeInOut),
+        .shake(hz: 1.5, curve: Curves.easeInOut),
         
         Container(
-          width: 10,
-          height: 4,
+          width: 8,
+          height: 3,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             boxShadow: [
-              BoxShadow(color: rocketColor.withOpacity(0.6), blurRadius: 10, spreadRadius: 1)
+              BoxShadow(color: rocketColor.withOpacity(0.5), blurRadius: 8, spreadRadius: 1)
             ],
           ),
         ).animate(onPlay: (c) => c.repeat(reverse: true))
@@ -266,14 +261,8 @@ class _TopBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    profile.name,
-                    style: TextStyle(color: themeColor, fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    rank.toUpperCase(),
-                    style: TextStyle(color: themeColor.withOpacity(0.6), fontSize: 10, letterSpacing: 1.2, fontWeight: FontWeight.w900),
-                  ),
+                  Text(profile.name, style: TextStyle(color: themeColor, fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text(rank.toUpperCase(), style: TextStyle(color: themeColor.withOpacity(0.6), fontSize: 10, letterSpacing: 1.2, fontWeight: FontWeight.w900)),
                 ],
               ),
               const Spacer(),
@@ -291,14 +280,9 @@ class _TopBar extends StatelessWidget {
                     Text('$totalStars', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                   ],
                 ),
-              ).animate(target: totalStars.toDouble() > 0 ? 1 : 0)
-               .shimmer(duration: 1200.ms, color: Colors.white24)
-               .scale(duration: 300.ms, curve: Curves.elasticOut),
+              ).animate(target: totalStars > 0 ? 1 : 0).shimmer(duration: 1200.ms).scale(duration: 300.ms),
               const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.settings_rounded, color: Colors.white, size: 28),
-                onPressed: onSettingsTap,
-              ),
+              IconButton(icon: const Icon(Icons.settings_rounded, color: Colors.white, size: 28), onPressed: onSettingsTap),
             ],
           ),
         ),
@@ -331,7 +315,6 @@ class _PlanetScrollView extends StatelessWidget {
     final totalHeight = levels.length * kPlanetSpacing + 250.0;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    // Find current level (highest level with < 3 stars)
     final int currentLevelId = levels.firstWhere(
       (l) => (progressMap[l.id]?.stars ?? 0) < 3,
       orElse: () => levels.last,
@@ -344,7 +327,6 @@ class _PlanetScrollView extends StatelessWidget {
         height: totalHeight,
         child: Stack(
           children: [
-            // 1. Draw the Path Line first
             CustomPaint(
               size: Size(screenWidth, totalHeight),
               painter: _PathPainter(
@@ -356,27 +338,6 @@ class _PlanetScrollView extends StatelessWidget {
               ),
             ),
 
-            // 2. Render Rocket BEFORE planets so it stays "behind" them in the Z-index
-            ...() {
-              final rocketIndex = levels.length - 1 - (currentLevelId - 1);
-              final wave = (rocketIndex % 4);
-              double x = (wave == 0 || wave == 3)
-                  ? screenWidth / 2 - kHorizontalAmplitude
-                  : screenWidth / 2 + kHorizontalAmplitude;
-              
-              // Position the rocket slightly above the node center
-              double y = rocketIndex * kPlanetSpacing + 60.0; 
-
-              return [
-                Positioned(
-                  left: x - 20,
-                  top: y,
-                  child: _RocketHero(totalStars: totalStars),
-                ),
-              ];
-            }(),
-
-            // 3. Render Planet Nodes last so they are "on top"
             ...List.generate(levels.length, (index) {
               final level = levels[index];
               final reversedIndex = levels.length - 1 - index;
@@ -388,18 +349,30 @@ class _PlanetScrollView extends StatelessWidget {
               double xOffset = (wave == 0 || wave == 3)
                   ? screenWidth / 2 - kHorizontalAmplitude
                   : screenWidth / 2 + kHorizontalAmplitude;
+              double yOffset = reversedIndex * kPlanetSpacing + 120.0;
 
-              return Positioned(
-                left: xOffset - 45,
-                top: reversedIndex * kPlanetSpacing + 120.0,
-                child: PlanetNode(
-                  level: level,
-                  stars: stars,
-                  isUnlocked: isUnlocked,
-                  isCurrent: level.id == currentLevelId,
-                  themeColor: themeColor,
-                  onTap: () => onLevelTap(level.id),
-                ),
+              return Stack(
+                children: [
+                  Positioned(
+                    left: xOffset - 45,
+                    top: yOffset,
+                    child: PlanetNode(
+                      level: level,
+                      stars: stars,
+                      isUnlocked: isUnlocked,
+                      isCurrent: level.id == currentLevelId,
+                      themeColor: themeColor,
+                      onTap: () => onLevelTap(level.id),
+                    ),
+                  ),
+
+                  if (level.id == currentLevelId)
+                    Positioned(
+                      left: xOffset - 65, // Tucked to the left
+                      top: yOffset - 15,  // Tucked slightly higher
+                      child: _RocketHero(totalStars: totalStars),
+                    ),
+                ],
               );
             }),
           ],
@@ -409,29 +382,16 @@ class _PlanetScrollView extends StatelessWidget {
   }
 }
 
-// ── Path Painter ─────────────────────────────────────────────────────────────
-
 class _PathPainter extends CustomPainter {
   final int levelCount;
   final double spacing, amplitude, screenWidth;
   final Color themeColor;
 
-  _PathPainter({
-    required this.levelCount,
-    required this.spacing,
-    required this.amplitude,
-    required this.screenWidth,
-    required this.themeColor
-  });
+  _PathPainter({required this.levelCount, required this.spacing, required this.amplitude, required this.screenWidth, required this.themeColor});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = themeColor.withOpacity(0.15)
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 4;
-
+    final paint = Paint()..color = themeColor.withOpacity(0.15)..style = PaintingStyle.stroke..strokeCap = StrokeCap.round..strokeWidth = 4;
     final path = Path();
     for (int i = 0; i < levelCount; i++) {
       final wave = i % 4;
@@ -446,8 +406,6 @@ class _PathPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// ── Starfield Widgets ────────────────────────────────────────────────────────
-
 class _ScrollingStarfield extends StatelessWidget {
   const _ScrollingStarfield();
   @override
@@ -460,19 +418,12 @@ class _StarPainter extends CustomPainter {
     final paint = Paint()..color = Colors.white.withOpacity(0.15);
     final random = Random(42); 
     for (int i = 0; i < 80; i++) {
-      canvas.drawCircle(
-        Offset(random.nextDouble() * 500, random.nextDouble() * 2000), 
-        random.nextDouble() * 1.5, 
-        paint
-      );
+      canvas.drawCircle(Offset(random.nextDouble() * 500, random.nextDouble() * 2000), random.nextDouble() * 1.5, paint);
     }
   }
-
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-
-// ── Parental Gate Logic ──────────────────────────────────────────────────────
 
 class _ParentalGateDialog extends StatefulWidget {
   final VoidCallback onPassed;
@@ -506,17 +457,14 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog> {
         children: [
           const Text("Solve to enter settings:", style: TextStyle(color: Colors.white70)),
           const SizedBox(height: 16),
-          Text("$num1 + $num2 = ?", 
-            style: const TextStyle(color: AppTheme.starYellow, fontSize: 32, fontWeight: FontWeight.bold)),
+          Text("$num1 + $num2 = ?", style: const TextStyle(color: AppTheme.starYellow, fontSize: 32, fontWeight: FontWeight.bold)),
           TextField(
             controller: _controller,
             autofocus: true,
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white, fontSize: 24),
-            decoration: const InputDecoration(
-              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.cosmicTeal))
-            ),
+            decoration: const InputDecoration(enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.cosmicTeal))),
             onChanged: (value) {
               if (int.tryParse(value) == answer) {
                 HapticFeedback.lightImpact();
