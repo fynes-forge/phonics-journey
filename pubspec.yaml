@@ -24,7 +24,7 @@ dependencies:
 
   # Navigation
   # STAYING ON v14 - v15+ introduces breaking changes to ShellRoutes and redirects
-  go_router: ^14.8.1
+  go_router: ^17.2.3
 
   # UI helpers
   google_fonts: ^6.2.1
