@@ -384,7 +384,7 @@ class _GameScreenState extends State<GameScreen> {
                   children: [
                     // Dynamic Trophy based on Star Reward logic
                     Text(
-                      state.stars == 3 ? '🏆' : state.stars == 2 ? '🥇' : state.stars == 1 ? '🥈' : '🚀',
+                      state.stars == 3 ? '🏆' : state.stars == 2 ? '🥈' : state.stars == 1 ? '🥉' : '🚀',
                       style: const TextStyle(fontSize: 100),
                     ).animate().scale(begin: const Offset(0, 0), curve: Curves.elasticOut, duration: 1000.ms).rotate(begin: -0.2, end: 0),
                     
