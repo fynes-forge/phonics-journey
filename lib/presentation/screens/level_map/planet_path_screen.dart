@@ -179,8 +179,7 @@ class _RocketHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Milestone Reward Color Logic
-    Color rocketColor = Colors.redAccent; // Default
+    Color rocketColor = Colors.redAccent;
     if (totalStars >= 10) rocketColor = Colors.greenAccent;
     if (totalStars >= 30) rocketColor = Colors.orangeAccent;
     if (totalStars >= 60) rocketColor = Colors.purpleAccent;
@@ -190,25 +189,24 @@ class _RocketHero extends StatelessWidget {
       children: [
         Icon(
           Icons.rocket_launch_rounded,
-          size: 38,
+          size: 42,
           color: rocketColor,
         )
         .animate(onPlay: (c) => c.repeat())
         .shimmer(duration: 2.seconds, color: Colors.white30)
         .shake(hz: 2, curve: Curves.easeInOut),
         
-        // Engine Glow
         Container(
-          width: 8,
-          height: 4,
+          width: 10,
+          height: 5,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             boxShadow: [
-              BoxShadow(color: rocketColor.withOpacity(0.8), blurRadius: 8, spreadRadius: 2)
+              BoxShadow(color: rocketColor.withOpacity(0.8), blurRadius: 12, spreadRadius: 2)
             ],
           ),
         ).animate(onPlay: (c) => c.repeat(reverse: true))
-         .scale(begin: const Offset(0.8, 0.8), end: const Offset(1.2, 1.2)),
+         .scale(begin: const Offset(0.8, 0.8), end: const Offset(1.4, 1.4)),
       ],
     );
   }
@@ -231,7 +229,6 @@ class _TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Derived Rank
     String rank = 'Cadet';
     if (totalStars >= 10) rank = 'Explorer';
     if (totalStars >= 30) rank = 'Captain';
@@ -334,7 +331,7 @@ class _PlanetScrollView extends StatelessWidget {
     final totalHeight = levels.length * kPlanetSpacing + 250.0;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    // Logic: Find the "Current Level" for the Rocket
+    // Find the current level ID (first one not mastered with 3 stars)
     final int currentLevelId = levels.firstWhere(
       (l) => (progressMap[l.id]?.stars ?? 0) < 3,
       orElse: () => levels.last,
@@ -358,24 +355,7 @@ class _PlanetScrollView extends StatelessWidget {
               ),
             ),
 
-            // The Rocket Hero
-            ...() {
-              final rocketIndex = levels.length - 1 - (currentLevelId - 1);
-              final wave = (rocketIndex % 4);
-              double x = (wave == 0 || wave == 3)
-                  ? screenWidth / 2 - kHorizontalAmplitude
-                  : screenWidth / 2 + kHorizontalAmplitude;
-              double y = rocketIndex * kPlanetSpacing + 65.0; // Sits above the planet
-
-              return [
-                Positioned(
-                  left: x - 20,
-                  top: y,
-                  child: _RocketHero(totalStars: totalStars),
-                ),
-              ];
-            }(),
-
+            // Planet Nodes
             ...List.generate(levels.length, (index) {
               final level = levels[index];
               final reversedIndex = levels.length - 1 - index;
@@ -401,6 +381,26 @@ class _PlanetScrollView extends StatelessWidget {
                 ),
               );
             }),
+
+            // Rocket Hero - Positioned ABOVE the current level node
+            ...() {
+              final rocketIndex = levels.length - 1 - (currentLevelId - 1);
+              final wave = (rocketIndex % 4);
+              double x = (wave == 0 || wave == 3)
+                  ? screenWidth / 2 - kHorizontalAmplitude
+                  : screenWidth / 2 + kHorizontalAmplitude;
+              
+              // We adjust the Y to sit significantly higher (-70) so it doesn't cover labels
+              double y = rocketIndex * kPlanetSpacing + 50.0; 
+
+              return [
+                Positioned(
+                  left: x - 21, // Centering logic
+                  top: y,
+                  child: _RocketHero(totalStars: totalStars),
+                ),
+              ];
+            }(),
           ],
         ),
       ),
