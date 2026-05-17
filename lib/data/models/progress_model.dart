@@ -31,6 +31,9 @@ class LevelProgressModel extends HiveObject {
   @HiveField(8)
   int totalAttempted;
 
+  @HiveField(9)
+  int starCoinsEarned; // New: Tracks coins earned specifically from this level
+
   LevelProgressModel({
     required this.profileId,
     required this.levelId,
@@ -41,9 +44,13 @@ class LevelProgressModel extends HiveObject {
     this.isUnlocked = false,
     this.totalCorrect = 0,
     this.totalAttempted = 0,
+    this.starCoinsEarned = 0,
   });
 
-  /// Calculate stars based on accuracy percentage
+  /// Calculate stars based on accuracy percentage.
+  /// 3 Stars: 100% (Mastery)
+  /// 2 Stars: 80-99%
+  /// 1 Star: 60-79%
   static int calculateStars(int correctAnswers, int totalQuestions) {
     if (totalQuestions == 0) return 0;
     final pct = (correctAnswers / totalQuestions * 100).round();
@@ -51,6 +58,12 @@ class LevelProgressModel extends HiveObject {
     if (pct >= 80) return 2;
     if (pct >= 60) return 1;
     return 0;
+  }
+
+  /// Helper to determine how many "new" coins to award.
+  /// Usually matches the star count, or can be a bonus for 100% accuracy.
+  static int calculateStarCoins(int earnedStars) {
+    return earnedStars; 
   }
 
   bool get isComplete => stars == 3;
@@ -63,6 +76,7 @@ class LevelProgressModel extends HiveObject {
     bool? isUnlocked,
     int? totalCorrect,
     int? totalAttempted,
+    int? starCoinsEarned,
   }) {
     return LevelProgressModel(
       profileId: profileId,
@@ -74,6 +88,7 @@ class LevelProgressModel extends HiveObject {
       isUnlocked: isUnlocked ?? this.isUnlocked,
       totalCorrect: totalCorrect ?? this.totalCorrect,
       totalAttempted: totalAttempted ?? this.totalAttempted,
+      starCoinsEarned: starCoinsEarned ?? this.starCoinsEarned,
     );
   }
 }

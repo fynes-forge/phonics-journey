@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
@@ -43,7 +44,6 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
     super.dispose();
   }
 
-  /// Triggers the math-based Parental Gate before allowing access to settings
   void _showParentalGate(BuildContext context) {
     HapticFeedback.mediumImpact();
     showDialog(
@@ -58,7 +58,6 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
   }
 
   void _onLevelTap(BuildContext context, int levelId, Map<int, LevelProgressModel> progressMap) {
-    // 3-STAR GATE: Level 1 is always open, others require 3 stars on previous level
     final bool isUnlocked = levelId == 1 || (progressMap[levelId - 1]?.stars ?? 0) >= 3;
 
     if (!isUnlocked) {
@@ -69,7 +68,7 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
   }
 
   void _showLockedDialog(BuildContext context) {
-    HapticFeedback.warningVerticalImpact();
+    HapticFeedback.heavyImpact();
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -119,10 +118,14 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
           return BlocBuilder<ProgressBloc, ProgressState>(
             builder: (context, progressState) {
               Map<int, LevelProgressModel> progressMap = {};
+              int totalStars = 0;
+
               if (progressState is ProgressLoaded) {
                 progressMap = progressState.progressMap;
+                totalStars = progressState.totalStarCoins;
               } else if (progressState is ProgressUpdated) {
                 progressMap = progressState.progressMap;
+                totalStars = progressState.totalStarCoins;
               }
 
               final levels = GetIt.I<CurriculumService>().levels;
@@ -139,6 +142,7 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
                           levels: levels,
                           progressMap: progressMap,
                           themeColor: themeColor,
+                          totalStars: totalStars,
                           scrollController: _scrollController,
                           onLevelTap: (levelId) => _onLevelTap(context, levelId, progressMap),
                         ),
@@ -150,6 +154,7 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
                         child: _TopBar(
                           profile: profile,
                           themeColor: themeColor,
+                          totalStars: totalStars,
                           onSettingsTap: () => _showParentalGate(context),
                         ),
                       ),
@@ -163,6 +168,307 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
       ),
     );
   }
+}
+
+// ── Rocket Hero Widget ───────────────────────────────────────────────────────
+
+class _RocketHero extends StatelessWidget {
+  final int totalStars;
+
+  const _RocketHero({required this.totalStars});
+
+  @override
+  Widget build(BuildContext context) {
+    // Milestone Reward Color Logic
+    Color rocketColor = Colors.redAccent; // Default
+    if (totalStars >= 10) rocketColor = Colors.greenAccent;
+    if (totalStars >= 30) rocketColor = Colors.orangeAccent;
+    if (totalStars >= 60) rocketColor = Colors.purpleAccent;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.rocket_launch_rounded,
+          size: 38,
+          color: rocketColor,
+        )
+        .animate(onPlay: (c) => c.repeat())
+        .shimmer(duration: 2.seconds, color: Colors.white30)
+        .shake(hz: 2, curve: Curves.easeInOut),
+        
+        // Engine Glow
+        Container(
+          width: 8,
+          height: 4,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(color: rocketColor.withOpacity(0.8), blurRadius: 8, spreadRadius: 2)
+            ],
+          ),
+        ).animate(onPlay: (c) => c.repeat(reverse: true))
+         .scale(begin: const Offset(0.8, 0.8), end: const Offset(1.2, 1.2)),
+      ],
+    );
+  }
+}
+
+// ── Top Bar Widget ───────────────────────────────────────────────────────────
+
+class _TopBar extends StatelessWidget {
+  final dynamic profile;
+  final Color themeColor;
+  final int totalStars;
+  final VoidCallback onSettingsTap;
+
+  const _TopBar({
+    required this.profile,
+    required this.themeColor,
+    required this.totalStars,
+    required this.onSettingsTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Derived Rank
+    String rank = 'Cadet';
+    if (totalStars >= 10) rank = 'Explorer';
+    if (totalStars >= 30) rank = 'Captain';
+    if (totalStars >= 60) rank = 'Master';
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppTheme.deepSpace.withOpacity(0.9), AppTheme.deepSpace.withOpacity(0.0)],
+        ),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: themeColor, width: 2),
+                ),
+                child: CircleAvatar(
+                  backgroundColor: themeColor.withOpacity(0.2),
+                  child: Text(
+                    ['🚀', '⭐', '🌙', '🪐', '☄️', '🌟', '🛸', '🌈'][profile.avatarIndex % 8],
+                    style: const TextStyle(fontSize: 20),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    profile.name,
+                    style: TextStyle(color: themeColor, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    rank.toUpperCase(),
+                    style: TextStyle(color: themeColor.withOpacity(0.6), fontSize: 10, letterSpacing: 1.2, fontWeight: FontWeight.w900),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white10),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.star_rounded, color: AppTheme.starYellow, size: 20),
+                    const SizedBox(width: 6),
+                    Text('$totalStars', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ).animate(target: totalStars.toDouble() > 0 ? 1 : 0)
+               .shimmer(duration: 1200.ms, color: Colors.white24)
+               .scale(duration: 300.ms, curve: Curves.elasticOut),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.settings_rounded, color: Colors.white, size: 28),
+                onPressed: onSettingsTap,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Path Rendering Widgets ───────────────────────────────────────────────────
+
+class _PlanetScrollView extends StatelessWidget {
+  final List<CurriculumLevel> levels;
+  final Map<int, LevelProgressModel> progressMap;
+  final Color themeColor;
+  final int totalStars;
+  final ScrollController scrollController;
+  final void Function(int) onLevelTap;
+
+  const _PlanetScrollView({
+    required this.levels,
+    required this.progressMap,
+    required this.themeColor,
+    required this.totalStars,
+    required this.scrollController,
+    required this.onLevelTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final totalHeight = levels.length * kPlanetSpacing + 250.0;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Logic: Find the "Current Level" for the Rocket
+    final int currentLevelId = levels.firstWhere(
+      (l) => (progressMap[l.id]?.stars ?? 0) < 3,
+      orElse: () => levels.last,
+    ).id;
+
+    return SingleChildScrollView(
+      controller: scrollController,
+      physics: const BouncingScrollPhysics(),
+      child: SizedBox(
+        height: totalHeight,
+        child: Stack(
+          children: [
+            CustomPaint(
+              size: Size(screenWidth, totalHeight),
+              painter: _PathPainter(
+                levelCount: levels.length,
+                spacing: kPlanetSpacing,
+                amplitude: kHorizontalAmplitude,
+                screenWidth: screenWidth,
+                themeColor: themeColor,
+              ),
+            ),
+
+            // The Rocket Hero
+            ...() {
+              final rocketIndex = levels.length - 1 - (currentLevelId - 1);
+              final wave = (rocketIndex % 4);
+              double x = (wave == 0 || wave == 3)
+                  ? screenWidth / 2 - kHorizontalAmplitude
+                  : screenWidth / 2 + kHorizontalAmplitude;
+              double y = rocketIndex * kPlanetSpacing + 65.0; // Sits above the planet
+
+              return [
+                Positioned(
+                  left: x - 20,
+                  top: y,
+                  child: _RocketHero(totalStars: totalStars),
+                ),
+              ];
+            }(),
+
+            ...List.generate(levels.length, (index) {
+              final level = levels[index];
+              final reversedIndex = levels.length - 1 - index;
+              final progress = progressMap[level.id];
+              final stars = progress?.stars ?? 0;
+              final isUnlocked = level.id == 1 || (progressMap[level.id - 1]?.stars ?? 0) >= 3;
+
+              final wave = (reversedIndex % 4);
+              double xOffset = (wave == 0 || wave == 3)
+                  ? screenWidth / 2 - kHorizontalAmplitude
+                  : screenWidth / 2 + kHorizontalAmplitude;
+
+              return Positioned(
+                left: xOffset - 45,
+                top: reversedIndex * kPlanetSpacing + 120.0,
+                child: PlanetNode(
+                  level: level,
+                  stars: stars,
+                  isUnlocked: isUnlocked,
+                  isCurrent: level.id == currentLevelId,
+                  themeColor: themeColor,
+                  onTap: () => onLevelTap(level.id),
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Path Painter ─────────────────────────────────────────────────────────────
+
+class _PathPainter extends CustomPainter {
+  final int levelCount;
+  final double spacing, amplitude, screenWidth;
+  final Color themeColor;
+
+  _PathPainter({
+    required this.levelCount,
+    required this.spacing,
+    required this.amplitude,
+    required this.screenWidth,
+    required this.themeColor
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = themeColor.withOpacity(0.15)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 4;
+
+    final path = Path();
+    for (int i = 0; i < levelCount; i++) {
+      final wave = i % 4;
+      double x = (wave == 0 || wave == 3) ? screenWidth / 2 - amplitude : screenWidth / 2 + amplitude;
+      double y = i * spacing + 165;
+      if (i == 0) path.moveTo(x, y); else path.lineTo(x, y);
+    }
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// ── Starfield Widgets ────────────────────────────────────────────────────────
+
+class _ScrollingStarfield extends StatelessWidget {
+  const _ScrollingStarfield();
+  @override
+  Widget build(BuildContext context) => CustomPaint(painter: _StarPainter());
+}
+
+class _StarPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = Colors.white.withOpacity(0.15);
+    final random = Random(42); 
+    for (int i = 0; i < 80; i++) {
+      canvas.drawCircle(
+        Offset(random.nextDouble() * 500, random.nextDouble() * 2000), 
+        random.nextDouble() * 1.5, 
+        paint
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 // ── Parental Gate Logic ──────────────────────────────────────────────────────
@@ -207,7 +513,9 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog> {
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white, fontSize: 24),
-            decoration: const InputDecoration(enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.cosmicTeal))),
+            decoration: const InputDecoration(
+              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.cosmicTeal))
+            ),
             onChanged: (value) {
               if (int.tryParse(value) == answer) {
                 HapticFeedback.lightImpact();
@@ -220,194 +528,4 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog> {
       ),
     );
   }
-}
-
-// ── Supporting Widgets ───────────────────────────────────────────────────────
-
-class _TopBar extends StatelessWidget {
-  final dynamic profile;
-  final Color themeColor;
-  final VoidCallback onSettingsTap;
-
-  const _TopBar({
-    required this.profile,
-    required this.themeColor,
-    required this.onSettingsTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [AppTheme.deepSpace.withOpacity(0.9), AppTheme.deepSpace.withOpacity(0.0)],
-        ),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: themeColor, width: 2),
-                ),
-                child: CircleAvatar(
-                  backgroundColor: themeColor.withOpacity(0.2),
-                  child: Text(
-                    ['🚀', '⭐', '🌙', '🪐', '☄️', '🌟', '🛸', '🌈'][profile.avatarIndex % 8],
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                profile.name,
-                style: TextStyle(
-                  color: themeColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  shadows: [Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 4, offset: const Offset(2, 2))],
-                ),
-              ),
-              const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.settings_rounded, color: Colors.white, size: 28),
-                onPressed: onSettingsTap,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _PlanetScrollView extends StatelessWidget {
-  final List<CurriculumLevel> levels;
-  final Map<int, LevelProgressModel> progressMap;
-  final Color themeColor;
-  final ScrollController scrollController;
-  final void Function(int) onLevelTap;
-
-  const _PlanetScrollView({
-    required this.levels,
-    required this.progressMap,
-    required this.themeColor,
-    required this.scrollController,
-    required this.onLevelTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final totalHeight = levels.length * kPlanetSpacing + 250.0;
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    return SingleChildScrollView(
-      controller: scrollController,
-      physics: const BouncingScrollPhysics(),
-      child: SizedBox(
-        height: totalHeight,
-        child: Stack(
-          children: [
-            CustomPaint(
-              size: Size(screenWidth, totalHeight),
-              painter: _PathPainter(
-                levelCount: levels.length,
-                spacing: kPlanetSpacing,
-                amplitude: kHorizontalAmplitude,
-                screenWidth: screenWidth,
-                themeColor: themeColor,
-              ),
-            ),
-            ...List.generate(levels.length, (index) {
-              final level = levels[index];
-              final reversedIndex = levels.length - 1 - index;
-              final progress = progressMap[level.id];
-              final stars = progress?.stars ?? 0;
-              final isUnlocked = level.id == 1 || (progressMap[level.id - 1]?.stars ?? 0) >= 3;
-
-              final wave = (reversedIndex % 4);
-              double xOffset = (wave == 0 || wave == 3)
-                  ? screenWidth / 2 - kHorizontalAmplitude
-                  : screenWidth / 2 + kHorizontalAmplitude;
-
-              return Positioned(
-                left: xOffset - 45,
-                top: reversedIndex * kPlanetSpacing + 120.0,
-                child: PlanetNode(
-                  level: level,
-                  stars: stars,
-                  isUnlocked: isUnlocked,
-                  isCurrent: isUnlocked && stars < 3,
-                  themeColor: themeColor,
-                  onTap: () => onLevelTap(level.id),
-                ),
-              );
-            }),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PathPainter extends CustomPainter {
-  final int levelCount;
-  final double spacing, amplitude, screenWidth;
-  final Color themeColor;
-
-  _PathPainter({
-    required this.levelCount,
-    required this.spacing,
-    required this.amplitude,
-    required this.screenWidth,
-    required this.themeColor
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = themeColor.withOpacity(0.15)
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 4;
-
-    final path = Path();
-    for (int i = 0; i < levelCount; i++) {
-      final wave = i % 4;
-      double x = (wave == 0 || wave == 3) ? screenWidth / 2 - amplitude : screenWidth / 2 + amplitude;
-      double y = i * spacing + 165;
-      if (i == 0) path.moveTo(x, y); else path.lineTo(x, y);
-    }
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class _ScrollingStarfield extends StatelessWidget {
-  const _ScrollingStarfield();
-  @override
-  Widget build(BuildContext context) => CustomPaint(painter: _StarPainter());
-}
-
-class _StarPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white.withOpacity(0.15);
-    final random = Random(42); // Fixed seed for consistent star positions
-    for (int i = 0; i < 80; i++) {
-      canvas.drawCircle(Offset(random.nextDouble() * 500, random.nextDouble() * 2000), random.nextDouble() * 1.5, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
