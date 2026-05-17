@@ -50,10 +50,14 @@ class ProgressLoaded extends ProgressState {
 
   ProgressLoaded({required this.progressMap, required this.profileId});
 
+  /// The "Star Bank" - Total coins/stars earned across the entire journey
+  int get totalStarCoins => progressMap.values.fold(0, (sum, p) => sum + p.stars);
+
   bool isUnlocked(int levelId) {
     if (levelId == 1) return true;
     final prev = progressMap[levelId - 1];
-    return prev?.stars == 3;
+    // 3-star gate requirement for Little Wandle mastery
+    return prev != null && prev.stars == 3;
   }
 
   int starsFor(int levelId) => progressMap[levelId]?.stars ?? 0;
@@ -61,7 +65,7 @@ class ProgressLoaded extends ProgressState {
   bool isComplete(int levelId) => (progressMap[levelId]?.stars ?? 0) == 3;
 
   @override
-  List<Object?> get props => [profileId, progressMap.length];
+  List<Object?> get props => [profileId, progressMap, totalStarCoins];
 }
 
 class ProgressUpdated extends ProgressState {
@@ -75,14 +79,16 @@ class ProgressUpdated extends ProgressState {
     required this.profileId,
   });
 
+  int get totalStarCoins => progressMap.values.fold(0, (sum, p) => sum + p.stars);
+
   bool isUnlocked(int levelId) {
     if (levelId == 1) return true;
     final prev = progressMap[levelId - 1];
-    return prev?.stars == 3;
+    return prev != null && prev.stars == 3;
   }
 
   @override
-  List<Object?> get props => [updatedProgress.levelId, updatedProgress.stars];
+  List<Object?> get props => [profileId, updatedProgress, progressMap, totalStarCoins];
 }
 
 class ProgressError extends ProgressState {
@@ -105,7 +111,7 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
       LoadAllProgress event, Emitter<ProgressState> emit) async {
     emit(ProgressLoading());
     try {
-      // Ensure level 1 is always initialised
+      // Ensure level 1 is always initialised via the domain layer
       await _manageProgress.initProfile(event.profileId);
       final list = _manageProgress.getAllProgress(event.profileId);
       final map = <int, LevelProgressModel>{
@@ -120,6 +126,7 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
   Future<void> _onRecord(
       RecordLevelAttempt event, Emitter<ProgressState> emit) async {
     try {
+      // The domain layer calculates the stars and updates Hive
       final updated = await _manageProgress.recordAttempt(
         profileId: event.profileId,
         levelId: event.levelId,
@@ -127,6 +134,7 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
         totalQuestions: event.totalQuestions,
       );
 
+      // Refresh the full progress map to calculate new total star count
       final list = _manageProgress.getAllProgress(event.profileId);
       final map = <int, LevelProgressModel>{
         for (final p in list) p.levelId: p,
