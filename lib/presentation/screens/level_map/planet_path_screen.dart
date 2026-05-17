@@ -189,7 +189,7 @@ class _RocketHero extends StatelessWidget {
       children: [
         Icon(
           Icons.rocket_launch_rounded,
-          size: 42,
+          size: 40,
           color: rocketColor,
         )
         .animate(onPlay: (c) => c.repeat())
@@ -198,15 +198,15 @@ class _RocketHero extends StatelessWidget {
         
         Container(
           width: 10,
-          height: 5,
+          height: 4,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             boxShadow: [
-              BoxShadow(color: rocketColor.withOpacity(0.8), blurRadius: 12, spreadRadius: 2)
+              BoxShadow(color: rocketColor.withOpacity(0.6), blurRadius: 10, spreadRadius: 1)
             ],
           ),
         ).animate(onPlay: (c) => c.repeat(reverse: true))
-         .scale(begin: const Offset(0.8, 0.8), end: const Offset(1.4, 1.4)),
+         .scale(begin: const Offset(0.8, 0.8), end: const Offset(1.2, 1.2)),
       ],
     );
   }
@@ -331,7 +331,7 @@ class _PlanetScrollView extends StatelessWidget {
     final totalHeight = levels.length * kPlanetSpacing + 250.0;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    // Find the current level ID (first one not mastered with 3 stars)
+    // Find current level (highest level with < 3 stars)
     final int currentLevelId = levels.firstWhere(
       (l) => (progressMap[l.id]?.stars ?? 0) < 3,
       orElse: () => levels.last,
@@ -344,6 +344,7 @@ class _PlanetScrollView extends StatelessWidget {
         height: totalHeight,
         child: Stack(
           children: [
+            // 1. Draw the Path Line first
             CustomPaint(
               size: Size(screenWidth, totalHeight),
               painter: _PathPainter(
@@ -355,7 +356,27 @@ class _PlanetScrollView extends StatelessWidget {
               ),
             ),
 
-            // Planet Nodes
+            // 2. Render Rocket BEFORE planets so it stays "behind" them in the Z-index
+            ...() {
+              final rocketIndex = levels.length - 1 - (currentLevelId - 1);
+              final wave = (rocketIndex % 4);
+              double x = (wave == 0 || wave == 3)
+                  ? screenWidth / 2 - kHorizontalAmplitude
+                  : screenWidth / 2 + kHorizontalAmplitude;
+              
+              // Position the rocket slightly above the node center
+              double y = rocketIndex * kPlanetSpacing + 60.0; 
+
+              return [
+                Positioned(
+                  left: x - 20,
+                  top: y,
+                  child: _RocketHero(totalStars: totalStars),
+                ),
+              ];
+            }(),
+
+            // 3. Render Planet Nodes last so they are "on top"
             ...List.generate(levels.length, (index) {
               final level = levels[index];
               final reversedIndex = levels.length - 1 - index;
@@ -381,26 +402,6 @@ class _PlanetScrollView extends StatelessWidget {
                 ),
               );
             }),
-
-            // Rocket Hero - Positioned ABOVE the current level node
-            ...() {
-              final rocketIndex = levels.length - 1 - (currentLevelId - 1);
-              final wave = (rocketIndex % 4);
-              double x = (wave == 0 || wave == 3)
-                  ? screenWidth / 2 - kHorizontalAmplitude
-                  : screenWidth / 2 + kHorizontalAmplitude;
-              
-              // We adjust the Y to sit significantly higher (-70) so it doesn't cover labels
-              double y = rocketIndex * kPlanetSpacing + 50.0; 
-
-              return [
-                Positioned(
-                  left: x - 21, // Centering logic
-                  top: y,
-                  child: _RocketHero(totalStars: totalStars),
-                ),
-              ];
-            }(),
           ],
         ),
       ),
