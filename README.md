@@ -306,8 +306,6 @@ The settings screen is protected by a **Parental Gate** to keep little fingers o
 
 The recording replaces the TTS fallback for that sound throughout the app — useful if the system voice is mispronouncing a tricky phoneme, or if you want the child to hear a familiar voice.
 
-> **Developer note:** Add the [`record`](https://pub.dev/packages/record) package and uncomment the microphone code in `voice_recorder_screen.dart` to enable recording.
-
 ---
 
 ## Privacy
