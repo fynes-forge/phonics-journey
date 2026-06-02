@@ -39,7 +39,7 @@ dependencies:
   # STAYING ON v8 - v9 introduces 'onProgress' and change in BlocObserver syntax
   flutter_bloc: ^8.1.6
   bloc: ^8.1.4
-  record: ^6.2.0
+  record: ^7.0.0
   permission_handler: ^11.3.1
 
 dev_dependencies:
