@@ -20,7 +20,7 @@ dependencies:
 
   # Audio / TTS
   flutter_tts: ^4.1.1 # Safe update
-  audioplayers: ^6.1.0 # Minor feature update
+  audioplayers: ^6.7.1 # Minor feature update
 
   # Navigation
   # STAYING ON v14 - v15+ introduces breaking changes to ShellRoutes and redirects
