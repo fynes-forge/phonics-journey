@@ -7,7 +7,9 @@ plugins {
 
 android {
     namespace = "com.example.phonics_journey"
-    compileSdk = flutter.compileSdkVersion
+
+    // Enforce SDK 35 required by permission_handler v12 & record v7
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -22,8 +24,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.phonics_journey"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
