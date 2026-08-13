@@ -8,9 +8,9 @@ plugins {
 android {
     namespace = "com.example.phonics_journey"
 
-    // Enforce SDK 35 required by permission_handler v12 & record v7
-    compileSdk = 35
-    ndkVersion = flutter.ndkVersion
+    // Upgraded to SDK 36 required by flutter_tts
+    compileSdk = 36
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -25,8 +25,9 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.phonics_journey"
 
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        // Upgraded minSdk to 24 required by flutter_tts
+        minSdk = 24
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
