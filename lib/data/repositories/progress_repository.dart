@@ -36,8 +36,10 @@ class ProgressRepository {
     final existing = getProgress(profileId, levelId);
 
     // Calculate stars based on the new attempt
-    final newStars =
-        LevelProgressModel.calculateStars(correctAnswers, totalQuestions);
+    final newStars = LevelProgressModel.calculateStars(
+      correctAnswers,
+      totalQuestions,
+    );
 
     final newScore = totalQuestions > 0
         ? (correctAnswers / totalQuestions * 100).round()
@@ -70,12 +72,14 @@ class ProgressRepository {
 
       if (nextExisting == null) {
         // If no progress exists for next level, create an unlocked entry
-        await saveProgress(LevelProgressModel(
-          profileId: profileId,
-          levelId: nextLevelId,
-          isUnlocked: true,
-          stars: 0,
-        ));
+        await saveProgress(
+          LevelProgressModel(
+            profileId: profileId,
+            levelId: nextLevelId,
+            isUnlocked: true,
+            stars: 0,
+          ),
+        );
       } else if (!nextExisting.isUnlocked) {
         // If it exists but is locked, unlock it
         await saveProgress(nextExisting.copyWith(isUnlocked: true));
@@ -89,12 +93,14 @@ class ProgressRepository {
   Future<void> initProgressForProfile(String profileId) async {
     final existing = getAllProgressForProfile(profileId);
     if (existing.isEmpty) {
-      await saveProgress(LevelProgressModel(
-        profileId: profileId,
-        levelId: 1,
-        isUnlocked: true,
-        stars: 0,
-      ));
+      await saveProgress(
+        LevelProgressModel(
+          profileId: profileId,
+          levelId: 1,
+          isUnlocked: true,
+          stars: 0,
+        ),
+      );
     }
   }
 }

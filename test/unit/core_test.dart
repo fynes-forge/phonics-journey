@@ -104,10 +104,7 @@ void main() {
 
     test('emits GamePlaying after StartGame', () async {
       bloc.add(StartGame(testLevel));
-      await expectLater(
-        bloc.stream,
-        emits(isA<GamePlaying>()),
-      );
+      await expectLater(bloc.stream, emits(isA<GamePlaying>()));
     });
 
     test('GamePlaying has correct question count', () async {

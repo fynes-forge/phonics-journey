@@ -51,3 +51,9 @@ run_dev: ## Run the app in debug mode
 ## run_prod: Run the app in release mode
 run_prod: ## Run the app in release mode
 	@flutter run --release
+
+install:
+	@flutter pub get
+
+analyze:
+	@flutter analyze

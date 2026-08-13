@@ -116,10 +116,7 @@ class PlanetNode extends StatelessWidget {
                 colors: gradient,
               )
             : const RadialGradient(
-                colors: [
-                  Color(0xFF3A3E5C),
-                  Color(0xFF1E2138),
-                ],
+                colors: [Color(0xFF3A3E5C), Color(0xFF1E2138)],
               ),
         boxShadow: isUnlocked
             ? [
@@ -157,9 +154,7 @@ class PlanetNode extends StatelessWidget {
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: Colors.white.withOpacity(0.9),
-                shadows: const [
-                  Shadow(color: Colors.black45, blurRadius: 4),
-                ],
+                shadows: const [Shadow(color: Colors.black45, blurRadius: 4)],
               ),
             ),
         ],

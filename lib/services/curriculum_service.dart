@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/services.dart';
 
 class CurriculumLevel {
@@ -41,8 +42,9 @@ class CurriculumLevel {
       exampleWord: json['example_word'] as String,
       words: List<String>.from(json['words'] as List),
       trickyWords: List<String>.from(json['tricky_words'] as List? ?? []),
-      distractorLetters:
-          List<String>.from(json['distractor_letters'] as List? ?? []),
+      distractorLetters: List<String>.from(
+        json['distractor_letters'] as List? ?? [],
+      ),
       description: json['description'] as String,
       startsUnlocked: json['unlocked'] as bool? ?? false,
     );

@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -57,8 +58,13 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
     );
   }
 
-  void _onLevelTap(BuildContext context, int levelId, Map<int, LevelProgressModel> progressMap) {
-    final bool isUnlocked = levelId == 1 || (progressMap[levelId - 1]?.stars ?? 0) >= 3;
+  void _onLevelTap(
+    BuildContext context,
+    int levelId,
+    Map<int, LevelProgressModel> progressMap,
+  ) {
+    final bool isUnlocked =
+        levelId == 1 || (progressMap[levelId - 1]?.stars ?? 0) >= 3;
 
     if (!isUnlocked) {
       _showLockedDialog(context);
@@ -74,7 +80,10 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1C2329),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Planet Locked!', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Planet Locked!',
+          style: TextStyle(color: Colors.white),
+        ),
         content: const Text(
           'Master the previous planet with 3 stars to unlock this one!',
           style: TextStyle(color: Colors.white70),
@@ -83,7 +92,7 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('OK'),
-          )
+          ),
         ],
       ),
     );
@@ -144,7 +153,8 @@ class _PlanetPathScreenState extends State<PlanetPathScreen> {
                           themeColor: themeColor,
                           totalStars: totalStars,
                           scrollController: _scrollController,
-                          onLevelTap: (levelId) => _onLevelTap(context, levelId, progressMap),
+                          onLevelTap: (levelId) =>
+                              _onLevelTap(context, levelId, progressMap),
                         ),
                       ),
                       Positioned(
@@ -188,15 +198,11 @@ class _RocketHero extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          Icons.rocket_launch_rounded,
-          size: 38,
-          color: rocketColor,
-        )
-        .animate(onPlay: (c) => c.repeat())
-        .shimmer(duration: 2.seconds, color: Colors.white30)
-        .shake(hz: 2, curve: Curves.easeInOut),
-        
+        Icon(Icons.rocket_launch_rounded, size: 38, color: rocketColor)
+            .animate(onPlay: (c) => c.repeat())
+            .shimmer(duration: 2.seconds, color: Colors.white30)
+            .shake(hz: 2, curve: Curves.easeInOut),
+
         // Engine Glow
         Container(
           width: 8,
@@ -204,11 +210,16 @@ class _RocketHero extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             boxShadow: [
-              BoxShadow(color: rocketColor.withOpacity(0.8), blurRadius: 8, spreadRadius: 2)
+              BoxShadow(
+                color: rocketColor.withOpacity(0.8),
+                blurRadius: 8,
+                spreadRadius: 2,
+              ),
             ],
           ),
-        ).animate(onPlay: (c) => c.repeat(reverse: true))
-         .scale(begin: const Offset(0.8, 0.8), end: const Offset(1.2, 1.2)),
+        )
+            .animate(onPlay: (c) => c.repeat(reverse: true))
+            .scale(begin: const Offset(0.8, 0.8), end: const Offset(1.2, 1.2)),
       ],
     );
   }
@@ -242,7 +253,10 @@ class _TopBar extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppTheme.deepSpace.withOpacity(0.9), AppTheme.deepSpace.withOpacity(0.0)],
+          colors: [
+            AppTheme.deepSpace.withOpacity(0.9),
+            AppTheme.deepSpace.withOpacity(0.0),
+          ],
         ),
       ),
       child: SafeArea(
@@ -259,7 +273,16 @@ class _TopBar extends StatelessWidget {
                 child: CircleAvatar(
                   backgroundColor: themeColor.withOpacity(0.2),
                   child: Text(
-                    ['🚀', '⭐', '🌙', '🪐', '☄️', '🌟', '🛸', '🌈'][profile.avatarIndex % 8],
+                    [
+                      '🚀',
+                      '⭐',
+                      '🌙',
+                      '🪐',
+                      '☄️',
+                      '🌟',
+                      '🛸',
+                      '🌈',
+                    ][profile.avatarIndex % 8],
                     style: const TextStyle(fontSize: 20),
                   ),
                 ),
@@ -271,17 +294,29 @@ class _TopBar extends StatelessWidget {
                 children: [
                   Text(
                     profile.name,
-                    style: TextStyle(color: themeColor, fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: themeColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Text(
                     rank.toUpperCase(),
-                    style: TextStyle(color: themeColor.withOpacity(0.6), fontSize: 10, letterSpacing: 1.2, fontWeight: FontWeight.w900),
+                    style: TextStyle(
+                      color: themeColor.withOpacity(0.6),
+                      fontSize: 10,
+                      letterSpacing: 1.2,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ],
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
@@ -289,17 +324,33 @@ class _TopBar extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.star_rounded, color: AppTheme.starYellow, size: 20),
+                    const Icon(
+                      Icons.star_rounded,
+                      color: AppTheme.starYellow,
+                      size: 20,
+                    ),
                     const SizedBox(width: 6),
-                    Text('$totalStars', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(
+                      '$totalStars',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
-              ).animate(target: totalStars.toDouble() > 0 ? 1 : 0)
-               .shimmer(duration: 1200.ms, color: Colors.white24)
-               .scale(duration: 300.ms, curve: Curves.elasticOut),
+              )
+                  .animate(target: totalStars.toDouble() > 0 ? 1 : 0)
+                  .shimmer(duration: 1200.ms, color: Colors.white24)
+                  .scale(duration: 300.ms, curve: Curves.elasticOut),
               const SizedBox(width: 8),
               IconButton(
-                icon: const Icon(Icons.settings_rounded, color: Colors.white, size: 28),
+                icon: const Icon(
+                  Icons.settings_rounded,
+                  color: Colors.white,
+                  size: 28,
+                ),
                 onPressed: onSettingsTap,
               ),
             ],
@@ -335,10 +386,12 @@ class _PlanetScrollView extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     // Logic: Find the "Current Level" for the Rocket
-    final int currentLevelId = levels.firstWhere(
-      (l) => (progressMap[l.id]?.stars ?? 0) < 3,
-      orElse: () => levels.last,
-    ).id;
+    final int currentLevelId = levels
+        .firstWhere(
+          (l) => (progressMap[l.id]?.stars ?? 0) < 3,
+          orElse: () => levels.last,
+        )
+        .id;
 
     return SingleChildScrollView(
       controller: scrollController,
@@ -365,7 +418,8 @@ class _PlanetScrollView extends StatelessWidget {
               double x = (wave == 0 || wave == 3)
                   ? screenWidth / 2 - kHorizontalAmplitude
                   : screenWidth / 2 + kHorizontalAmplitude;
-              double y = rocketIndex * kPlanetSpacing + 65.0; // Sits above the planet
+              double y =
+                  rocketIndex * kPlanetSpacing + 65.0; // Sits above the planet
 
               return [
                 Positioned(
@@ -381,7 +435,8 @@ class _PlanetScrollView extends StatelessWidget {
               final reversedIndex = levels.length - 1 - index;
               final progress = progressMap[level.id];
               final stars = progress?.stars ?? 0;
-              final isUnlocked = level.id == 1 || (progressMap[level.id - 1]?.stars ?? 0) >= 3;
+              final isUnlocked =
+                  level.id == 1 || (progressMap[level.id - 1]?.stars ?? 0) >= 3;
 
               final wave = (reversedIndex % 4);
               double xOffset = (wave == 0 || wave == 3)
@@ -420,7 +475,7 @@ class _PathPainter extends CustomPainter {
     required this.spacing,
     required this.amplitude,
     required this.screenWidth,
-    required this.themeColor
+    required this.themeColor,
   });
 
   @override
@@ -434,9 +489,14 @@ class _PathPainter extends CustomPainter {
     final path = Path();
     for (int i = 0; i < levelCount; i++) {
       final wave = i % 4;
-      double x = (wave == 0 || wave == 3) ? screenWidth / 2 - amplitude : screenWidth / 2 + amplitude;
+      double x = (wave == 0 || wave == 3)
+          ? screenWidth / 2 - amplitude
+          : screenWidth / 2 + amplitude;
       double y = i * spacing + 165;
-      if (i == 0) path.moveTo(x, y); else path.lineTo(x, y);
+      if (i == 0)
+        path.moveTo(x, y);
+      else
+        path.lineTo(x, y);
     }
     canvas.drawPath(path, paint);
   }
@@ -457,12 +517,12 @@ class _StarPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..color = Colors.white.withOpacity(0.15);
-    final random = Random(42); 
+    final random = Random(42);
     for (int i = 0; i < 80; i++) {
       canvas.drawCircle(
-        Offset(random.nextDouble() * 500, random.nextDouble() * 2000), 
-        random.nextDouble() * 1.5, 
-        paint
+        Offset(random.nextDouble() * 500, random.nextDouble() * 2000),
+        random.nextDouble() * 1.5,
+        paint,
       );
     }
   }
@@ -503,10 +563,19 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text("Solve to enter settings:", style: TextStyle(color: Colors.white70)),
+          const Text(
+            "Solve to enter settings:",
+            style: TextStyle(color: Colors.white70),
+          ),
           const SizedBox(height: 16),
-          Text("$num1 + $num2 = ?", 
-            style: const TextStyle(color: AppTheme.starYellow, fontSize: 32, fontWeight: FontWeight.bold)),
+          Text(
+            "$num1 + $num2 = ?",
+            style: const TextStyle(
+              color: AppTheme.starYellow,
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           TextField(
             controller: _controller,
             autofocus: true,
@@ -514,7 +583,9 @@ class _ParentalGateDialogState extends State<_ParentalGateDialog> {
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white, fontSize: 24),
             decoration: const InputDecoration(
-              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.cosmicTeal))
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.cosmicTeal),
+              ),
             ),
             onChanged: (value) {
               if (int.tryParse(value) == answer) {
