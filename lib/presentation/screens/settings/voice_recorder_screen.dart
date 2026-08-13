@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
@@ -145,8 +146,10 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
-                          color: AppTheme.moonWhite),
+                      icon: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: AppTheme.moonWhite,
+                      ),
                     ),
                     Expanded(
                       child: Text(
@@ -169,7 +172,10 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                           AppTheme.cosmicTeal.withOpacity(0.1),
                         ],
                       ),
-                      border: Border.all(color: AppTheme.cosmicTeal, width: 3),
+                      border: Border.all(
+                        color: AppTheme.cosmicTeal,
+                        width: 3,
+                      ),
                     ),
                     child: Center(
                       child: Text(
@@ -195,8 +201,10 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                   decoration: AppTheme.cardDecoration(),
                   child: Column(
                     children: [
-                      Text('🎙️ Recording Tips',
-                          style: Theme.of(context).textTheme.titleMedium),
+                      Text(
+                        '🎙️ Recording Tips',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                       const SizedBox(height: 12),
                       _tip('Speak clearly and at a normal pace'),
                       _tip('Say just the sound, not the letter name'),
@@ -264,7 +272,8 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                             foregroundColor: AppTheme.cosmicTeal,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25)),
+                              borderRadius: BorderRadius.circular(25),
+                            ),
                           ),
                         ),
                       ),
@@ -279,7 +288,8 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                             foregroundColor: AppTheme.errorRed,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25)),
+                              borderRadius: BorderRadius.circular(25),
+                            ),
                           ),
                         ),
                       ),
@@ -302,14 +312,19 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('• ',
-              style: TextStyle(color: AppTheme.starYellow, fontSize: 16)),
+          const Text(
+            '• ',
+            style: TextStyle(color: AppTheme.starYellow, fontSize: 16),
+          ),
           Expanded(
-              child: Text(text,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: AppTheme.moonWhite.withOpacity(0.85)))),
+            child: Text(
+              text,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppTheme.moonWhite.withOpacity(0.85)),
+            ),
+          ),
         ],
       ),
     );
@@ -351,14 +366,18 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
       builder: (_) => AlertDialog(
         backgroundColor: AppTheme.stardustBlue,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Delete recording?',
-            style: Theme.of(context).textTheme.titleLarge),
+        title: Text(
+          'Delete recording?',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         content: Text(
-            'This will remove your custom recording for "${widget.phoneme}".'),
+          'This will remove your custom recording for "${widget.phoneme}".',
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.errorRed),

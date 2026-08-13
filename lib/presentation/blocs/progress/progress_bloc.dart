@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+
 import '../../../data/models/progress_model.dart';
 import '../../../domain/usecases/manage_progress.dart';
 
@@ -30,8 +31,12 @@ class RecordLevelAttempt extends ProgressEvent {
   });
 
   @override
-  List<Object?> get props =>
-      [profileId, levelId, correctAnswers, totalQuestions];
+  List<Object?> get props => [
+        profileId,
+        levelId,
+        correctAnswers,
+        totalQuestions,
+      ];
 }
 
 // ── States ────────────────────────────────────────────────────────────────
@@ -51,7 +56,8 @@ class ProgressLoaded extends ProgressState {
   ProgressLoaded({required this.progressMap, required this.profileId});
 
   /// The "Star Bank" - Total coins/stars earned across the entire journey
-  int get totalStarCoins => progressMap.values.fold(0, (sum, p) => sum + p.stars);
+  int get totalStarCoins =>
+      progressMap.values.fold(0, (sum, p) => sum + p.stars);
 
   bool isUnlocked(int levelId) {
     if (levelId == 1) return true;
@@ -79,7 +85,8 @@ class ProgressUpdated extends ProgressState {
     required this.profileId,
   });
 
-  int get totalStarCoins => progressMap.values.fold(0, (sum, p) => sum + p.stars);
+  int get totalStarCoins =>
+      progressMap.values.fold(0, (sum, p) => sum + p.stars);
 
   bool isUnlocked(int levelId) {
     if (levelId == 1) return true;
@@ -88,7 +95,12 @@ class ProgressUpdated extends ProgressState {
   }
 
   @override
-  List<Object?> get props => [profileId, updatedProgress, progressMap, totalStarCoins];
+  List<Object?> get props => [
+        profileId,
+        updatedProgress,
+        progressMap,
+        totalStarCoins,
+      ];
 }
 
 class ProgressError extends ProgressState {
@@ -108,15 +120,15 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
   }
 
   Future<void> _onLoad(
-      LoadAllProgress event, Emitter<ProgressState> emit) async {
+    LoadAllProgress event,
+    Emitter<ProgressState> emit,
+  ) async {
     emit(ProgressLoading());
     try {
       // Ensure level 1 is always initialised via the domain layer
       await _manageProgress.initProfile(event.profileId);
       final list = _manageProgress.getAllProgress(event.profileId);
-      final map = <int, LevelProgressModel>{
-        for (final p in list) p.levelId: p,
-      };
+      final map = <int, LevelProgressModel>{for (final p in list) p.levelId: p};
       emit(ProgressLoaded(progressMap: map, profileId: event.profileId));
     } catch (e) {
       emit(ProgressError(e.toString()));
@@ -124,7 +136,9 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
   }
 
   Future<void> _onRecord(
-      RecordLevelAttempt event, Emitter<ProgressState> emit) async {
+    RecordLevelAttempt event,
+    Emitter<ProgressState> emit,
+  ) async {
     try {
       // The domain layer calculates the stars and updates Hive
       final updated = await _manageProgress.recordAttempt(
@@ -136,15 +150,15 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
 
       // Refresh the full progress map to calculate new total star count
       final list = _manageProgress.getAllProgress(event.profileId);
-      final map = <int, LevelProgressModel>{
-        for (final p in list) p.levelId: p,
-      };
+      final map = <int, LevelProgressModel>{for (final p in list) p.levelId: p};
 
-      emit(ProgressUpdated(
-        updatedProgress: updated,
-        progressMap: map,
-        profileId: event.profileId,
-      ));
+      emit(
+        ProgressUpdated(
+          updatedProgress: updated,
+          progressMap: map,
+          profileId: event.profileId,
+        ),
+      );
     } catch (e) {
       emit(ProgressError(e.toString()));
     }

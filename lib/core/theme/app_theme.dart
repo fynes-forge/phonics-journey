@@ -91,10 +91,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(25),
           borderSide: BorderSide(color: seed, width: 2),
         ),
-        labelStyle: const TextStyle(
-          fontFamily: 'Andika',
-          color: moonWhite,
-        ),
+        labelStyle: const TextStyle(fontFamily: 'Andika', color: moonWhite),
         hintStyle: TextStyle(
           fontFamily: 'Andika',
           color: moonWhite.withOpacity(0.5),
@@ -181,14 +178,12 @@ class AppTheme {
         colors: [
           color.withOpacity(0.9),
           color.withOpacity(0.4),
-          Colors.transparent
+          Colors.transparent,
         ],
         stops: const [0.3, 0.7, 1.0],
       ) as dynamic;
 
-  static BoxDecoration spaceBackground = BoxDecoration(
-    gradient: spaceGradient,
-  );
+  static BoxDecoration spaceBackground = BoxDecoration(gradient: spaceGradient);
 
   static BoxDecoration cardDecoration({Color? glowColor}) => BoxDecoration(
         color: stardustBlue.withOpacity(0.3),

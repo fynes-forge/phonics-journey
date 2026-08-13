@@ -63,7 +63,7 @@ class LevelProgressModel extends HiveObject {
   /// Helper to determine how many "new" coins to award.
   /// Usually matches the star count, or can be a bonus for 100% accuracy.
   static int calculateStarCoins(int earnedStars) {
-    return earnedStars; 
+    return earnedStars;
   }
 
   bool get isComplete => stars == 3;

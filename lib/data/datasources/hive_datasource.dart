@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+
 import '../models/profile_model.dart';
 import '../models/progress_model.dart';
 

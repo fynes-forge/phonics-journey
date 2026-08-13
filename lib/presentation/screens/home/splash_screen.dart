@@ -59,10 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      '🚀',
-                      style: TextStyle(fontSize: 96),
-                    )
+                    const Text('🚀', style: TextStyle(fontSize: 96))
                         .animate()
                         .fadeIn(duration: 600.ms)
                         .scale(
@@ -88,9 +85,10 @@ class _SplashScreenState extends State<SplashScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'A Space Adventure in Reading',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppTheme.starYellow,
-                          ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(color: AppTheme.starYellow),
                     )
                         .animate(delay: 700.ms)
                         .fadeIn(duration: 600.ms)
@@ -154,10 +152,7 @@ class _StarPainter extends CustomPainter {
 
   static final List<Offset> _positions = List.generate(
     60,
-    (i) => Offset(
-      (i * 137.508 % 400) / 400,
-      (i * 97.3 % 800) / 800,
-    ),
+    (i) => Offset((i * 137.508 % 400) / 400, (i * 97.3 % 800) / 800),
   );
 
   @override
@@ -194,11 +189,7 @@ class _LoadingDots extends StatelessWidget {
             color: AppTheme.starYellow,
             shape: BoxShape.circle,
           ),
-        )
-            .animate(
-              onPlay: (controller) => controller.repeat(),
-            )
-            .scale(
+        ).animate(onPlay: (controller) => controller.repeat()).scale(
               begin: const Offset(1, 1),
               end: const Offset(1.5, 1.5),
               duration: 600.ms,

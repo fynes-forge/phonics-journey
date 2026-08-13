@@ -97,9 +97,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       widget.isEditing
                           ? 'Update your space explorer details'
                           : 'Let\'s set up your space adventure!',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppTheme.starYellow,
-                          ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(color: AppTheme.starYellow),
                       textAlign: TextAlign.center,
                     ).animate(delay: 200.ms).fadeIn(),
                     const SizedBox(height: 40),
@@ -134,7 +135,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                               boxShadow: selected
                                   ? [
                                       BoxShadow(
-                                        color: _selectedColor.withOpacity(0.4),
+                                        color: _selectedColor.withOpacity(
+                                          0.4,
+                                        ),
                                         blurRadius: 12,
                                         spreadRadius: 2,
                                       ),
@@ -150,7 +153,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                           ),
                         )
                             .animate(
-                                delay: Duration(milliseconds: 350 + i * 50))
+                              delay: Duration(milliseconds: 350 + i * 50),
+                            )
                             .fadeIn()
                             .scale(begin: const Offset(0.8, 0.8));
                       }),
@@ -218,8 +222,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                   : null,
                             ),
                             child: selected
-                                ? const Icon(Icons.check,
-                                    color: Colors.white, size: 22)
+                                ? const Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 22,
+                                  )
                                 : null,
                           ),
                         );
@@ -229,8 +236,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                     if (_nameController.text.isNotEmpty) ...[
                       Container(
                         padding: const EdgeInsets.all(20),
-                        decoration:
-                            AppTheme.cardDecoration(glowColor: _selectedColor),
+                        decoration: AppTheme.cardDecoration(
+                          glowColor: _selectedColor,
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -269,7 +277,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         ),
                       ),
                       child: state is ProfileLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -284,8 +294,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Text(widget.isEditing ? '✅' : '🚀',
-                                    style: const TextStyle(fontSize: 20)),
+                                Text(
+                                  widget.isEditing ? '✅' : '🚀',
+                                  style: const TextStyle(fontSize: 20),
+                                ),
                               ],
                             ),
                     ).animate(delay: 800.ms).fadeIn().scale(
@@ -312,7 +324,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     // The Fix: Check if the bloc is closed before attempting to add an event
     if (_profileBloc.isClosed) {
       debugPrint(
-          '🚨 CRITICAL ERROR: ProfileBloc is closed. This should not happen to a Singleton.');
+        '🚨 CRITICAL ERROR: ProfileBloc is closed. This should not happen to a Singleton.',
+      );
       return;
     }
 

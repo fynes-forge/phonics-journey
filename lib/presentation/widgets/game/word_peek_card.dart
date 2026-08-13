@@ -27,19 +27,16 @@ class WordPeek {
           Center(
             child: Material(
               color: Colors.transparent,
-              child: _PeekCardContent(
-                word: word,
-                emoji: emoji,
-                showText: showText,
-              )
-                  .animate()
-                  .scale(
-                    begin: const Offset(0.6, 0.6),
-                    end: const Offset(1.0, 1.0),
-                    duration: 250.ms,
-                    curve: Curves.elasticOut,
-                  )
-                  .fadeIn(duration: 180.ms),
+              child:
+                  _PeekCardContent(word: word, emoji: emoji, showText: showText)
+                      .animate()
+                      .scale(
+                        begin: const Offset(0.6, 0.6),
+                        end: const Offset(1.0, 1.0),
+                        duration: 250.ms,
+                        curve: Curves.elasticOut,
+                      )
+                      .fadeIn(duration: 180.ms),
             ),
           ),
         ],
@@ -127,7 +124,7 @@ class _PeekCardContent extends StatelessWidget {
                 curve: Curves.easeInOut,
               ),
           const SizedBox(height: 24),
-          
+
           // Only show word details if showText is true
           if (showText) ...[
             // Divider
@@ -163,7 +160,7 @@ class _PeekCardContent extends StatelessWidget {
             // to help the child visualize the number of sounds to find.
             _PhonemeDotsRow(word: word),
           ],
-          
+
           const SizedBox(height: 20),
           Text(
             'Release to continue',

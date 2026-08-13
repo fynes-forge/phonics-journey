@@ -7,7 +7,6 @@ import 'package:get_it/get_it.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../services/audio_service.dart';
-import '../../../services/curriculum_service.dart';
 import '../../blocs/profile/profile_bloc.dart';
 import '../../blocs/progress/progress_bloc.dart';
 import '../../../data/models/progress_model.dart';
@@ -44,8 +43,10 @@ class SettingsScreen extends StatelessWidget {
                         children: [
                           IconButton(
                             onPressed: () => context.pop(),
-                            icon: const Icon(Icons.arrow_back_rounded,
-                                color: AppTheme.moonWhite),
+                            icon: const Icon(
+                              Icons.arrow_back_rounded,
+                              color: AppTheme.moonWhite,
+                            ),
                           ),
                           const Text(
                             '⚙️ Parent Settings',
@@ -123,7 +124,22 @@ class SettingsScreen extends StatelessWidget {
   // --- Utility Methods for Dialogs ---
 
   void _showVoiceRecorderList(BuildContext context, AudioService audio) {
-    final phonemes = ['s', 'a', 't', 'p', 'i', 'n', 'm', 'd', 'g', 'o', 'ck', 'ch', 'sh', 'th'];
+    final phonemes = [
+      's',
+      'a',
+      't',
+      'p',
+      'i',
+      'n',
+      'm',
+      'd',
+      'g',
+      'o',
+      'ck',
+      'ch',
+      'sh',
+      'th',
+    ];
 
     showModalBottomSheet(
       context: context,
@@ -139,8 +155,10 @@ class SettingsScreen extends StatelessWidget {
           controller: scrollController,
           itemCount: phonemes.length,
           itemBuilder: (_, i) => ListTile(
-            title: Text('Sound: ${phonemes[i]}',
-                style: const TextStyle(color: Colors.white)),
+            title: Text(
+              'Sound: ${phonemes[i]}',
+              style: const TextStyle(color: Colors.white),
+            ),
             trailing: const Icon(Icons.mic, color: AppTheme.starYellow),
             onTap: () =>
                 context.push('${AppRouter.voiceRecorder}/${phonemes[i]}'),
@@ -155,8 +173,10 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1C2329),
-        title: const Text('Phonics Journey',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Phonics Journey',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         content: const Text(
           '''
 Local, secure, and privacy-focused learning.
@@ -171,8 +191,9 @@ Made for Explorers 🚀''',
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Close', style: TextStyle(color: Colors.white)))
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close', style: TextStyle(color: Colors.white)),
+          ),
         ],
       ),
     );
@@ -183,20 +204,25 @@ Made for Explorers 🚀''',
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1C2329),
-        title: const Text('Privacy',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: const Text('''
+        title: const Text(
+          'Privacy',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        content: const Text(
+          '''
 Your privacy is our priority. 
         
 • All recordings are stored locally.
 • No personal data is collected.
 • No internet connection is required to play.
 • No third-party tracking or analytics.''',
-            style: TextStyle(color: Colors.white70, fontSize: 14)),
+          style: TextStyle(color: Colors.white70, fontSize: 14),
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK', style: TextStyle(color: Colors.white)))
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK', style: TextStyle(color: Colors.white)),
+          ),
         ],
       ),
     );
@@ -215,8 +241,13 @@ Your privacy is our priority.
 
             return AlertDialog(
               backgroundColor: const Color(0xFF1C2329),
-              title: const Text('Space Curriculum',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              title: const Text(
+                'Space Curriculum',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               content: SizedBox(
                 width: double.maxFinite,
                 child: SingleChildScrollView(
@@ -239,8 +270,12 @@ Systematic synthetic phonics progression:''',
               ),
               actions: [
                 TextButton(
-                    onPressed: () => Navigator.pop(dialogContext),
-                    child: const Text('OK', style: TextStyle(color: Colors.white)))
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ],
             );
           },
@@ -251,7 +286,10 @@ Systematic synthetic phonics progression:''',
 
   Widget _buildCurriculumTable(Map<int, LevelProgressModel> progressMap) {
     const headerStyle = TextStyle(
-        color: AppTheme.starYellow, fontWeight: FontWeight.bold, fontSize: 11);
+      color: AppTheme.starYellow,
+      fontWeight: FontWeight.bold,
+      fontSize: 11,
+    );
 
     return Table(
       columnWidths: const {
@@ -265,45 +303,87 @@ Systematic synthetic phonics progression:''',
           decoration: BoxDecoration(color: Colors.white12),
           children: [
             Padding(
-                padding: EdgeInsets.all(8),
-                child: Text('Levels', style: headerStyle)),
+              padding: EdgeInsets.all(8),
+              child: Text('Levels', style: headerStyle),
+            ),
             Padding(
-                padding: EdgeInsets.all(8),
-                child: Text('Phase', style: headerStyle)),
+              padding: EdgeInsets.all(8),
+              child: Text('Phase', style: headerStyle),
+            ),
             Padding(
-                padding: EdgeInsets.all(8),
-                child: Text('Content', style: headerStyle)),
+              padding: EdgeInsets.all(8),
+              child: Text('Content', style: headerStyle),
+            ),
           ],
         ),
         // Helper to check progress for these specific ranges
-        _buildRow('1–25', '2', 's a t p i n m d g o c k ck e u r h b f l ff ll ss j v', _isPhaseStarted(1, 25, progressMap)),
-        _buildRow('26–55', '3', 'ch sh th ng ai ee igh oa oo ar or ur ow oi ear air ure er', _isPhaseStarted(26, 55, progressMap)),
-        _buildRow('56–70', '4', 'CVCC, CCVC, CCVCC; 3-letter blends; Tricky words', _isPhaseStarted(56, 70, progressMap)),
-        _buildRow('71–100', '5', 'Alternative spellings: ay ou ie ea oy ir ue aw wh ph ew oe au ey; Split digraphs', _isPhaseStarted(71, 100, progressMap)),
+        _buildRow(
+          '1–25',
+          '2',
+          's a t p i n m d g o c k ck e u r h b f l ff ll ss j v',
+          _isPhaseStarted(1, 25, progressMap),
+        ),
+        _buildRow(
+          '26–55',
+          '3',
+          'ch sh th ng ai ee igh oa oo ar or ur ow oi ear air ure er',
+          _isPhaseStarted(26, 55, progressMap),
+        ),
+        _buildRow(
+          '56–70',
+          '4',
+          'CVCC, CCVC, CCVCC; 3-letter blends; Tricky words',
+          _isPhaseStarted(56, 70, progressMap),
+        ),
+        _buildRow(
+          '71–100',
+          '5',
+          'Alternative spellings: ay ou ie ea oy ir ue aw wh ph ew oe au ey; Split digraphs',
+          _isPhaseStarted(71, 100, progressMap),
+        ),
       ],
     );
   }
 
-  bool _isPhaseStarted(int start, int end, Map<int, LevelProgressModel> progressMap) {
+  bool _isPhaseStarted(
+    int start,
+    int end,
+    Map<int, LevelProgressModel> progressMap,
+  ) {
     for (int i = start; i <= end; i++) {
       if (progressMap.containsKey(i)) return true;
     }
     return false;
   }
 
-  TableRow _buildRow(String levels, String phase, String content, bool isStarted) {
+  TableRow _buildRow(
+    String levels,
+    String phase,
+    String content,
+    bool isStarted,
+  ) {
     // Text color shifts to Cosmic Teal if the phase has been started
     final Color textColor = isStarted ? AppTheme.cosmicTeal : Colors.white70;
-    final cellStyle = TextStyle(color: textColor, fontSize: 10, fontWeight: isStarted ? FontWeight.bold : FontWeight.normal);
-    
+    final cellStyle = TextStyle(
+      color: textColor,
+      fontSize: 10,
+      fontWeight: isStarted ? FontWeight.bold : FontWeight.normal,
+    );
+
     return TableRow(
       children: [
         Padding(
-            padding: const EdgeInsets.all(8), child: Text(levels, style: cellStyle)),
+          padding: const EdgeInsets.all(8),
+          child: Text(levels, style: cellStyle),
+        ),
         Padding(
-            padding: const EdgeInsets.all(8), child: Text(phase, style: cellStyle)),
+          padding: const EdgeInsets.all(8),
+          child: Text(phase, style: cellStyle),
+        ),
         Padding(
-            padding: const EdgeInsets.all(8), child: Text(content, style: cellStyle)),
+          padding: const EdgeInsets.all(8),
+          child: Text(content, style: cellStyle),
+        ),
       ],
     );
   }
@@ -365,14 +445,18 @@ class _SettingsTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold)),
-                  Text(subtitle,
-                      style:
-                          const TextStyle(color: Colors.white54, fontSize: 12)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(color: Colors.white54, fontSize: 12),
+                  ),
                 ],
               ),
             ),

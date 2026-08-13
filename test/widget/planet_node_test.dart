@@ -79,7 +79,7 @@ void main() {
       expect(find.text('1'), findsOneWidget);
     });
 
-    testWidgets('shows star emoji when 3 stars', (tester) async {
+    testWidgets('shows star icons when 3 stars', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
           PlanetNode(
@@ -92,7 +92,8 @@ void main() {
           ),
         ),
       );
-      expect(find.text('⭐'), findsWidgets);
+      // Matches the Material Icon for stars rendered by PlanetNode
+      expect(find.byIcon(Icons.star_rounded), findsWidgets);
     });
 
     testWidgets('calls onTap when tapped', (tester) async {

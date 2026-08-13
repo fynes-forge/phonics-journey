@@ -1,7 +1,7 @@
 /// EmojiDictionaryService
 /// Maps curriculum words to kid-safe, single-codepoint emojis suitable
 /// for 5-year-olds playing visual phonics/wordle games.
-/// 
+///
 /// Zero dependencies, zero network calls, zero bundle size impact.
 /// Falls back to '✨' for unmapped words — never throws or returns null.
 class EmojiDictionaryService {
@@ -19,11 +19,11 @@ class EmojiDictionaryService {
     'sob': '😭',
     'sun': '☀️',
     'six': '6️⃣',
-    'sag': '🛋️',       // Sagging couch/seat
+    'sag': '🛋️', // Sagging couch/seat
     'sap': '🪵',
     'sad': '😢',
     'sum': '➕',
-    'sub': '🛳️',       // Submarine / ship
+    'sub': '🛳️', // Submarine / ship
     'sup': '🥣',
     'ant': '🐜',
     'add': '➕',
@@ -34,9 +34,9 @@ class EmojiDictionaryService {
     'ape': '🦍',
     'tap': '🚰',
     'tip': '✏️',
-    'top': '🪀',       // Spinning top toy
+    'top': '🪀', // Spinning top toy
     'tin': '🥫',
-    'tan': '☀️',       // Sun / tan
+    'tan': '☀️', // Sun / tan
     'tag': '🏷️',
     'tug': '🚢',
     'tub': '🛁',
@@ -52,7 +52,7 @@ class EmojiDictionaryService {
     'pop': '🎈',
     'pot': '🪴',
     'pup': '🐶',
-    'peg': '📎',       // Clothes peg / clip
+    'peg': '📎', // Clothes peg / clip
     'pen': '🖊️',
     'pet': '🐶',
     'it': '👉',
@@ -72,7 +72,7 @@ class EmojiDictionaryService {
     'man': '👨',
     'mop': '🧹',
     'mob': '👥',
-    'mud': '🐷',       // Pig in mud
+    'mud': '🐷', // Pig in mud
     'mug': '☕',
     'mom': '👩',
     'mum': '👩',
@@ -578,7 +578,7 @@ class EmojiDictionaryService {
     'glow': '✨',
     'slow': '🐢',
     'show': '🎭',
-    'crow': '🐦',        // Simple bird codepoint (no ZWJ)
+    'crow': '🐦', // Simple bird codepoint (no ZWJ)
     'elbow': '💪',
     'eight': '8️⃣',
     'they': '👥',
@@ -591,7 +591,7 @@ class EmojiDictionaryService {
     'call': '📞',
     'fall': '🍂',
     'wall': '🧱',
-    'tall': '📏',       // Measuring rule for tall
+    'tall': '📏', // Measuring rule for tall
     'hall': '🏛️',
     'walk': '🚶',
     'talk': '💬',

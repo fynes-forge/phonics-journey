@@ -80,12 +80,8 @@ Future<void> _setupDependencies() async {
   // FIX: Changed from LazySingleton to Eager Singleton for Blocs.
   // This ensures they are fully initialized and listening BEFORE
   // the UI can even attempt to add an event.
-  sl.registerSingleton<ProfileBloc>(
-    ProfileBloc(sl<ManageProfile>()),
-  );
-  sl.registerSingleton<ProgressBloc>(
-    ProgressBloc(sl<ManageProgress>()),
-  );
+  sl.registerSingleton<ProfileBloc>(ProfileBloc(sl<ManageProfile>()));
+  sl.registerSingleton<ProgressBloc>(ProgressBloc(sl<ManageProgress>()));
 
   // --- Init App Data ---
   await sl<CurriculumService>().loadCurriculum();

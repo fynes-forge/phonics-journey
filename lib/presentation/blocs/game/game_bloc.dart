@@ -1,6 +1,8 @@
 import 'dart:math';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+
 import '../../../services/curriculum_service.dart';
 
 // ── Model ─────────────────────────────────────────────────────────────────────
@@ -174,15 +176,17 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     newPlaced[event.slotIndex] = event.letter;
     newAvail.remove(event.letter);
 
-    emit(GamePlaying(
-      level: s.level,
-      currentQuestion: s.currentQuestion,
-      placedLetters: newPlaced,
-      availableLetters: newAvail,
-      questionIndex: s.questionIndex,
-      totalQuestions: s.totalQuestions,
-      correctCount: s.correctCount,
-    ));
+    emit(
+      GamePlaying(
+        level: s.level,
+        currentQuestion: s.currentQuestion,
+        placedLetters: newPlaced,
+        availableLetters: newAvail,
+        questionIndex: s.questionIndex,
+        totalQuestions: s.totalQuestions,
+        correctCount: s.correctCount,
+      ),
+    );
   }
 
   // ── Remove letter ──────────────────────────────────────────────────────────
@@ -199,15 +203,17 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     newAvail.add(letter);
     newPlaced[event.slotIndex] = null;
 
-    emit(GamePlaying(
-      level: s.level,
-      currentQuestion: s.currentQuestion,
-      placedLetters: newPlaced,
-      availableLetters: newAvail,
-      questionIndex: s.questionIndex,
-      totalQuestions: s.totalQuestions,
-      correctCount: s.correctCount,
-    ));
+    emit(
+      GamePlaying(
+        level: s.level,
+        currentQuestion: s.currentQuestion,
+        placedLetters: newPlaced,
+        availableLetters: newAvail,
+        questionIndex: s.questionIndex,
+        totalQuestions: s.totalQuestions,
+        correctCount: s.correctCount,
+      ),
+    );
   }
 
   // ── Submit ─────────────────────────────────────────────────────────────────
@@ -221,17 +227,19 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final correct = s.currentQuestion.answer;
     final isCorrect = _listsEqual(placed, correct);
 
-    emit(GamePlaying(
-      level: s.level,
-      currentQuestion: s.currentQuestion,
-      placedLetters: s.placedLetters,
-      availableLetters: s.availableLetters,
-      questionIndex: s.questionIndex,
-      totalQuestions: s.totalQuestions,
-      correctCount: s.correctCount + (isCorrect ? 1 : 0),
-      showFeedback: true,
-      lastAnswerCorrect: isCorrect,
-    ));
+    emit(
+      GamePlaying(
+        level: s.level,
+        currentQuestion: s.currentQuestion,
+        placedLetters: s.placedLetters,
+        availableLetters: s.availableLetters,
+        questionIndex: s.questionIndex,
+        totalQuestions: s.totalQuestions,
+        correctCount: s.correctCount + (isCorrect ? 1 : 0),
+        showFeedback: true,
+        lastAnswerCorrect: isCorrect,
+      ),
+    );
   }
 
   // ── Next ───────────────────────────────────────────────────────────────────
@@ -242,11 +250,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final nextIndex = s.questionIndex + 1;
 
     if (nextIndex >= s.totalQuestions) {
-      emit(GameComplete(
-        level: s.level,
-        correctCount: s.correctCount,
-        totalQuestions: s.totalQuestions,
-      ));
+      emit(
+        GameComplete(
+          level: s.level,
+          correctCount: s.correctCount,
+          totalQuestions: s.totalQuestions,
+        ),
+      );
     } else {
       emit(_makePlayingState(s.level, nextIndex, s.correctCount));
     }
@@ -260,7 +270,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   // ── Helpers ────────────────────────────────────────────────────────────────
 
   GamePlaying _makePlayingState(
-      CurriculumLevel level, int qIndex, int correctSoFar) {
+    CurriculumLevel level,
+    int qIndex,
+    int correctSoFar,
+  ) {
     final question = _questions[qIndex];
     final shuffled = List<String>.from(question.letters)..shuffle(_rng);
 
@@ -292,11 +305,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
       final allLetters = [...letters, ...selectedDistractors];
 
-      return GameQuestion(
-        word: word,
-        letters: allLetters,
-        answer: letters,
-      );
+      return GameQuestion(word: word, letters: allLetters, answer: letters);
     }).toList();
   }
 
