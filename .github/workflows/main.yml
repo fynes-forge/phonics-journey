@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  FLUTTER_VERSION: '3.27.0'
+  FLUTTER_VERSION: '3.29.0'
   JAVA_VERSION: '17'
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
         run: flutter pub get
 
       - name: Generate Hive adapters
-        run: flutter pub run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
@@ -89,7 +89,7 @@ jobs:
         run: flutter pub get
 
       - name: Generate Hive adapters
-        run: flutter pub run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build debug APK
         run: flutter build apk --debug --no-shrink
@@ -131,7 +131,7 @@ jobs:
         run: flutter pub get
 
       - name: Generate Hive adapters
-        run: flutter pub run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Decode keystore from secret
         env:
@@ -202,7 +202,7 @@ jobs:
         run: flutter pub get
 
       - name: Generate Hive adapters
-        run: flutter pub run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build iOS (no code signing)
         run: flutter build ios --release --no-codesign
