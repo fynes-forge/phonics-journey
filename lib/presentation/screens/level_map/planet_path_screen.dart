@@ -211,7 +211,7 @@ class _RocketHero extends StatelessWidget {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: rocketColor.withOpacity(0.8),
+                color: rocketColor.withValues(alpha: 0.8),
                 blurRadius: 8,
                 spreadRadius: 2,
               ),
@@ -254,8 +254,8 @@ class _TopBar extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            AppTheme.deepSpace.withOpacity(0.9),
-            AppTheme.deepSpace.withOpacity(0.0),
+            AppTheme.deepSpace.withValues(alpha: 0.9),
+            AppTheme.deepSpace.withValues(alpha: 0.0),
           ],
         ),
       ),
@@ -271,7 +271,7 @@ class _TopBar extends StatelessWidget {
                   border: Border.all(color: themeColor, width: 2),
                 ),
                 child: CircleAvatar(
-                  backgroundColor: themeColor.withOpacity(0.2),
+                  backgroundColor: themeColor.withValues(alpha: 0.2),
                   child: Text(
                     [
                       '🚀',
@@ -303,7 +303,7 @@ class _TopBar extends StatelessWidget {
                   Text(
                     rank.toUpperCase(),
                     style: TextStyle(
-                      color: themeColor.withOpacity(0.6),
+                      color: themeColor.withValues(alpha: 0.6),
                       fontSize: 10,
                       letterSpacing: 1.2,
                       fontWeight: FontWeight.w900,
@@ -318,7 +318,7 @@ class _TopBar extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: Colors.white10),
                 ),
@@ -481,7 +481,7 @@ class _PathPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = themeColor.withOpacity(0.15)
+      ..color = themeColor.withValues(alpha: 0.15)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 4;
@@ -493,10 +493,11 @@ class _PathPainter extends CustomPainter {
           ? screenWidth / 2 - amplitude
           : screenWidth / 2 + amplitude;
       double y = i * spacing + 165;
-      if (i == 0)
+      if (i == 0) {
         path.moveTo(x, y);
-      else
+      } else {
         path.lineTo(x, y);
+      }
     }
     canvas.drawPath(path, paint);
   }
@@ -516,7 +517,7 @@ class _ScrollingStarfield extends StatelessWidget {
 class _StarPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white.withOpacity(0.15);
+    final paint = Paint()..color = Colors.white.withValues(alpha: 0.15);
     final random = Random(42);
     for (int i = 0; i < 80; i++) {
       canvas.drawCircle(

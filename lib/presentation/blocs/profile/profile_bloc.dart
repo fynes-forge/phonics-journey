@@ -23,7 +23,7 @@ class CreateProfile extends ProfileEvent {
     this.avatarIndex = 0,
   });
   @override
-  List<Object?> get props => [name, themeColor.value, avatarIndex];
+  List<Object?> get props => [name, themeColor.toARGB32(), avatarIndex];
 }
 
 class UpdateProfileEvent extends ProfileEvent {
@@ -110,7 +110,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     try {
       final profile = await _manageProfile.createProfile(
         name: event.name,
-        themeColorValue: event.themeColor.value,
+        themeColorValue: event.themeColor.toARGB32(),
         avatarIndex: event.avatarIndex,
       );
       emit(ProfileLoaded(profile));

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
@@ -41,11 +41,13 @@ class _SplashScreenState extends State<SplashScreen> {
         // We add a slight delay to ensure the splash animations can be seen
         if (state is ProfileLoaded) {
           Future.delayed(const Duration(milliseconds: 1800), () {
-            if (mounted) context.go(AppRouter.planetPath);
+            if (!context.mounted) return;
+            context.go(AppRouter.planetPath);
           });
         } else if (state is ProfileNotFound) {
           Future.delayed(const Duration(milliseconds: 1800), () {
-            if (mounted) context.go(AppRouter.profileSetup);
+            if (!context.mounted) return;
+            context.go(AppRouter.profileSetup);
           });
         }
       },
@@ -139,7 +141,7 @@ class _StarFieldState extends State<_StarField>
     return AnimatedBuilder(
       animation: _controller,
       builder: (_, __) => CustomPaint(
-        size: MediaQuery.of(context).size,
+        size: MediaQuery.sizeOf(context),
         painter: _StarPainter(_controller.value),
       ),
     );
@@ -161,7 +163,7 @@ class _StarPainter extends CustomPainter {
     for (int i = 0; i < _positions.length; i++) {
       final pos = _positions[i];
       final flicker = 0.4 + 0.6 * ((t * 3.14 + i * 0.5).abs() % 3.14 / 3.14);
-      paint.color = Colors.white.withOpacity(flicker * 0.8);
+      paint.color = Colors.white.withValues(alpha: flicker * 0.8);
       final radius = 1.0 + (i % 3) * 0.8;
       canvas.drawCircle(
         Offset(pos.dx * size.width, pos.dy * size.height),

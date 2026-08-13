@@ -21,7 +21,7 @@ class WordPeek {
         children: [
           // Semi-transparent backdrop
           Positioned.fill(
-            child: Container(color: Colors.black.withOpacity(0.55)),
+            child: Container(color: Colors.black.withValues(alpha: 0.55)),
           ),
           // Centered Peek Card
           Center(
@@ -79,12 +79,12 @@ class _PeekCardContent extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: AppTheme.stardustBlue.withOpacity(0.5),
+          color: AppTheme.stardustBlue.withValues(alpha: 0.5),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.deepSpace.withOpacity(0.8),
+            color: AppTheme.deepSpace.withValues(alpha: 0.8),
             blurRadius: 40,
             spreadRadius: 8,
           ),
@@ -97,7 +97,7 @@ class _PeekCardContent extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: AppTheme.stardustBlue.withOpacity(0.4),
+              color: AppTheme.stardustBlue.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -134,7 +134,7 @@ class _PeekCardContent extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: [
                     Colors.transparent,
-                    AppTheme.stardustBlue.withOpacity(0.3),
+                    AppTheme.stardustBlue.withValues(alpha: 0.3),
                     Colors.transparent,
                   ],
                 ),
@@ -167,7 +167,7 @@ class _PeekCardContent extends StatelessWidget {
             style: TextStyle(
               fontFamily: 'Andika',
               fontSize: 12,
-              color: const Color(0xFF4F6272).withOpacity(0.6),
+              color: const Color(0xFF4F6272).withValues(alpha: 0.6),
             ),
           ),
         ],
@@ -201,7 +201,7 @@ class _PhonemeDotsRow extends StatelessWidget {
           height: 8,
           margin: const EdgeInsets.symmetric(horizontal: 3),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.7),
+            color: color.withValues(alpha: 0.7),
             shape: BoxShape.circle,
           ),
         );

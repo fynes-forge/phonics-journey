@@ -78,14 +78,14 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: stardustBlue.withOpacity(0.4),
+        fillColor: stardustBlue.withValues(alpha: 0.4),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(25),
-          borderSide: BorderSide(color: seed.withOpacity(0.5)),
+          borderSide: BorderSide(color: seed.withValues(alpha: 0.5)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(25),
-          borderSide: BorderSide(color: seed.withOpacity(0.3)),
+          borderSide: BorderSide(color: seed.withValues(alpha: 0.3)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(25),
@@ -94,7 +94,7 @@ class AppTheme {
         labelStyle: const TextStyle(fontFamily: 'Andika', color: moonWhite),
         hintStyle: TextStyle(
           fontFamily: 'Andika',
-          color: moonWhite.withOpacity(0.5),
+          color: moonWhite.withValues(alpha: 0.5),
         ),
       ),
     );
@@ -176,8 +176,8 @@ class AppTheme {
 
   static LinearGradient planetGlow(Color color) => RadialGradient(
         colors: [
-          color.withOpacity(0.9),
-          color.withOpacity(0.4),
+          color.withValues(alpha: 0.9),
+          color.withValues(alpha: 0.4),
           Colors.transparent,
         ],
         stops: const [0.3, 0.7, 1.0],
@@ -186,16 +186,16 @@ class AppTheme {
   static BoxDecoration spaceBackground = BoxDecoration(gradient: spaceGradient);
 
   static BoxDecoration cardDecoration({Color? glowColor}) => BoxDecoration(
-        color: stardustBlue.withOpacity(0.3),
+        color: stardustBlue.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(25),
         border: Border.all(
-          color: (glowColor ?? cosmicTeal).withOpacity(0.4),
+          color: (glowColor ?? cosmicTeal).withValues(alpha: 0.4),
           width: 1.5,
         ),
         boxShadow: glowColor != null
             ? [
                 BoxShadow(
-                  color: glowColor.withOpacity(0.3),
+                  color: glowColor.withValues(alpha: 0.3),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),

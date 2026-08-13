@@ -24,22 +24,6 @@ class PlanetNode extends StatelessWidget {
 
   static const double _size = 90.0;
 
-  // Different planet visual styles based on level id
-  static const List<String> _planetEmojis = [
-    '🌍',
-    '🌕',
-    '🪐',
-    '🔴',
-    '🌑',
-    '🟤',
-    '⚫',
-    '🌐',
-    '🌏',
-    '🌖',
-    '💙',
-    '🟠',
-  ];
-
   static const List<List<Color>> _planetGradients = [
     [Color(0xFF4CAF82), Color(0xFF2E7D52)], // green
     [Color(0xFF2196F3), Color(0xFF0D47A1)], // blue
@@ -56,7 +40,7 @@ class PlanetNode extends StatelessWidget {
   List<Color> get _gradient {
     final idx = (level.id - 1) % _planetGradients.length;
     if (stars == 3) {
-      return [themeColor, themeColor.withOpacity(0.6)];
+      return [themeColor, themeColor.withValues(alpha: 0.6)];
     }
     return _planetGradients[idx];
   }
@@ -96,7 +80,7 @@ class PlanetNode extends StatelessWidget {
             curve: Curves.easeInOut,
           )
           .then()
-          .shimmer(duration: 1500.ms, color: themeColor.withOpacity(0.4));
+          .shimmer(duration: 1500.ms, color: themeColor.withValues(alpha: 0.4));
     }
 
     return planetBody;
@@ -121,14 +105,17 @@ class PlanetNode extends StatelessWidget {
         boxShadow: isUnlocked
             ? [
                 BoxShadow(
-                  color: gradient.first.withOpacity(stars == 3 ? 0.7 : 0.3),
+                  color:
+                      gradient.first.withValues(alpha: stars == 3 ? 0.7 : 0.3),
                   blurRadius: stars == 3 ? 24 : 12,
                   spreadRadius: stars == 3 ? 4 : 1,
                 ),
               ]
             : null,
         border: Border.all(
-          color: isUnlocked ? gradient.first.withOpacity(0.6) : Colors.white12,
+          color: isUnlocked
+              ? gradient.first.withValues(alpha: 0.6)
+              : Colors.white12,
           width: 2,
         ),
       ),
@@ -153,7 +140,7 @@ class PlanetNode extends StatelessWidget {
                 fontFamily: 'Andika',
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 shadows: const [Shadow(color: Colors.black45, blurRadius: 4)],
               ),
             ),
@@ -188,8 +175,8 @@ class PlanetNode extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
               color: isUnlocked
-                  ? AppTheme.stardustBlue.withOpacity(0.7)
-                  : AppTheme.lockedGrey.withOpacity(0.5),
+                  ? AppTheme.stardustBlue.withValues(alpha: 0.7)
+                  : AppTheme.lockedGrey.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
@@ -234,7 +221,7 @@ class _RingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = color.withOpacity(0.6)
+      ..color = color.withValues(alpha: 0.6)
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
 
