@@ -15,7 +15,7 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+-*'      # e.g. v1.0.0-beta.1
 
 env:
-  FLUTTER_VERSION: '3.22.0'
+  FLUTTER_VERSION: '3.24.0'
   JAVA_VERSION: '17'
 
 jobs:
