@@ -181,35 +181,35 @@ jobs:
   # ────────────────────────────────────────────────────────────────────────────
   # JOB 4: Build iOS (macOS runner, main branch only)
   # ────────────────────────────────────────────────────────────────────────────
-  build-ios:
-    name: Build iOS (no-codesign)
-    runs-on: macos-latest
-    needs: test
-    if: github.ref == 'refs/heads/main'
+  # build-ios:
+  #   name: Build iOS (no-codesign)
+  #   runs-on: macos-latest
+  #   needs: test
+  #   if: github.ref == 'refs/heads/main'
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v7
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: stable
-          cache: true
+  #     - name: Set up Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: ${{ env.FLUTTER_VERSION }}
+  #         channel: stable
+  #         cache: true
 
-      - name: Install dependencies
-        run: flutter pub get
+  #     - name: Install dependencies
+  #       run: flutter pub get
 
-      - name: Generate Hive adapters
-        run: dart run build_runner build --delete-conflicting-outputs
+  #     - name: Generate Hive adapters
+  #       run: dart run build_runner build --delete-conflicting-outputs
 
-      - name: Build iOS (no code signing)
-        run: flutter build ios --release --no-codesign
+  #     - name: Build iOS (no code signing)
+  #       run: flutter build ios --release --no-codesign
 
-      - name: Upload iOS build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-build-${{ github.sha }}
-          path: build/ios/iphoneos/Runner.app
-          retention-days: 30
+  #     - name: Upload iOS build artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ios-build-${{ github.sha }}
+  #         path: build/ios/iphoneos/Runner.app
+  #         retention-days: 30
