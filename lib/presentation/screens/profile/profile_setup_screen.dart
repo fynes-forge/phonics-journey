@@ -124,8 +124,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                             height: 64,
                             decoration: BoxDecoration(
                               color: selected
-                                  ? _selectedColor.withOpacity(0.3)
-                                  : AppTheme.stardustBlue.withOpacity(0.3),
+                                  ? _selectedColor.withValues(alpha: 0.3)
+                                  : AppTheme.stardustBlue
+                                      .withValues(alpha: 0.3),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color:
@@ -135,8 +136,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                               boxShadow: selected
                                   ? [
                                       BoxShadow(
-                                        color: _selectedColor.withOpacity(
-                                          0.4,
+                                        color: _selectedColor.withValues(
+                                          alpha: 0.4,
                                         ),
                                         blurRadius: 12,
                                         spreadRadius: 2,
@@ -195,7 +196,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       spacing: 16,
                       runSpacing: 16,
                       children: AppTheme.profileColors.map((color) {
-                        final selected = _selectedColor.value == color.value;
+                        final selected =
+                            _selectedColor.toARGB32() == color.toARGB32();
                         return GestureDetector(
                           onTap: () => setState(() => _selectedColor = color),
                           child: AnimatedContainer(
@@ -214,7 +216,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                               boxShadow: selected
                                   ? [
                                       BoxShadow(
-                                        color: color.withOpacity(0.6),
+                                        color: color.withValues(alpha: 0.6),
                                         blurRadius: 16,
                                         spreadRadius: 4,
                                       ),
@@ -334,7 +336,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         UpdateProfileEvent(
           state.profile.copyWith(
             name: name,
-            themeColorValue: _selectedColor.value,
+            themeColorValue: _selectedColor.toARGB32(),
             avatarIndex: _selectedAvatar,
           ),
         ),

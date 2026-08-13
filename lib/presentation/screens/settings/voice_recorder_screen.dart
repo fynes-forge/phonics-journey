@@ -168,8 +168,8 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          AppTheme.cosmicTeal.withOpacity(0.6),
-                          AppTheme.cosmicTeal.withOpacity(0.1),
+                          AppTheme.cosmicTeal.withValues(alpha: 0.6),
+                          AppTheme.cosmicTeal.withValues(alpha: 0.1),
                         ],
                       ),
                       border: Border.all(
@@ -242,7 +242,7 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
                             color: (_state == _RecordingState.recording
                                     ? AppTheme.errorRed
                                     : AppTheme.successGreen)
-                                .withOpacity(0.5),
+                                .withValues(alpha: 0.5),
                             blurRadius: 24,
                             spreadRadius: 4,
                           ),
@@ -322,7 +322,7 @@ class _VoiceRecorderScreenState extends State<VoiceRecorderScreen>
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
-                  ?.copyWith(color: AppTheme.moonWhite.withOpacity(0.85)),
+                  ?.copyWith(color: AppTheme.moonWhite.withValues(alpha: 0.85)),
             ),
           ),
         ],

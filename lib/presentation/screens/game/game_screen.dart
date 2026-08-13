@@ -226,7 +226,7 @@ class _GameScreenState extends State<GameScreen> {
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
               value: (state.questionIndex + 1) / state.totalQuestions,
-              backgroundColor: AppTheme.stardustBlue.withOpacity(0.3),
+              backgroundColor: AppTheme.stardustBlue.withValues(alpha: 0.3),
               valueColor: AlwaysStoppedAnimation(themeColor),
               minHeight: 10,
             ),
@@ -246,9 +246,9 @@ class _GameScreenState extends State<GameScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: phaseColor.withOpacity(0.2),
+              color: phaseColor.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: phaseColor.withOpacity(0.5)),
+              border: Border.all(color: phaseColor.withValues(alpha: 0.5)),
             ),
             child: Text(
               'Phase ${state.level.phase}',
@@ -296,7 +296,7 @@ class _GameScreenState extends State<GameScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       decoration: BoxDecoration(
         color: (isCorrect ? AppTheme.successGreen : AppTheme.errorRed)
-            .withOpacity(0.2),
+            .withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isCorrect ? AppTheme.successGreen : AppTheme.errorRed,
@@ -345,12 +345,12 @@ class _GameScreenState extends State<GameScreen> {
             height: _slotWidth(state.currentQuestion.answer.length),
             decoration: BoxDecoration(
               color: isHovering
-                  ? AppTheme.cosmicTeal.withOpacity(0.3)
+                  ? AppTheme.cosmicTeal.withValues(alpha: 0.3)
                   : (letter != null
                       ? (isCorrectSlot
-                          ? AppTheme.errorRed.withOpacity(0.3)
-                          : AppTheme.cosmicTeal.withOpacity(0.2))
-                      : AppTheme.stardustBlue.withOpacity(0.2)),
+                          ? AppTheme.errorRed.withValues(alpha: 0.3)
+                          : AppTheme.cosmicTeal.withValues(alpha: 0.2))
+                      : AppTheme.stardustBlue.withValues(alpha: 0.2)),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isHovering
@@ -358,7 +358,7 @@ class _GameScreenState extends State<GameScreen> {
                     : (letter != null
                         ? (isCorrectSlot
                             ? AppTheme.errorRed
-                            : AppTheme.cosmicTeal.withOpacity(0.7))
+                            : AppTheme.cosmicTeal.withValues(alpha: 0.7))
                         : Colors.white24),
                 width: isHovering ? 2.5 : 1.5,
               ),
@@ -664,8 +664,8 @@ class _WordPeekButtonState extends State<_WordPeekButton> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: _isPressing
-                  ? AppTheme.starYellow.withOpacity(0.4)
-                  : Colors.white.withOpacity(0.05),
+                  ? AppTheme.starYellow.withValues(alpha: 0.4)
+                  : Colors.white.withValues(alpha: 0.05),
               border: Border.all(
                 color: _isPressing ? AppTheme.starYellow : Colors.white24,
                 width: 2,
@@ -725,10 +725,13 @@ class _LetterTile extends StatelessWidget {
       height: 62,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [themeColor.withOpacity(0.4), themeColor.withOpacity(0.15)],
+          colors: [
+            themeColor.withValues(alpha: 0.4),
+            themeColor.withValues(alpha: 0.15)
+          ],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: themeColor.withOpacity(0.7), width: 2),
+        border: Border.all(color: themeColor.withValues(alpha: 0.7), width: 2),
       ),
       child: Center(
         child: Text(

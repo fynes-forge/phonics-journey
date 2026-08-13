@@ -35,7 +35,7 @@ class RocketHero extends StatelessWidget {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: rocketColor.withOpacity(0.8),
+                color: rocketColor.withValues(alpha: 0.8),
                 blurRadius: 10,
                 spreadRadius: 2,
               ),
