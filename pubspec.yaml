@@ -16,7 +16,7 @@ dependencies:
 
   # Animation
   flutter_animate: ^4.5.0
-  lottie: ^3.1.2 # Minor patch update
+  lottie: ^3.5.1 # Minor patch update
 
   # Audio / TTS
   flutter_tts: ^4.1.1 # Safe update
